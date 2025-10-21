@@ -1,7 +1,7 @@
 import type { ComponentType, SVGProps } from 'react';
 
 export interface ButtonProps {
-  icon: ComponentType<SVGProps<SVGSVGElement>>;
+  icon?: ComponentType<SVGProps<SVGSVGElement>>; // optional로 변경
   label: string;
   className?: string;
   disabled?: boolean;
@@ -19,18 +19,20 @@ export const Asidetab = ({
     <button
       type="button"
       disabled={disabled}
-      className={`group flex gap-[1.125rem] border-none bg-transparent p-0 text-[#C1C1C1] outline-none focus:text-white focus:outline-none focus:ring-0 active:text-white ${className}`}
+      className={`group flex items-center gap-[1.125rem] border-none bg-transparent p-0 text-[#C1C1C1] outline-none focus:text-white focus:outline-none focus:ring-0 active:text-white ${className}`}
       onClick={onClick}
     >
-      <Icon
-        className={`${
-          disabled
-            ? 'text-gray-400'
-            : 'text-[#C1C1C1] group-focus:text-white group-active:text-white'
-        }`}
-        width={24}
-        height={24}
-      />
+      {Icon && (
+        <Icon
+          className={`${
+            disabled
+              ? 'text-gray-400'
+              : 'text-[#C1C1C1] group-focus:text-white group-active:text-white'
+          }`}
+          width={24}
+          height={24}
+        />
+      )}
       <span>{label}</span>
     </button>
   );
