@@ -34,7 +34,7 @@ const Aside: React.FC = () => {
                 ? 'text-white'
                 : 'text-[#C1C1C1]'
             }
-            onClick={() => handleClick('/dashboard')}
+            onClick={() => handleClick('/dashboard/1')}
           />
           <ul className="ml-14 flex list-disc flex-col gap-2 marker:text-sm marker:text-[#C1C1C1]">
             <li>
@@ -80,7 +80,7 @@ const Aside: React.FC = () => {
             className={
               activeMenu.startsWith('/shop') ? 'text-white' : 'text-[#C1C1C1]'
             }
-            onClick={() => handleClick('/shop')}
+            onClick={() => handleClick('/shop/1')}
           />
           <ul className="ml-14 flex list-disc flex-col gap-2 marker:text-sm marker:text-[#C1C1C1]">
             <li>
@@ -122,7 +122,7 @@ const Aside: React.FC = () => {
                 ? 'text-white'
                 : 'text-[#C1C1C1]'
             }
-            onClick={() => handleClick('/settlement')}
+            onClick={() => handleClick('/settlement/1')}
           />
           <ul className="ml-14 flex list-disc flex-col gap-2 marker:text-sm marker:text-[#C1C1C1]">
             <li>
