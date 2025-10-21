@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router';
 import Counter from './components/Counter';
 import { Button } from './components/ui/button';
 import { Signup } from './auth/sign-up';
+import Aside from './components/aside/aside';
 
 function MainPage() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ function MainPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
+      <Aside />
       <div className="rounded-lg bg-white p-8 shadow-md">
         <h1 className="mb-8 text-center text-3xl font-bold text-gray-800">
           moduLapProject
