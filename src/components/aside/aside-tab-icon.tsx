@@ -5,6 +5,7 @@ export interface ButtonProps {
   label: string;
   className?: string;
   disabled?: boolean;
+  onClick?: () => void;
 }
 
 export const Asidetab = ({
@@ -12,12 +13,14 @@ export const Asidetab = ({
   label,
   disabled = false,
   className = '',
+  onClick = () => {},
 }: ButtonProps) => {
   return (
     <button
       type="button"
       disabled={disabled}
-      className={`group flex items-center gap-[1.125rem] border-none bg-transparent text-[#C1C1C1] outline-none focus:text-white focus:outline-none focus:ring-0 active:text-white ${className}`}
+      className={`group flex gap-[1.125rem] border-none bg-transparent p-0 text-[#C1C1C1] outline-none focus:text-white focus:outline-none focus:ring-0 active:text-white ${className}`}
+      onClick={onClick}
     >
       <Icon
         className={`${

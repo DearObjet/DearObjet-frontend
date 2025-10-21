@@ -5,9 +5,6 @@ import { MessageCircleMore } from 'lucide-react';
 const meta = {
   title: 'Example/Asidetab',
   component: Asidetab,
-  parameters: {
-    layout: 'centered',
-  },
   tags: ['autodocs'],
 } satisfies Meta<typeof Asidetab>;
 
