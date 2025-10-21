@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Asidetab } from './aside-tab-icon';
+import { Asidetab } from './aside-tab-menu';
 import { MessageCircleMore } from 'lucide-react';
 
 const meta = {
