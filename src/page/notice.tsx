@@ -57,7 +57,7 @@ function Notice() {
   const [selectedCategory, setSelectedCategory] = useState('전체');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 1;
+  const itemsPerPage = 15;
 
   const filteredNotices =
     selectedCategory === '전체'
