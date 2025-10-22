@@ -6,6 +6,8 @@ import { Asidetab } from './aside-tab-menu';
 
 import { MessageCircleMore } from 'lucide-react';
 
+import DearObjectLogo from '../../assets/dear-objet-logo.svg';
+
 const Aside: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,8 +20,8 @@ const Aside: React.FC = () => {
 
   return (
     <aside className="flex h-screen flex-col bg-black pb-[2.875rem] pl-[2.375rem] pr-[3.75rem] pt-[3.25rem] text-white">
-      <section className="flex text-[1.1875rem]">
-        <img src="" alt="dear objet 로고" />
+      <section className="flex items-center gap-2 text-[1.1875rem]">
+        <img src={DearObjectLogo} alt="dear objet 로고" />
         <h2>my pape</h2>
       </section>
 

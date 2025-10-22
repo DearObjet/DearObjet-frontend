@@ -4,6 +4,7 @@ import Counter from './components/Counter';
 import { Button } from './components/ui/button';
 import { Signup } from './auth/sign-up';
 import Aside from './components/aside/aside';
+import Notice from './page/notice';
 
 function MainPage() {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ function App() {
     <Routes>
       <Route path="/" element={<MainPage />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/notice" element={<Notice />} />
     </Routes>
   );
 }
