@@ -30,7 +30,7 @@ export const NoticeList: React.FC<NoticeListProps> = ({
           <p className="flex h-[1.9375rem] w-[4.1875rem] flex-shrink-0 items-center justify-center rounded-2xl bg-black text-[0.8125rem] font-extrabold text-white">
             {notice.type}
           </p>
-          <p className="max-w-[278px] flex-1 overflow-hidden whitespace-nowrap text-left text-sm text-gray-600">
+          <p className="flex max-w-[278px] flex-1 items-center overflow-hidden whitespace-nowrap text-left text-sm text-gray-600">
             {notice.title}
           </p>
           <span className="ml-auto flex flex-shrink-0 items-center text-sm text-gray-400">

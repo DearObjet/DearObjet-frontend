@@ -14,22 +14,37 @@ const noticeData: NoticeItem[] = [
   },
   {
     id: 2,
-    type: '업데이트',
-    title: '업데이트업데이트업데이트업데이트업데이트',
+    type: '이벤트',
+    title: '이벤트이벤트이벤트이벤트이벤트이벤트',
     date: '2025.10.21',
-    content: '업데이트 관련 상세 내용입니다.',
+    content: '이벤트 관련 상세 내용입니다.',
   },
   {
     id: 3,
-    type: '점검 안내',
-    title: '점검 안내점검 안내점검 안내점검 안내점검 안내점검 안내',
+    type: '일반',
+    title: '일반일반일반일반일반일반',
     date: '2025.10.20',
-    content: '점검 안내 상세 내용입니다.',
+    content: '일반 공지 상세 내용입니다.',
+  },
+  {
+    id: 4,
+    type: '이용안내',
+    title: '이용안내이용안내이용안내이용안내이용안내',
+    date: '2025.10.21',
+    content: '이용안내 관련 상세 내용입니다.',
   },
 ];
 
+const categories = ['전체', '이벤트', '일반', '이용안내'];
+
 function Notice() {
   const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState('전체');
+
+  const filteredNotices =
+    selectedCategory === '전체'
+      ? noticeData
+      : noticeData.filter((notice) => notice.type === selectedCategory);
 
   return (
     <div className="flex h-screen w-screen">
@@ -39,10 +54,25 @@ function Notice() {
           <h2>공지사항</h2>
         </header>
         <main className="grid w-full flex-1 grid-cols-2 gap-3 overflow-y-auto bg-gray-100 p-5 px-[3.625rem]">
-          <section className="rounded-xl bg-white">
+          <section className="rounded-xl bg-white px-[3.125rem] py-10">
             <h3 className="hidden">공지사항 리스트</h3>
+            <div className="mb-5">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  className="hover:white relative rounded-none bg-white text-sm font-medium text-gray-900 hover:border-white focus:outline-none"
+                  onClick={() => setSelectedCategory(category)}
+                >
+                  {category}
+                  {selectedCategory === category && (
+                    <span className="absolute bottom-0 left-1/2 h-[2px] w-[58px] -translate-x-1/2 bg-gray-900"></span>
+                  )}
+                </button>
+              ))}
+            </div>
+
             <NoticeList
-              notices={noticeData}
+              notices={filteredNotices}
               onSelectNotice={setSelectedNotice}
               selectedId={selectedNotice?.id}
             />
