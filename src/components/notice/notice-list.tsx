@@ -1,7 +1,6 @@
 import React from 'react';
 
 export interface NoticeItem {
-  id: number;
   type: string;
   title: string;
   date: string;
@@ -19,14 +18,13 @@ export const NoticeList: React.FC<NoticeListProps> = ({
   onSelectNotice,
 }) => {
   return (
-    <div className="flex flex-col gap-2">
-      {notices.map((notice) => (
+    <div className="flex flex-col gap-5">
+      {notices.map((notice, index) => (
         <button
-          key={notice.id}
+          key={index}
           onClick={() => onSelectNotice(notice)}
-          className={`flex gap-5 border-b bg-white hover:border-white focus:outline-none`}
+          className={`flex gap-5 border-b bg-white p-0 hover:border-white focus:outline-none`}
         >
-          <p className="flex-shrink-0 text-center text-base">{notice.id}</p>
           <p className="flex h-[1.9375rem] w-[4.1875rem] flex-shrink-0 items-center justify-center rounded-2xl bg-black text-[0.8125rem] font-extrabold text-white">
             {notice.type}
           </p>
