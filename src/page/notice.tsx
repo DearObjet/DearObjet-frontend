@@ -80,18 +80,16 @@ function Notice() {
   ) => {
     switch (type) {
       case 'left':
-        setCurrentPage((prev) => Math.max(prev - 1, 1));
-        break;
-      case 'right':
-        setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-        break;
-      case 'two-left':
-        // 현재 화면 시작 페이지 기준 이전 화면 끝으로 이동
         setCurrentPage(Math.max(startPage - maxPageButtons, 1));
         break;
-      case 'two-right':
-        // 현재 화면 끝 페이지 기준 다음 화면 시작으로 이동
+      case 'right':
         setCurrentPage(Math.min(endPage + 1, totalPages));
+        break;
+      case 'two-left':
+        setCurrentPage(Math.min(endPage, 1));
+        break;
+      case 'two-right':
+        setCurrentPage(Math.max(startPage, totalPages));
         break;
     }
   };
@@ -145,7 +143,6 @@ function Notice() {
                 />
               </button>
 
-              {/* 1페이지 뒤로 */}
               <button
                 className="rounded-none border-gray-300 bg-white px-3 py-1 text-gray-300 hover:border-gray-300 focus:outline-none"
                 onClick={() => handlePageChange('left')}
@@ -157,7 +154,6 @@ function Notice() {
                 />
               </button>
 
-              {/* 숫자 페이지 버튼 */}
               {Array.from({ length: endPage - startPage + 1 }, (_, i) => (
                 <button
                   key={startPage + i}
@@ -172,7 +168,6 @@ function Notice() {
                 </button>
               ))}
 
-              {/* 1페이지 앞으로 */}
               <button
                 className="rounded-none border-gray-300 bg-white px-3 py-1 text-gray-300 hover:border-gray-300 focus:outline-none"
                 onClick={() => handlePageChange('right')}
@@ -184,7 +179,6 @@ function Notice() {
                 />
               </button>
 
-              {/* 4페이지 앞으로 */}
               <button
                 className="rounded-none border-gray-300 bg-white px-3 py-1 text-gray-300 hover:border-gray-300 focus:outline-none"
                 onClick={() => handlePageChange('two-right')}
