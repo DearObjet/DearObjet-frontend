@@ -11,6 +11,10 @@ interface LabelProps {
   label: string;
 }
 
+interface ErrorMessageProps {
+  error: string;
+}
+
 interface FormData {
   id: string;
   password: string;
@@ -57,6 +61,12 @@ const LoginForm: React.FC = () => {
     </label>
   );
 
+  const ErrorMessage: React.FC<ErrorMessageProps> = ({ error }) => (
+    <div className="text-sm text-red-600" role="alert">
+      {error}
+    </div>
+  );
+
   return (
     <div className="">
       <h2 className="">로그인폼</h2>
@@ -83,11 +93,7 @@ const LoginForm: React.FC = () => {
             className="w-full"
           />
         </div>
-        {error && (
-          <div className="text-sm text-red-600" role="alert">
-            {error}
-          </div>
-        )}
+        {error && <ErrorMessage error={error} />}
         <div>
           <Link to="/">ID/PW 찾기</Link>
           <Link to="/">회원가입</Link>
