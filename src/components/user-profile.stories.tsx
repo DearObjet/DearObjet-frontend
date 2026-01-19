@@ -9,23 +9,6 @@ const meta = {
     variant: {
       control: 'select',
       options: ['author', 'aside'],
-      description: '프로필 변형 타입',
-    },
-    userName: {
-      control: 'text',
-      description: '사용자 이름',
-    },
-    userId: {
-      control: 'text',
-      description: '사용자 ID',
-    },
-    userImage: {
-      control: 'text',
-      description: '사용자 이미지 URL',
-    },
-    isSelected: {
-      control: 'boolean',
-      description: '선택 상태',
     },
   },
 } satisfies Meta<typeof UserProfile>;
