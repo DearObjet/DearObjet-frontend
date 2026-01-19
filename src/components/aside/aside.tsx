@@ -201,7 +201,12 @@ const Aside: React.FC = () => {
         />
       </section>
 
-      <UserProfile className="mt-auto" />
+      <UserProfile
+        className="mt-auto"
+        variant="aside"
+        userName="김자까"
+        userId="jakka@gmail.com"
+      />
     </aside>
   );
 };
