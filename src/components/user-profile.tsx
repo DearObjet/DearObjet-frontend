@@ -1,12 +1,13 @@
 import React from 'react';
 
 interface UserProfileProps {
-  variant?: 'aside';
+  variant?: 'author' | 'aside';
   userName: string;
   userId?: string;
   userImage?: string;
   postTime?: string;
   className?: string;
+  isSelected?: boolean;
   onAction?: () => void;
 }
 
@@ -16,8 +17,33 @@ const UserProfile: React.FC<UserProfileProps> = ({
   userId,
   userImage,
   className = '',
+  isSelected = false,
+  onAction,
 }) => {
   const defaultImage = '';
+
+  if (variant === 'author') {
+    return (
+      <div className={`flex flex-col items-center ${className}`}>
+        <div className="relative cursor-pointer" onClick={onAction}>
+          <img
+            src={userImage || defaultImage}
+            alt={userName}
+            className={`h-28 w-28 rounded-full object-cover transition-all ${
+              isSelected ? 'ring-2 ring-blue-100' : ''
+            }`}
+          />
+        </div>
+        <span
+          className={`mt-4 text-sm transition-colors ${
+            isSelected ? 'text-gray-900' : 'text-gray-500'
+          }`}
+        >
+          {userName}
+        </span>
+      </div>
+    );
+  }
 
   if (variant === 'aside') {
     return (
@@ -37,7 +63,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
     );
   }
 
-  return;
+  return null;
 };
 
 export default UserProfile;
