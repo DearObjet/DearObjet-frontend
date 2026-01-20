@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { NoticeList } from '../components/notice/notice-list';
-import type { NoticeItem } from '../components/notice/notice-list';
+import { NoticeList } from './notice-list';
+import type { NoticeItem } from './notice-list';
 
 import RightShiftIcon from '../assets/right-shift.svg';
 import LeftShiftIcon from '../assets/left-shift.svg';
@@ -79,7 +79,6 @@ function Notice({ noticeData, onSelectNotice }: NoticeProps) {
         <NoticeList notices={currentNotices} onSelectNotice={onSelectNotice} />
       </div>
 
-      {/* 페이지네이션 */}
       <div className="mt-4 flex items-center justify-center gap-2">
         <button
           className="rounded-none border-gray-300 bg-white px-3 py-1 text-gray-300 hover:border-gray-300 focus:outline-none"
