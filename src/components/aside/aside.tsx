@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 
-import UserProfile from './user-profile';
+import UserProfile from '../user-profile';
 import { Asidetab } from './aside-tab-menu';
 
 import { MessageCircleMore } from 'lucide-react';
@@ -201,7 +201,12 @@ const Aside: React.FC = () => {
         />
       </section>
 
-      <UserProfile className="mt-auto" />
+      <UserProfile
+        className="mt-auto"
+        variant="aside"
+        userName="김자까"
+        userId="jakka@gmail.com"
+      />
     </aside>
   );
 };
