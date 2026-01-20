@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { NoticeList } from './notice-list';
 import type { NoticeItem } from './notice-list';
 
-import RightShiftIcon from '../assets/right-shift.svg';
-import LeftShiftIcon from '../assets/left-shift.svg';
-import TwoRightShiftIcon from '../assets/two-right-shift.svg';
-import TwoLeftShiftIcon from '../assets/two-left-shift.svg';
+import RightShiftIcon from '../../assets/right-shift.svg';
+import LeftShiftIcon from '../../assets/left-shift.svg';
+import TwoRightShiftIcon from '../../assets/two-right-shift.svg';
+import TwoLeftShiftIcon from '../../assets/two-left-shift.svg';
 
 const categories = ['전체', '이벤트', '일반', '이용안내'];
 
