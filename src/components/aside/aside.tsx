@@ -188,8 +188,12 @@ const Aside: React.FC = () => {
         <Asidetab
           icon={MessageCircleMore}
           label="공지사항"
-          className={activeMenu === '/notice' ? 'text-white' : 'text-[#C1C1C1]'}
-          onClick={() => handleClick('/notice')}
+          className={
+            activeMenu === '/shop-artist-notice'
+              ? 'text-white'
+              : 'text-[#C1C1C1]'
+          }
+          onClick={() => handleClick('/shop-artist-notice')}
         />
         <Asidetab
           icon={MessageCircleMore}
