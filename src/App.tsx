@@ -36,7 +36,7 @@ function App() {
     <Routes>
       <Route path="/" element={<MainPage />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/notice" element={<ShopArtistNotice />} />
+      <Route path="/shop-artist-notice" element={<ShopArtistNotice />} />
     </Routes>
   );
 }

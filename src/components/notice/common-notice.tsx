@@ -14,7 +14,7 @@ interface NoticeProps {
   onSelectNotice: (notice: NoticeItem) => void;
 }
 
-function Notice({ noticeData, onSelectNotice }: NoticeProps) {
+function CommonNotice({ noticeData, onSelectNotice }: NoticeProps) {
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
@@ -142,4 +142,4 @@ function Notice({ noticeData, onSelectNotice }: NoticeProps) {
   );
 }
 
-export default Notice;
+export default CommonNotice;
