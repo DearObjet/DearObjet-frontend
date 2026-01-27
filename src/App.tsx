@@ -4,6 +4,7 @@ import { Signup } from './auth/sign-up';
 import ShopArtistNotice from './page/shop-artist-notice';
 import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
+import { Button } from './components/ui/button';
 
 function MainPage() {
   const navigate = useNavigate();
@@ -113,8 +114,8 @@ function MainPage() {
             <div className="h-[15.75rem] bg-gray-200"></div>
 
             <div className="flex gap-10 self-center">
-              <ChevronLeft />
-              <ChevronRight />
+              <Button variant="icon" icon={<ChevronLeft />} />
+              <Button variant="icon" icon={<ChevronRight />} />
             </div>
           </section>
 
@@ -137,20 +138,18 @@ function MainPage() {
               className="relative flex items-center gap-10 self-center after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:text-sm after:content-[attr(data-page)]"
               data-page={`${currentNoticePage}/${totalNoticePages}`}
             >
-              <button
+              <Button
+                variant="icon"
+                icon={<ChevronLeft />}
                 onClick={handleNoticePrevPage}
                 disabled={currentNoticePage === 1}
-                className="disabled:cursor-not-allowed disabled:opacity-30"
-              >
-                <ChevronLeft />
-              </button>
-              <button
+              />
+              <Button
+                variant="icon"
+                icon={<ChevronRight />}
                 onClick={handleNoticeNextPage}
                 disabled={currentNoticePage === totalNoticePages}
-                className="disabled:cursor-not-allowed disabled:opacity-30"
-              >
-                <ChevronRight />
-              </button>
+              />
             </div>
           </section>
         </aside>
