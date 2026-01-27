@@ -1,15 +1,20 @@
+import type { ReactNode } from 'react';
+
 export interface ButtonProps {
-  variant?: 'primary' | 'secondaryLight' | 'secondaryDark';
+  variant?: 'primary' | 'secondaryLight' | 'secondaryDark' | 'icon';
   size?: 'small' | 'medium' | 'large';
-  label: string;
+  label?: string;
+  icon?: ReactNode;
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
 export const Button = ({
   variant = 'primary',
   size = 'medium',
   label,
+  icon,
   onClick,
   className = '',
   ...props
@@ -27,16 +32,17 @@ export const Button = ({
       'border-gray-900 hover:bg-gray-100 hover:border-gray-900 text-gray-900 rounded active:bg-gray-200 active:border-gray-900 disabled:bg-white disabled:border-gray-300 disabled:text-gray-300',
     secondaryDark:
       'bg-gray-900 border-gray-900 hover:border-gray-900 hover:border-gray-700 text-white rounded active:bg-black active:border-gray-900 disabled:bg-gray-200 disabled:border-gray-200 disabled:text-gray-500',
+    icon: 'disabled:text-gray-200 text-black',
   };
 
   return (
     <button
       type="button"
-      className={` ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+      className={`${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
       onClick={onClick}
       {...props}
     >
-      {label}
+      {icon || label}
     </button>
   );
 };
