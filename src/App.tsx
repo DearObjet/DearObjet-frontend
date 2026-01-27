@@ -6,6 +6,8 @@ import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './components/ui/button';
 
+import KakaoLogo from './assets/kakao-logo.svg';
+
 function MainPage() {
   const navigate = useNavigate();
 
@@ -86,10 +88,11 @@ function MainPage() {
               </div>
 
               <button
-                className="w-[13.25rem] bg-[#FEE500] text-xs font-bold"
+                className="flex w-[13.25rem] items-center justify-center gap-2 rounded-sm bg-[#FEE500] py-2 text-xs font-bold"
                 onClick={handleSignupClick}
               >
                 카카오로 시작하기
+                <img src={KakaoLogo} alt="dear objet 로고" />
               </button>
             </div>
           </section>
