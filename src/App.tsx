@@ -3,17 +3,52 @@ import { Routes, Route, useNavigate } from 'react-router';
 import { Signup } from './auth/sign-up';
 import ShopArtistNotice from './page/shop-artist-notice';
 import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
+import { useState } from 'react';
 
 function MainPage() {
   const navigate = useNavigate();
+
+  const [currentNoticePage, setCurrentNoticePage] = useState(1);
+  const noticesPerPage = 5;
+
   const regions = [
     { value: 'seoul', label: '서울' },
     { value: 'busan', label: '부산' },
     { value: 'incheon', label: '인천' },
   ];
 
+  const allNotices = [
+    { category: '공지', content: '10/20-10/22 KTX 반값!' },
+    { category: '부산', content: '황금연휴, ‘공짜’로 부산가기 이벤트!' },
+    { category: '이벤트', content: '선착순 EVENT 케이팝데몬헌터스 굿즈' },
+    { category: '축제', content: '단풍의 계절 10월 “청도 단풍 축제”' },
+    {
+      category: '문화공연',
+      content: '광안리 oo만명 인파 드론이 수놓은 한글날',
+    },
+  ];
+
+  const totalNoticePages = Math.ceil(allNotices.length / noticesPerPage);
+
+  const currentNotices = allNotices.slice(
+    (currentNoticePage - 1) * noticesPerPage,
+    currentNoticePage * noticesPerPage
+  );
+
   const handleSignupClick = () => {
     navigate('/signup');
+  };
+
+  const handleNoticePrevPage = () => {
+    if (currentNoticePage > 1) {
+      setCurrentNoticePage(currentNoticePage - 1);
+    }
+  };
+
+  const handleNoticeNextPage = () => {
+    if (currentNoticePage < totalNoticePages) {
+      setCurrentNoticePage(currentNoticePage + 1);
+    }
   };
 
   return (
@@ -85,11 +120,37 @@ function MainPage() {
 
           <section className="flex flex-col gap-3">
             <h2>공지&이벤트</h2>
-            <div className="h-[10rem] w-full rounded-sm border border-gray-300"></div>
+            <div className="w-full rounded-sm border border-gray-300 p-3">
+              <div className="flex flex-col gap-3">
+                {currentNotices.map((notice, index) => (
+                  <div key={index} className="flex text-[0.625rem] font-normal">
+                    <span className="w-12 shrink-0 text-center">
+                      {notice.category}
+                    </span>
+                    <span className="truncate text-left">{notice.content}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-            <div className="relative flex items-center gap-10 self-center after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:text-sm after:content-['1/6']">
-              <ChevronLeft />
-              <ChevronRight />
+            <div
+              className="relative flex items-center gap-10 self-center after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:text-sm after:content-[attr(data-page)]"
+              data-page={`${currentNoticePage}/${totalNoticePages}`}
+            >
+              <button
+                onClick={handleNoticePrevPage}
+                disabled={currentNoticePage === 1}
+                className="disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                <ChevronLeft />
+              </button>
+              <button
+                onClick={handleNoticeNextPage}
+                disabled={currentNoticePage === totalNoticePages}
+                className="disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                <ChevronRight />
+              </button>
             </div>
           </section>
         </aside>
