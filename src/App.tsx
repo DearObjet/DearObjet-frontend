@@ -1,12 +1,19 @@
+import KakaoLogo from './assets/kakao-logo.svg';
+
 import './App.css';
 import { Routes, Route, useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from './hooks/redux';
 import { Signup } from './auth/sign-up';
 import ShopArtistNotice from './page/shop-artist-notice';
 import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
-import { useState } from 'react';
 import { Button } from './components/ui/button';
-
-import KakaoLogo from './assets/kakao-logo.svg';
+import { setThemeMode, setSystemTheme } from './store/slices/themeSlice';
+import {
+  useGetSystemThemeQuery,
+  useGetUserThemeQuery,
+} from './store/api/themeApi';
+import { ThemeCustomizer } from './page/admin/theme-customizer';
 
 function MainPage() {
   const navigate = useNavigate();
@@ -162,11 +169,43 @@ function MainPage() {
 }
 
 function App() {
+  const dispatch = useAppDispatch();
+  const isAuthenticated = true;
+  const themeMode = useAppSelector((state) => state.theme.mode);
+
+  // 시스템 테마 로드 (모든 사용자)
+  const { data: systemTheme, isSuccess } = useGetSystemThemeQuery();
+
+  // 사용자 다크모드 설정 로드 (로그인 시만)
+  const { data: userTheme } = useGetUserThemeQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
+  // 초기 다크모드 적용
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', themeMode === 'dark');
+  }, [themeMode]);
+
+  // 시스템 테마 적용
+  useEffect(() => {
+    if (isSuccess && systemTheme) {
+      dispatch(setSystemTheme(systemTheme));
+    }
+  }, [systemTheme, isSuccess, dispatch]);
+
+  // 사용자 다크모드 적용
+  useEffect(() => {
+    if (userTheme) {
+      dispatch(setThemeMode(userTheme.mode));
+    }
+  }, [userTheme, dispatch]);
+
   return (
     <Routes>
       <Route path="/" element={<MainPage />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/shop-artist-notice" element={<ShopArtistNotice />} />
+      <Route path="/admin" element={<ThemeCustomizer />} />
     </Routes>
   );
 }

@@ -1,12 +1,14 @@
+import type React from 'react';
 import type { ReactNode } from 'react';
 
-export interface ButtonProps {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondaryLight' | 'secondaryDark' | 'icon';
   size?: 'small' | 'medium' | 'large';
   label?: string;
   icon?: ReactNode;
   onClick?: () => void;
   className?: string;
+  style?: React.CSSProperties;
   disabled?: boolean;
 }
 
@@ -17,6 +19,8 @@ export const Button = ({
   icon,
   onClick,
   className = '',
+  disabled = false,
+  style,
   ...props
 }: ButtonProps) => {
   const sizeClasses = {
@@ -26,12 +30,27 @@ export const Button = ({
   };
 
   const variantClasses = {
-    primary:
-      'bg-blue-100 border-blue-100 hover:border-blue-300 text-white rounded active:bg-blue-300 active:border-blue-300 disabled:bg-gray-300 disabled:border-gray-300',
-    secondaryLight:
-      'border-gray-900 hover:bg-gray-100 hover:border-gray-900 text-gray-900 rounded active:bg-gray-200 active:border-gray-900 disabled:bg-white disabled:border-gray-300 disabled:text-gray-300',
-    secondaryDark:
-      'bg-gray-900 border-gray-900 hover:border-gray-900 hover:border-gray-700 text-white rounded active:bg-black active:border-gray-900 disabled:bg-gray-200 disabled:border-gray-200 disabled:text-gray-500',
+    primary: `
+      bg-primary-bg text-primary-text border-2 border-primary-border rounded-lg
+      hover:bg-primary-hover-bg hover:text-primary-hover-text hover:border-primary-hover-border
+      active:bg-primary-active-bg active:text-primary-active-text active:border-primary-active-border active:scale-95
+      disabled:bg-primary-disabled-bg disabled:text-primary-disabled-text disabled:border-primary-disabled-border disabled:cursor-not-allowed
+      transition-all duration-200
+    `,
+    secondaryLight: `
+      bg-secondary-light-bg text-secondary-light-text border-2 border-secondary-light-border rounded-lg
+      hover:bg-secondary-light-hover-bg hover:text-secondary-light-hover-text hover:border-secondary-light-hover-border
+      active:bg-secondary-light-active-bg active:text-secondary-light-active-text active:border-secondary-light-active-border active:scale-95
+      disabled:bg-secondary-light-disabled-bg disabled:text-secondary-light-disabled-text disabled:border-secondary-light-disabled-border disabled:cursor-not-allowed
+      transition-all duration-200
+    `,
+    secondaryDark: `
+      bg-secondary-dark-bg text-secondary-dark-text border-2 border-secondary-dark-border rounded-lg
+      hover:bg-secondary-dark-hover-bg hover:text-secondary-dark-hover-text hover:border-secondary-dark-hover-border
+      active:bg-secondary-dark-active-bg active:text-secondary-dark-active-text active:border-secondary-dark-active-border active:scale-95
+      disabled:bg-secondary-dark-disabled-bg disabled:text-secondary-dark-disabled-text disabled:border-secondary-dark-disabled-border disabled:cursor-not-allowed
+      transition-all duration-200
+    `,
     icon: 'disabled:text-gray-200 text-black',
   };
 
@@ -40,6 +59,8 @@ export const Button = ({
       type="button"
       className={`${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
       onClick={onClick}
+      disabled={disabled}
+      style={style}
       {...props}
     >
       {icon || label}
