@@ -1,18 +1,22 @@
 import type React from 'react';
+import type { ReactNode } from 'react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondaryLight' | 'secondaryDark';
+  variant?: 'primary' | 'secondaryLight' | 'secondaryDark' | 'icon';
   size?: 'small' | 'medium' | 'large';
-  label: string;
+  label?: string;
+  icon?: ReactNode;
   onClick?: () => void;
   className?: string;
   style?: React.CSSProperties;
+  disabled?: boolean;
 }
 
 export const Button = ({
   variant = 'primary',
   size = 'medium',
   label,
+  icon,
   onClick,
   className = '',
   disabled = false,
@@ -47,6 +51,7 @@ export const Button = ({
       disabled:bg-secondary-dark-disabled-bg disabled:text-secondary-dark-disabled-text disabled:border-secondary-dark-disabled-border disabled:cursor-not-allowed
       transition-all duration-200
     `,
+    icon: 'disabled:text-gray-200 text-black',
   };
 
   return (
@@ -58,7 +63,7 @@ export const Button = ({
       style={style}
       {...props}
     >
-      {label}
+      {icon || label}
     </button>
   );
 };
