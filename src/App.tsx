@@ -1,14 +1,15 @@
 import KakaoLogo from './assets/kakao-logo.svg';
 
 import './App.css';
-import { Routes, Route, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router';
+import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from './hooks/redux';
 import { Signup } from './auth/sign-up';
+import { OAuthCallback } from './auth/oauth-callback';
 import ShopArtistNotice from './page/shop-artist-notice';
-import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
-import { Button } from './components/ui/button';
 import { setThemeMode, setSystemTheme } from './store/slices/themeSlice';
+import { Button } from './components/ui/button';
 import {
   useGetSystemThemeQuery,
   useGetUserThemeQuery,
@@ -16,8 +17,6 @@ import {
 import { ThemeCustomizer } from './page/admin/theme-customizer';
 
 function MainPage() {
-  const navigate = useNavigate();
-
   const [currentNoticePage, setCurrentNoticePage] = useState(1);
   const noticesPerPage = 5;
 
@@ -45,10 +44,6 @@ function MainPage() {
     currentNoticePage * noticesPerPage
   );
 
-  const handleSignupClick = () => {
-    navigate('/signup');
-  };
-
   const handleNoticePrevPage = () => {
     if (currentNoticePage > 1) {
       setCurrentNoticePage(currentNoticePage - 1);
@@ -59,6 +54,13 @@ function MainPage() {
     if (currentNoticePage < totalNoticePages) {
       setCurrentNoticePage(currentNoticePage + 1);
     }
+  };
+
+  // 카카오 시작하기 버튼 눌렀을 때
+  const handleKakaoLogin = () => {
+    const API_BASE_URL =
+      import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    window.location.href = `${API_BASE_URL}/oauth2/authorization/kakao`;
   };
 
   return (
@@ -96,7 +98,7 @@ function MainPage() {
 
               <button
                 className="flex w-[13.25rem] items-center justify-center gap-2 rounded-sm bg-[#FEE500] py-2 text-xs font-bold"
-                onClick={handleSignupClick}
+                onClick={handleKakaoLogin}
               >
                 카카오로 시작하기
                 <img src={KakaoLogo} alt="dear objet 로고" />
@@ -204,6 +206,7 @@ function App() {
     <Routes>
       <Route path="/" element={<MainPage />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/oauth/callback" element={<OAuthCallback />} />
       <Route path="/shop-artist-notice" element={<ShopArtistNotice />} />
       <Route path="/admin" element={<ThemeCustomizer />} />
     </Routes>
