@@ -397,15 +397,16 @@ export function Signup() {
           />
         )}
 
-        <LabeledInput
+        <LabeledInputWithButton
           id="phone"
           label="휴대폰번호"
+          buttonLabel="휴대폰인증"
           type="tel"
           value={formData.phoneNumber}
           onChange={(e) =>
             setFormData({ ...formData, phoneNumber: e.target.value })
           }
-          placeholder="010-1234-5678"
+          // placeholder="010-1234-5678"
         />
 
         {isBusinessUser && (
@@ -435,7 +436,7 @@ export function Signup() {
               onChange={(e) =>
                 setFormData({ ...formData, businessNumber: e.target.value })
               }
-              placeholder="000-00-00000"
+              // placeholder="000-00-00000"
             />
 
             <div className="flex flex-col gap-1">
@@ -472,7 +473,7 @@ export function Signup() {
                 <label htmlFor="businessType">업종</label>
                 <SelectBox
                   options={[
-                    { value: '', label: '선택해주세요' },
+                    { value: '', label: '' },
                     { value: 'retail', label: '소매업' },
                     { value: 'manufacturing', label: '제조업' },
                   ]}
@@ -486,7 +487,7 @@ export function Signup() {
                 <label htmlFor="businessCategory">업태</label>
                 <SelectBox
                   options={[
-                    { value: '', label: '선택해주세요' },
+                    { value: '', label: '' },
                     { value: 'craft', label: '공예품' },
                     { value: 'art', label: '예술품' },
                   ]}
@@ -502,14 +503,14 @@ export function Signup() {
               id="businessCert"
               label="사업자등록증 업로드"
               buttonLabel="업로드"
-              placeholder="파일을 선택해주세요"
+              // placeholder="파일을 선택해주세요"
             />
 
             <div className="flex w-full flex-col gap-2">
               <label htmlFor="mainCategory">주요 카테고리</label>
               <SelectBox
                 options={[
-                  { value: '', label: '선택해주세요' },
+                  { value: '', label: '' },
                   { value: 'pottery', label: '도자기' },
                   { value: 'textile', label: '섬유/직물' },
                   { value: 'wood', label: '목공예' },
