@@ -129,7 +129,7 @@ const SUBMIT_BUTTON_LABELS: Record<UserType, string> = {
 interface LabeledInputProps {
   id?: string;
   label: string;
-  type?: 'text' | 'password' | 'email' | 'tel';
+  type?: 'text' | 'password' | 'tel';
   placeholder?: string;
   className?: string;
   value?: string;
@@ -253,7 +253,6 @@ export function Signup() {
   // 폼 데이터 상태
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
     phoneNumber: '',
     // 사업자 정보
     shopName: '',
@@ -321,7 +320,7 @@ export function Signup() {
     }
 
     // 폼 검증
-    if (!formData.name || !formData.email || !formData.phoneNumber) {
+    if (!formData.name || !formData.phoneNumber) {
       alert('필수 정보를 모두 입력해주세요.');
       return;
     }
@@ -342,7 +341,6 @@ export function Signup() {
     try {
       const requestData: CompleteSignupRequest = {
         name: formData.name,
-        email: formData.email,
         phoneNumber: formData.phoneNumber,
         smsAgreement: agreements.notification || false,
         marketingAgreement: agreements.marketing || false,
