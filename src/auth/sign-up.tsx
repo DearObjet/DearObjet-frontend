@@ -22,7 +22,6 @@ import {
 } from '../store/slices/signup-address-slice';
 
 import { useCompleteSignupMutation } from '../store/api/authApi';
-import { clearAuth } from '../store/slices/authSlice';
 import type { RootState } from '../store/index';
 import type { CompleteSignupRequest } from '../types/authTypes';
 
@@ -360,13 +359,6 @@ export function Signup() {
     }
   };
 
-  const handleCancel = () => {
-    if (confirm('회원가입을 취소하시겠습니까?')) {
-      dispatch(clearAuth());
-      navigate('/');
-    }
-  };
-
   return (
     <div className="flex w-screen flex-col items-center gap-4 p-4">
       <div className="flex w-full max-w-md gap-2">
@@ -553,13 +545,6 @@ export function Signup() {
         </div>
 
         <div className="flex gap-2">
-          <Button
-            type="button"
-            label="취소"
-            variant="secondaryLight"
-            onClick={handleCancel}
-            className="flex-1"
-          />
           <Button
             type="submit"
             label={isLoading ? '처리 중...' : SUBMIT_BUTTON_LABELS[userType]}
