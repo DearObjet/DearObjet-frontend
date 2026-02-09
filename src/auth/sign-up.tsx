@@ -398,15 +398,6 @@ export function Signup() {
         )}
 
         <LabeledInput
-          id="email"
-          label="이메일"
-          type="email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          placeholder="example@email.com"
-        />
-
-        <LabeledInput
           id="phone"
           label="휴대폰번호"
           type="tel"
