@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { CompleteSignupRequest } from '../../types/authTypes';
 import type { RootState } from '../index';
+import type { ApiResponse } from '../../types/apiTypes';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -27,6 +28,7 @@ export const authApi = createApi({
         body: data,
       }),
       invalidatesTags: ['Auth'],
+      transformResponse: (response: ApiResponse<void>) => response.data,
     }),
 
     // Access Token 갱신
@@ -35,6 +37,8 @@ export const authApi = createApi({
         url: '/auth/token/refresh',
         method: 'POST',
       }),
+      transformResponse: (response: ApiResponse<{ accessToken: string }>) =>
+        response.data,
     }),
 
     // 로그아웃

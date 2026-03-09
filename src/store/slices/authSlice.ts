@@ -35,18 +35,8 @@ const authSlice = createSlice({
     setSignupRequired: (state, action: PayloadAction<boolean>) => {
       state.signupRequired = action.payload;
     },
-
-    clearAuth: (state) => {
-      state.accessToken = null;
-      state.user = null;
-      state.isAuthenticated = false;
-      state.signupRequired = false;
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('user');
-    },
   },
 });
 
-export const { setAccessToken, setUser, setSignupRequired, clearAuth } =
-  authSlice.actions;
+export const { setAccessToken, setUser, setSignupRequired } = authSlice.actions;
 export default authSlice.reducer;
