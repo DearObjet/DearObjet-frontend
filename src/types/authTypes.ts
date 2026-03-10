@@ -13,5 +13,4 @@ export interface CompleteSignupRequest {
   phoneNumber: string;
   smsAgreement: boolean;
   marketingAgreement: boolean;
-  role: 'CUSTOMER' | 'ARTIST' | 'SHOP';
 }

@@ -300,13 +300,6 @@ export function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 역할 매핑
-    const roleMap: Record<UserType, 'CUSTOMER' | 'ARTIST' | 'SHOP'> = {
-      일반회원: 'CUSTOMER',
-      작가: 'ARTIST',
-      소품샵: 'SHOP',
-    };
-
     // 필수 약관 체크
     const requiredTerms: AgreementKey[] = ['age', 'terms'];
     if (userType !== '일반회원') {
@@ -344,7 +337,6 @@ export function Signup() {
         phoneNumber: formData.phoneNumber,
         smsAgreement: agreements.notification || false,
         marketingAgreement: agreements.marketing || false,
-        role: roleMap[userType],
       };
 
       await completeSignup(requestData).unwrap();
