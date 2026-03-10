@@ -23,12 +23,12 @@ export const authApi = createApi({
     // 회원가입 완료
     completeSignup: builder.mutation<void, CompleteSignupRequest>({
       query: (data) => ({
-        url: '/users/complete', // 수정 필요
+        url: '/users/complete',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: ['Auth'],
-      transformResponse: (response: ApiResponse<void>) => response.data,
+      // transformResponse: (response: ApiResponse<void>) => response.data,
     }),
 
     // Access Token 갱신
