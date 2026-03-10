@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChevronRight } from 'lucide-react';
@@ -21,9 +21,18 @@ import {
   setDetailAddress,
 } from '../store/slices/signup-address-slice';
 
-import { useCompleteSignupMutation } from '../store/api/authApi';
+import {
+  useCompleteSignupMutation,
+  useCompleteShopSignupMutation,
+  useCompleteArtistSignupMutation,
+} from '../store/api/authApi';
 import type { RootState } from '../store/index';
-import type { CompleteSignupRequest } from '../types/authTypes';
+import type {
+  CompleteSignupRequest,
+  BusinessType,
+  BusinessCategory,
+  Specialty,
+} from '../types/authTypes';
 
 declare global {
   interface Window {
@@ -125,6 +134,38 @@ const SUBMIT_BUTTON_LABELS: Record<UserType, string> = {
   작가: '작가 등록 신청',
   소품샵: '소품샵 등록 신청',
 };
+
+const BUSINESS_TYPE_OPTIONS: { value: BusinessType | ''; label: string }[] = [
+  { value: '', label: '' },
+  { value: 'SERVICE', label: '서비스업' },
+  { value: 'WHOLESALE_RETAIL', label: '도·소매업' },
+];
+
+const BUSINESS_CATEGORY_OPTIONS: {
+  value: BusinessCategory | '';
+  label: string;
+}[] = [
+  { value: '', label: '' },
+  { value: 'ONLINE_MARKETPLACE', label: '통신판매중개업' },
+  { value: 'ECOMMERCE_PLATFORM', label: '전자상거래 플랫폼 운영업' },
+  { value: 'ECOMMERCE_RETAIL', label: '전자상거래 소매업' },
+  { value: 'GENERAL_RETAIL', label: '잡화 소매업' },
+  { value: 'CRAFT_RETAIL', label: '공예품 소매업' },
+];
+
+const SPECIALTY_OPTIONS: { value: Specialty | ''; label: string }[] = [
+  { value: '', label: '' },
+  { value: 'STATIONERY_PAPER', label: '문구·페이퍼 소품' },
+  { value: 'INTERIOR_DECOR', label: '인테리어 소품' },
+  { value: 'LIVING_GOODS', label: '리빙·생활잡화' },
+  { value: 'DESK_OFFICE', label: '데스크·오피스 소품' },
+  { value: 'EMOTIONAL_GOODS_GIFT', label: '감성 굿즈·기프트' },
+  { value: 'HANDMADE_CRAFT', label: '핸드메이드·공예' },
+  { value: 'ILLUSTRATION_ART_GOODS', label: '일러스트·아트굿즈' },
+  { value: 'CERAMIC', label: '도자기·세라믹' },
+  { value: 'FABRIC_TEXTILE', label: '패브릭·자수·텍스타일' },
+  { value: 'ECO_UPCYCLE', label: '친환경·업사이클 소품' },
+];
 
 interface LabeledInputProps {
   id?: string;
@@ -248,18 +289,29 @@ export function Signup() {
     (state: RootState) => state.signupAddress
   );
 
-  const [completeSignup, { isLoading }] = useCompleteSignupMutation();
+  const [completeSignup, { isLoading: isLoadingCustomer }] =
+    useCompleteSignupMutation();
+  const [completeShopSignup, { isLoading: isLoadingShop }] =
+    useCompleteShopSignupMutation();
+  const [completeArtistSignup, { isLoading: isLoadingArtist }] =
+    useCompleteArtistSignupMutation();
 
-  // 폼 데이터 상태
+  const isLoading = isLoadingCustomer || isLoadingShop || isLoadingArtist;
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [businessLicenseFile, setBusinessLicenseFile] = useState<File | null>(
+    null
+  );
+
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
-    // 사업자 정보
     shopName: '',
+    ownerName: '',
     businessNumber: '',
-    businessType: '',
-    businessCategory: '',
-    mainCategory: '',
+    businessType: '' as BusinessType | '',
+    businessCategory: '' as BusinessCategory | '',
+    specialty: '' as Specialty | '',
   });
 
   const isBusinessUser = userType !== '일반회원';
@@ -267,7 +319,6 @@ export function Signup() {
     term.showForUserTypes.includes(userType)
   );
 
-  // OAuth 로그인 없이 접근한 경우 메인으로 리다이렉트
   useEffect(() => {
     if (!signupRequired) {
       navigate('/');
@@ -300,7 +351,6 @@ export function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 필수 약관 체크
     const requiredTerms: AgreementKey[] = ['age', 'terms'];
     if (userType !== '일반회원') {
       requiredTerms.push('businessInfo', 'settlement', 'fraud');
@@ -312,40 +362,77 @@ export function Signup() {
       return;
     }
 
-    // 폼 검증
-    if (!formData.name || !formData.phoneNumber) {
-      alert('필수 정보를 모두 입력해주세요.');
+    if (userType === '일반회원') {
+      if (!formData.name || !formData.phoneNumber) {
+        alert('필수 정보를 모두 입력해주세요.');
+        return;
+      }
+
+      try {
+        const requestData: CompleteSignupRequest = {
+          name: formData.name,
+          phoneNumber: formData.phoneNumber,
+          smsAgreement: agreements.notification || false,
+          marketingAgreement: agreements.marketing || false,
+        };
+
+        await completeSignup(requestData).unwrap();
+
+        alert('회원가입이 완료되었습니다!');
+        navigate('/');
+      } catch (error) {
+        console.error('회원가입 실패:', error);
+        alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+      }
       return;
     }
 
-    // 사업자 정보 검증
-    if (isBusinessUser) {
-      if (
-        !formData.shopName ||
-        !formData.businessNumber ||
-        !zipcode ||
-        !roadAddress
-      ) {
-        alert('사업자 정보를 모두 입력해주세요.');
-        return;
-      }
+    if (
+      !formData.shopName ||
+      !formData.ownerName ||
+      !formData.phoneNumber ||
+      !formData.businessNumber ||
+      !formData.businessType ||
+      !formData.businessCategory ||
+      !formData.specialty ||
+      !roadAddress ||
+      !businessLicenseFile
+    ) {
+      alert('사업자 정보를 모두 입력해주세요.');
+      return;
     }
 
+    const businessAddress = detailAddress
+      ? `${roadAddress} ${detailAddress}`
+      : roadAddress;
+
+    const request = {
+      marketingAgreement: agreements.marketing || false,
+      reviewDataAgreement: agreements.customerData || false,
+      businessNumber: formData.businessNumber,
+      businessName: formData.shopName,
+      name: formData.shopName,
+      smsAgreement: agreements.notification || false,
+      businessAddress,
+      phoneNumber: formData.phoneNumber,
+      businessType: formData.businessType as BusinessType,
+      businessCategory: formData.businessCategory as BusinessCategory,
+      specialty: formData.specialty as Specialty,
+      ownerName: formData.ownerName,
+    };
+
     try {
-      const requestData: CompleteSignupRequest = {
-        name: formData.name,
-        phoneNumber: formData.phoneNumber,
-        smsAgreement: agreements.notification || false,
-        marketingAgreement: agreements.marketing || false,
-      };
+      if (userType === '소품샵') {
+        await completeShopSignup({ request, businessLicenseFile }).unwrap();
+      } else {
+        await completeArtistSignup({ request, businessLicenseFile }).unwrap();
+      }
 
-      await completeSignup(requestData).unwrap();
-
-      alert('회원가입이 완료되었습니다!');
+      alert('등록 신청이 완료되었습니다!');
       navigate('/');
     } catch (error) {
-      console.error('회원가입 실패:', error);
-      alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+      console.error('가입 실패:', error);
+      alert('등록 신청에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -388,7 +475,6 @@ export function Signup() {
           onChange={(e) =>
             setFormData({ ...formData, phoneNumber: e.target.value })
           }
-          // placeholder="010-1234-5678"
         />
 
         {isBusinessUser && (
@@ -403,11 +489,11 @@ export function Signup() {
             />
 
             <LabeledInput
-              id="username"
+              id="ownerName"
               label="대표자명"
-              value={formData.name}
+              value={formData.ownerName}
               onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
+                setFormData({ ...formData, ownerName: e.target.value })
               }
             />
 
@@ -418,7 +504,6 @@ export function Signup() {
               onChange={(e) =>
                 setFormData({ ...formData, businessNumber: e.target.value })
               }
-              // placeholder="000-00-00000"
             />
 
             <div className="flex flex-col gap-1">
@@ -439,7 +524,6 @@ export function Signup() {
                   value={roadAddress}
                   readOnly
                 />
-
                 <Input
                   id="shopAddressDetail"
                   value={detailAddress}
@@ -454,53 +538,70 @@ export function Signup() {
               <div className="flex w-full flex-col">
                 <label htmlFor="businessType">업종</label>
                 <SelectBox
-                  options={[
-                    { value: '', label: '' },
-                    { value: 'retail', label: '소매업' },
-                    { value: 'manufacturing', label: '제조업' },
-                  ]}
+                  options={BUSINESS_TYPE_OPTIONS}
                   value={formData.businessType}
                   onChange={(value) =>
-                    setFormData({ ...formData, businessType: value })
+                    setFormData({
+                      ...formData,
+                      businessType: value as BusinessType | '',
+                    })
                   }
                 />
               </div>
               <div className="flex w-full flex-col">
                 <label htmlFor="businessCategory">업태</label>
                 <SelectBox
-                  options={[
-                    { value: '', label: '' },
-                    { value: 'craft', label: '공예품' },
-                    { value: 'art', label: '예술품' },
-                  ]}
+                  options={BUSINESS_CATEGORY_OPTIONS}
                   value={formData.businessCategory}
                   onChange={(value) =>
-                    setFormData({ ...formData, businessCategory: value })
+                    setFormData({
+                      ...formData,
+                      businessCategory: value as BusinessCategory | '',
+                    })
                   }
                 />
               </div>
             </div>
 
-            <LabeledInputWithButton
-              id="businessCert"
-              label="사업자등록증 업로드"
-              buttonLabel="업로드"
-              // placeholder="파일을 선택해주세요"
-            />
+            <div className="flex flex-col gap-1">
+              <label htmlFor="businessCert">사업자등록증 업로드</label>
+              <div className="flex w-full gap-2">
+                <Input
+                  id="businessCert"
+                  className="flex-1"
+                  value={businessLicenseFile?.name ?? ''}
+                  readOnly
+                  placeholder="파일을 선택해주세요"
+                />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setBusinessLicenseFile(file);
+                  }}
+                />
+                <Button
+                  label="업로드"
+                  variant="secondaryDark"
+                  onClick={() => fileInputRef.current?.click()}
+                  type="button"
+                />
+              </div>
+            </div>
 
             <div className="flex w-full flex-col gap-2">
-              <label htmlFor="mainCategory">주요 카테고리</label>
+              <label htmlFor="specialty">주요 카테고리</label>
               <SelectBox
-                options={[
-                  { value: '', label: '' },
-                  { value: 'pottery', label: '도자기' },
-                  { value: 'textile', label: '섬유/직물' },
-                  { value: 'wood', label: '목공예' },
-                  { value: 'metal', label: '금속공예' },
-                ]}
-                value={formData.mainCategory}
+                options={SPECIALTY_OPTIONS}
+                value={formData.specialty}
                 onChange={(value) =>
-                  setFormData({ ...formData, mainCategory: value })
+                  setFormData({
+                    ...formData,
+                    specialty: value as Specialty | '',
+                  })
                 }
               />
             </div>
