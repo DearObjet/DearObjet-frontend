@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChevronRight } from 'lucide-react';
@@ -21,9 +21,20 @@ import {
   setDetailAddress,
 } from '../store/slices/signup-address-slice';
 
-import { useCompleteSignupMutation } from '../store/api/authApi';
+import {
+  useCompleteSignupMutation,
+  useCompleteShopSignupMutation,
+  useCompleteArtistSignupMutation,
+  useSendPhoneVerificationMutation,
+  useVerifyPhoneMutation,
+} from '../store/api/authApi';
 import type { RootState } from '../store/index';
-import type { CompleteSignupRequest } from '../types/authTypes';
+import type {
+  CompleteSignupRequest,
+  BusinessType,
+  BusinessCategory,
+  Specialty,
+} from '../types/authTypes';
 
 declare global {
   interface Window {
@@ -126,6 +137,38 @@ const SUBMIT_BUTTON_LABELS: Record<UserType, string> = {
   소품샵: '소품샵 등록 신청',
 };
 
+const BUSINESS_TYPE_OPTIONS: { value: BusinessType | ''; label: string }[] = [
+  { value: '', label: '' },
+  { value: 'SERVICE', label: '서비스업' },
+  { value: 'WHOLESALE_RETAIL', label: '도·소매업' },
+];
+
+const BUSINESS_CATEGORY_OPTIONS: {
+  value: BusinessCategory | '';
+  label: string;
+}[] = [
+  { value: '', label: '' },
+  { value: 'ONLINE_MARKETPLACE', label: '통신판매중개업' },
+  { value: 'ECOMMERCE_PLATFORM', label: '전자상거래 플랫폼 운영업' },
+  { value: 'ECOMMERCE_RETAIL', label: '전자상거래 소매업' },
+  { value: 'GENERAL_RETAIL', label: '잡화 소매업' },
+  { value: 'CRAFT_RETAIL', label: '공예품 소매업' },
+];
+
+const SPECIALTY_OPTIONS: { value: Specialty | ''; label: string }[] = [
+  { value: '', label: '' },
+  { value: 'STATIONERY_PAPER', label: '문구·페이퍼 소품' },
+  { value: 'INTERIOR_DECOR', label: '인테리어 소품' },
+  { value: 'LIVING_GOODS', label: '리빙·생활잡화' },
+  { value: 'DESK_OFFICE', label: '데스크·오피스 소품' },
+  { value: 'EMOTIONAL_GOODS_GIFT', label: '감성 굿즈·기프트' },
+  { value: 'HANDMADE_CRAFT', label: '핸드메이드·공예' },
+  { value: 'ILLUSTRATION_ART_GOODS', label: '일러스트·아트굿즈' },
+  { value: 'CERAMIC', label: '도자기·세라믹' },
+  { value: 'FABRIC_TEXTILE', label: '패브릭·자수·텍스타일' },
+  { value: 'ECO_UPCYCLE', label: '친환경·업사이클 소품' },
+];
+
 interface LabeledInputProps {
   id?: string;
   label: string;
@@ -135,6 +178,7 @@ interface LabeledInputProps {
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   readOnly?: boolean;
+  error?: string;
 }
 
 const LabeledInput = ({
@@ -146,24 +190,29 @@ const LabeledInput = ({
   value,
   onChange,
   readOnly,
+  error,
 }: LabeledInputProps) => (
   <div className={`flex flex-col gap-1 ${className}`}>
-    <label htmlFor={id}>{label}</label>
+    <label htmlFor={id} className={error ? 'text-red-400' : ''}>
+      {label}
+    </label>
     <Input
       id={id}
       type={type}
       placeholder={placeholder}
-      className="w-full"
+      className={`w-full ${error ? 'border-red-400 focus-visible:ring-red-400' : ''}`}
       value={value}
       onChange={onChange}
       readOnly={readOnly}
     />
+    {error && <p className="text-sm text-red-400">{error}</p>}
   </div>
 );
 
 interface LabeledInputWithButtonProps extends LabeledInputProps {
   buttonLabel: string;
   onButtonClick?: () => void;
+  buttonDisabled?: boolean;
 }
 
 const LabeledInputWithButton = ({
@@ -172,19 +221,23 @@ const LabeledInputWithButton = ({
   type = 'text',
   buttonLabel,
   onButtonClick,
+  buttonDisabled,
   placeholder,
   value,
   onChange,
   readOnly,
+  error,
 }: LabeledInputWithButtonProps) => (
   <div className="flex flex-col gap-1">
-    <label htmlFor={id}>{label}</label>
+    <label htmlFor={id} className={error ? 'text-red-400' : ''}>
+      {label}
+    </label>
     <div className="flex w-full gap-2">
       <Input
         id={id}
         type={type}
         placeholder={placeholder}
-        className="flex-1"
+        className={`flex-1 ${error ? 'border-red-400 focus-visible:ring-red-400' : ''}`}
         value={value}
         onChange={onChange}
         readOnly={readOnly}
@@ -194,8 +247,10 @@ const LabeledInputWithButton = ({
         variant="secondaryDark"
         onClick={onButtonClick}
         type="button"
+        disabled={buttonDisabled}
       />
     </div>
+    {error && <p className="text-sm text-red-400">{error}</p>}
   </div>
 );
 
@@ -248,31 +303,78 @@ export function Signup() {
     (state: RootState) => state.signupAddress
   );
 
-  const [completeSignup, { isLoading }] = useCompleteSignupMutation();
+  const [completeSignup, { isLoading: isLoadingCustomer }] =
+    useCompleteSignupMutation();
+  const [completeShopSignup, { isLoading: isLoadingShop }] =
+    useCompleteShopSignupMutation();
+  const [completeArtistSignup, { isLoading: isLoadingArtist }] =
+    useCompleteArtistSignupMutation();
+  const [sendPhoneVerification] = useSendPhoneVerificationMutation();
+  const [verifyPhone] = useVerifyPhoneMutation();
 
-  // 폼 데이터 상태
+  const isLoading = isLoadingCustomer || isLoadingShop || isLoadingArtist;
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [businessLicenseFile, setBusinessLicenseFile] = useState<File | null>(
+    null
+  );
+
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
-    // 사업자 정보
     shopName: '',
+    ownerName: '',
     businessNumber: '',
-    businessType: '',
-    businessCategory: '',
-    mainCategory: '',
+    businessType: '' as BusinessType | '',
+    businessCategory: '' as BusinessCategory | '',
+    specialty: '' as Specialty | '',
   });
+
+  const [verificationCode, setVerificationCode] = useState('');
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [isCodeExpired, setIsCodeExpired] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(180);
+  const [isSendDisabled, setIsSendDisabled] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const isBusinessUser = userType !== '일반회원';
   const visibleTerms = TERMS.filter((term) =>
     term.showForUserTypes.includes(userType)
   );
 
-  // OAuth 로그인 없이 접근한 경우 메인으로 리다이렉트
   useEffect(() => {
     if (!signupRequired) {
       navigate('/');
     }
   }, [signupRequired, navigate]);
+
+  useEffect(() => {
+    if (!isCodeSent || isPhoneVerified) return;
+    setTimeLeft(180);
+    setIsCodeExpired(false);
+    setIsSendDisabled(true);
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsCodeExpired(true);
+          setIsSendDisabled(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isCodeSent, isPhoneVerified]);
+
+  const formatTime = (s: number) =>
+    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+
+  const clearError = (key: string) =>
+    setErrors((prev) => ({ ...prev, [key]: '' }));
 
   const openPostcode = () => {
     if (!window.daum?.Postcode) {
@@ -288,72 +390,177 @@ export function Signup() {
     new window.daum.Postcode({
       oncomplete: (data: DaumPostcodeData) => {
         dispatch(
-          setAddress({
-            zipcode: data.zonecode,
-            roadAddress: data.roadAddress,
-          })
+          setAddress({ zipcode: data.zonecode, roadAddress: data.roadAddress })
         );
+        clearError('roadAddress');
       },
     }).open();
+  };
+
+  const handleSendVerification = async () => {
+    if (!formData.phoneNumber) {
+      setErrors((prev) => ({
+        ...prev,
+        phoneNumber: '휴대폰번호를 입력해주세요.',
+      }));
+      return;
+    }
+    try {
+      await sendPhoneVerification({
+        phoneNumber: formData.phoneNumber,
+      }).unwrap();
+      setIsCodeSent(false);
+      setTimeout(() => setIsCodeSent(true), 0);
+      setIsPhoneVerified(false);
+      setIsCodeExpired(false);
+      setVerificationCode('');
+    } catch {
+      setErrors((prev) => ({
+        ...prev,
+        phoneNumber: '인증번호 발송에 실패했습니다. 잠시 후 다시 시도해주세요.',
+      }));
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    if (!verificationCode) {
+      setErrors((prev) => ({
+        ...prev,
+        verificationCode: '인증번호를 입력해주세요.',
+      }));
+      return;
+    }
+    try {
+      const result = await verifyPhone({
+        phoneNumber: formData.phoneNumber,
+        code: verificationCode,
+      }).unwrap();
+
+      if (result.verified) {
+        setIsPhoneVerified(true);
+        setIsSendDisabled(true);
+        setErrors((prev) => ({
+          ...prev,
+          phoneVerified: '',
+          verificationCode: '',
+        }));
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          verificationCode: '인증번호가 올바르지 않습니다.',
+        }));
+      }
+    } catch {
+      setErrors((prev) => ({
+        ...prev,
+        verificationCode: '인증에 실패했습니다. 다시 시도해주세요.',
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 역할 매핑
-    const roleMap: Record<UserType, 'CUSTOMER' | 'ARTIST' | 'SHOP'> = {
-      일반회원: 'CUSTOMER',
-      작가: 'ARTIST',
-      소품샵: 'SHOP',
-    };
+    const newErrors: Record<string, string> = {};
 
-    // 필수 약관 체크
     const requiredTerms: AgreementKey[] = ['age', 'terms'];
     if (userType !== '일반회원') {
       requiredTerms.push('businessInfo', 'settlement', 'fraud');
     }
 
-    const allRequiredAgreed = requiredTerms.every((key) => agreements[key]);
-    if (!allRequiredAgreed) {
-      alert('필수 약관에 모두 동의해주세요.');
-      return;
+    if (!requiredTerms.every((key) => agreements[key])) {
+      newErrors.terms = '필수 약관에 모두 동의해주세요.';
     }
 
-    // 폼 검증
-    if (!formData.name || !formData.phoneNumber) {
-      alert('필수 정보를 모두 입력해주세요.');
-      return;
-    }
+    if (userType === '일반회원') {
+      if (!formData.name) newErrors.name = '필수 입력 항목입니다.';
+      if (!formData.phoneNumber) {
+        newErrors.phoneNumber = '필수 입력 항목입니다.';
+      } else if (isCodeSent && !isPhoneVerified) {
+        newErrors.phoneVerified = '휴대폰 인증을 완료해주세요.';
+      } else if (!isPhoneVerified) {
+        newErrors.phoneVerified = '휴대폰 인증을 해주세요.';
+      }
 
-    // 사업자 정보 검증
-    if (isBusinessUser) {
-      if (
-        !formData.shopName ||
-        !formData.businessNumber ||
-        !zipcode ||
-        !roadAddress
-      ) {
-        alert('사업자 정보를 모두 입력해주세요.');
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
         return;
       }
+
+      try {
+        const requestData: CompleteSignupRequest = {
+          name: formData.name,
+          phoneNumber: formData.phoneNumber,
+          smsAgreement: agreements.notification || false,
+          marketingAgreement: agreements.marketing || false,
+        };
+        await completeSignup(requestData).unwrap();
+        navigate('/');
+      } catch {
+        setErrors({ submit: '회원가입에 실패했습니다. 다시 시도해주세요.' });
+      }
+      return;
     }
 
+    if (!formData.shopName) newErrors.shopName = '필수 입력 항목입니다.';
+    if (!formData.ownerName) newErrors.ownerName = '필수 입력 항목입니다.';
+    if (!formData.phoneNumber) {
+      newErrors.phoneNumber = '필수 입력 항목입니다.';
+    } else if (isCodeSent && !isPhoneVerified) {
+      newErrors.phoneVerified = '휴대폰 인증을 완료해주세요.';
+    } else if (!isPhoneVerified) {
+      newErrors.phoneVerified = '휴대폰 인증을 해주세요.';
+    }
+    if (!formData.businessNumber)
+      newErrors.businessNumber = '필수 입력 항목입니다.';
+    if (!formData.businessType)
+      newErrors.businessType = '필수 입력 항목입니다.';
+    if (!formData.businessCategory)
+      newErrors.businessCategory = '필수 입력 항목입니다.';
+    if (!formData.specialty) newErrors.specialty = '필수 입력 항목입니다.';
+    if (!roadAddress) newErrors.roadAddress = '필수 입력 항목입니다.';
+    if (!businessLicenseFile)
+      newErrors.businessLicenseFile = '필수 입력 항목입니다.';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    const businessAddress = detailAddress
+      ? `${roadAddress} ${detailAddress}`
+      : roadAddress;
+
+    const request = {
+      marketingAgreement: agreements.marketing || false,
+      reviewDataAgreement: agreements.customerData || false,
+      businessNumber: formData.businessNumber,
+      businessName: formData.shopName,
+      name: formData.shopName,
+      smsAgreement: agreements.notification || false,
+      businessAddress,
+      phoneNumber: formData.phoneNumber,
+      businessType: formData.businessType as BusinessType,
+      businessCategory: formData.businessCategory as BusinessCategory,
+      specialty: formData.specialty as Specialty,
+      ownerName: formData.ownerName,
+    };
+
     try {
-      const requestData: CompleteSignupRequest = {
-        name: formData.name,
-        phoneNumber: formData.phoneNumber,
-        smsAgreement: agreements.notification || false,
-        marketingAgreement: agreements.marketing || false,
-        role: roleMap[userType],
-      };
-
-      await completeSignup(requestData).unwrap();
-
-      alert('회원가입이 완료되었습니다!');
+      if (userType === '소품샵') {
+        await completeShopSignup({
+          request,
+          businessLicenseFile: businessLicenseFile!,
+        }).unwrap();
+      } else {
+        await completeArtistSignup({
+          request,
+          businessLicenseFile: businessLicenseFile!,
+        }).unwrap();
+      }
       navigate('/');
-    } catch (error) {
-      console.error('회원가입 실패:', error);
-      alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+    } catch {
+      setErrors({ submit: '등록 신청에 실패했습니다. 다시 시도해주세요.' });
     }
   };
 
@@ -367,7 +574,10 @@ export function Signup() {
             variant={
               userType === type.value ? 'secondaryDark' : 'secondaryLight'
             }
-            onClick={() => dispatch(setUserType(type.value))}
+            onClick={() => {
+              dispatch(setUserType(type.value));
+              setErrors({});
+            }}
             className="flex-1"
             type="button"
           />
@@ -383,21 +593,95 @@ export function Signup() {
             id="username"
             label="이름"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            error={errors.name}
+            onChange={(e) => {
+              setFormData({ ...formData, name: e.target.value });
+              clearError('name');
+            }}
           />
         )}
 
-        <LabeledInputWithButton
-          id="phone"
-          label="휴대폰번호"
-          buttonLabel="휴대폰인증"
-          type="tel"
-          value={formData.phoneNumber}
-          onChange={(e) =>
-            setFormData({ ...formData, phoneNumber: e.target.value })
-          }
-          // placeholder="010-1234-5678"
-        />
+        <div className="flex flex-col gap-1">
+          <LabeledInputWithButton
+            id="phone"
+            label="휴대폰번호"
+            buttonLabel="휴대폰인증"
+            buttonDisabled={isSendDisabled}
+            type="tel"
+            value={formData.phoneNumber}
+            error={errors.phoneNumber}
+            onChange={(e) => {
+              setFormData({ ...formData, phoneNumber: e.target.value });
+              setIsCodeSent(false);
+              setIsPhoneVerified(false);
+              setIsCodeExpired(false);
+              setIsSendDisabled(false);
+              clearError('phoneNumber');
+              clearError('phoneVerified');
+            }}
+            onButtonClick={handleSendVerification}
+          />
+
+          {isCodeSent && !isPhoneVerified && (
+            <>
+              <div
+                className={`flex w-full items-center rounded-md border px-3 py-2 ${
+                  isCodeExpired || errors.verificationCode
+                    ? 'border-red-400'
+                    : 'border-gray-900'
+                }`}
+              >
+                <input
+                  placeholder="인증코드 6자리"
+                  className="flex-1 text-sm outline-none placeholder:text-gray-400"
+                  value={verificationCode}
+                  onChange={(e) => {
+                    setVerificationCode(e.target.value);
+                    clearError('verificationCode');
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleVerifyCode();
+                    }
+                  }}
+                  maxLength={6}
+                  disabled={isCodeExpired}
+                />
+                <span className="mr-3 text-sm text-red-500">
+                  {formatTime(timeLeft)}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleVerifyCode}
+                  disabled={!verificationCode || isCodeExpired}
+                  className="text-sm text-black disabled:cursor-not-allowed disabled:text-gray-300"
+                >
+                  확인
+                </button>
+              </div>
+
+              {isCodeExpired && (
+                <p className="text-sm text-red-400">
+                  유효시간이 지났어요. &apos;휴대폰 인증&apos;을 다시 해주세요.
+                </p>
+              )}
+              {errors.verificationCode && !isCodeExpired && (
+                <p className="text-sm text-red-400">
+                  {errors.verificationCode}
+                </p>
+              )}
+            </>
+          )}
+
+          {errors.phoneVerified && (
+            <p className="text-sm text-red-400">{errors.phoneVerified}</p>
+          )}
+
+          {isPhoneVerified && (
+            <p className="text-sm text-blue-200">✓ 휴대폰 인증 완료</p>
+          )}
+        </div>
 
         {isBusinessUser && (
           <>
@@ -405,34 +689,49 @@ export function Signup() {
               id="shopName"
               label="상호명"
               value={formData.shopName}
-              onChange={(e) =>
-                setFormData({ ...formData, shopName: e.target.value })
-              }
+              error={errors.shopName}
+              onChange={(e) => {
+                setFormData({ ...formData, shopName: e.target.value });
+                clearError('shopName');
+              }}
             />
 
             <LabeledInput
-              id="username"
+              id="ownerName"
               label="대표자명"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              value={formData.ownerName}
+              error={errors.ownerName}
+              onChange={(e) => {
+                setFormData({ ...formData, ownerName: e.target.value });
+                clearError('ownerName');
+              }}
             />
 
             <LabeledInput
               id="shopNumber"
               label="사업자 등록번호"
               value={formData.businessNumber}
-              onChange={(e) =>
-                setFormData({ ...formData, businessNumber: e.target.value })
-              }
-              // placeholder="000-00-00000"
+              error={errors.businessNumber}
+              onChange={(e) => {
+                setFormData({ ...formData, businessNumber: e.target.value });
+                clearError('businessNumber');
+              }}
             />
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="shopAddress">사업자 주소지</label>
+              <label
+                htmlFor="shopAddress"
+                className={errors.roadAddress ? 'text-red-400' : ''}
+              >
+                사업자 주소지
+              </label>
               <div className="flex gap-2">
-                <Input id="zipcode" value={zipcode} readOnly />
+                <Input
+                  id="zipcode"
+                  value={zipcode}
+                  readOnly
+                  className={errors.roadAddress ? 'border-red-400' : ''}
+                />
                 <Button
                   label="주소찾기"
                   variant="secondaryDark"
@@ -443,11 +742,10 @@ export function Signup() {
               <div className="flex w-full gap-2">
                 <Input
                   id="shopAddress"
-                  className="w-full"
+                  className={`w-full ${errors.roadAddress ? 'border-red-400' : ''}`}
                   value={roadAddress}
                   readOnly
                 />
-
                 <Input
                   id="shopAddressDetail"
                   value={detailAddress}
@@ -456,61 +754,129 @@ export function Signup() {
                   placeholder="상세주소"
                 />
               </div>
+              {errors.roadAddress && (
+                <p className="text-sm text-red-400">{errors.roadAddress}</p>
+              )}
             </div>
 
             <div className="flex w-full gap-2">
               <div className="flex w-full flex-col">
-                <label htmlFor="businessType">업종</label>
+                <label
+                  htmlFor="businessType"
+                  className={errors.businessType ? 'text-red-400' : ''}
+                >
+                  업종
+                </label>
                 <SelectBox
-                  options={[
-                    { value: '', label: '' },
-                    { value: 'retail', label: '소매업' },
-                    { value: 'manufacturing', label: '제조업' },
-                  ]}
+                  options={BUSINESS_TYPE_OPTIONS}
+                  placeholder="업종을 선택해주세요."
                   value={formData.businessType}
-                  onChange={(value) =>
-                    setFormData({ ...formData, businessType: value })
-                  }
+                  onChange={(value) => {
+                    setFormData({
+                      ...formData,
+                      businessType: value as BusinessType | '',
+                    });
+                    clearError('businessType');
+                  }}
+                  error={errors.businessType}
                 />
+                {errors.businessType && (
+                  <p className="text-sm text-red-400">{errors.businessType}</p>
+                )}
               </div>
               <div className="flex w-full flex-col">
-                <label htmlFor="businessCategory">업태</label>
+                <label
+                  htmlFor="businessCategory"
+                  className={errors.businessCategory ? 'text-red-400' : ''}
+                >
+                  업태
+                </label>
                 <SelectBox
-                  options={[
-                    { value: '', label: '' },
-                    { value: 'craft', label: '공예품' },
-                    { value: 'art', label: '예술품' },
-                  ]}
+                  options={BUSINESS_CATEGORY_OPTIONS}
                   value={formData.businessCategory}
-                  onChange={(value) =>
-                    setFormData({ ...formData, businessCategory: value })
-                  }
+                  placeholder="업태를 선택해주세요."
+                  onChange={(value) => {
+                    setFormData({
+                      ...formData,
+                      businessCategory: value as BusinessCategory | '',
+                    });
+                    clearError('businessCategory');
+                  }}
+                  error={errors.businessCategory}
                 />
+                {errors.businessCategory && (
+                  <p className="text-sm text-red-400">
+                    {errors.businessCategory}
+                  </p>
+                )}
               </div>
             </div>
 
-            <LabeledInputWithButton
-              id="businessCert"
-              label="사업자등록증 업로드"
-              buttonLabel="업로드"
-              // placeholder="파일을 선택해주세요"
-            />
+            <div className="flex flex-col gap-1">
+              <label
+                htmlFor="businessCert"
+                className={errors.businessLicenseFile ? 'text-red-400' : ''}
+              >
+                사업자등록증 업로드
+              </label>
+              <div className="flex w-full gap-2">
+                <Input
+                  id="businessCert"
+                  className={`flex-1 ${errors.businessLicenseFile ? 'border-red-400' : ''}`}
+                  value={businessLicenseFile?.name ?? ''}
+                  readOnly
+                  placeholder="파일을 선택해주세요"
+                />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setBusinessLicenseFile(file);
+                      clearError('businessLicenseFile');
+                    }
+                  }}
+                />
+                <Button
+                  label="업로드"
+                  variant="secondaryDark"
+                  onClick={() => fileInputRef.current?.click()}
+                  type="button"
+                />
+              </div>
+              {errors.businessLicenseFile && (
+                <p className="text-sm text-red-400">
+                  {errors.businessLicenseFile}
+                </p>
+              )}
+            </div>
 
             <div className="flex w-full flex-col gap-2">
-              <label htmlFor="mainCategory">주요 카테고리</label>
+              <label
+                htmlFor="specialty"
+                className={errors.specialty ? 'text-red-400' : ''}
+              >
+                주요 카테고리
+              </label>
               <SelectBox
-                options={[
-                  { value: '', label: '' },
-                  { value: 'pottery', label: '도자기' },
-                  { value: 'textile', label: '섬유/직물' },
-                  { value: 'wood', label: '목공예' },
-                  { value: 'metal', label: '금속공예' },
-                ]}
-                value={formData.mainCategory}
-                onChange={(value) =>
-                  setFormData({ ...formData, mainCategory: value })
-                }
+                options={SPECIALTY_OPTIONS}
+                value={formData.specialty}
+                placeholder="주요 카테고리를 선택해주세요."
+                onChange={(value) => {
+                  setFormData({
+                    ...formData,
+                    specialty: value as Specialty | '',
+                  });
+                  clearError('specialty');
+                }}
+                error={errors.specialty}
               />
+              {errors.specialty && (
+                <p className="text-sm text-red-400">{errors.specialty}</p>
+              )}
             </div>
           </>
         )}
@@ -522,9 +888,10 @@ export function Signup() {
               id="agree-all"
               label="전체동의"
               checked={agreements.all}
-              onChange={(isChecked: boolean) =>
-                dispatch(setAllAgreements(isChecked))
-              }
+              onChange={(isChecked: boolean) => {
+                dispatch(setAllAgreements(isChecked));
+                clearError('terms');
+              }}
               className="border-b border-gray-300 pb-2"
             />
             {visibleTerms.map((term) => (
@@ -533,19 +900,27 @@ export function Signup() {
                 term={term}
                 checked={agreements[term.key]}
                 isOpen={openTerms[term.key]}
-                onCheck={(isChecked: boolean) =>
-                  dispatch(setAgreement({ key: term.key, isChecked }))
-                }
+                onCheck={(isChecked: boolean) => {
+                  dispatch(setAgreement({ key: term.key, isChecked }));
+                  clearError('terms');
+                }}
                 onToggle={() => dispatch(toggleTerm(term.key))}
               />
             ))}
           </div>
+          {errors.terms && (
+            <p className="text-sm text-red-400">{errors.terms}</p>
+          )}
         </div>
+
+        {errors.submit && (
+          <p className="text-sm text-red-400">{errors.submit}</p>
+        )}
 
         <div className="flex gap-2">
           <Button
             type="submit"
-            label={isLoading ? '처리 중...' : SUBMIT_BUTTON_LABELS[userType]}
+            label={SUBMIT_BUTTON_LABELS[userType]}
             variant="secondaryDark"
             disabled={isLoading}
             className="flex-1"
