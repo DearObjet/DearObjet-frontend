@@ -2,6 +2,10 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type {
   CompleteSignupRequest,
   CompleteBusinessSignupRequest,
+  SendPhoneVerificationRequest,
+  SendPhoneVerificationResponse,
+  VerifyPhoneRequest,
+  VerifyPhoneResponse,
 } from '../../types/authTypes';
 import type { RootState } from '../index';
 import type { ApiResponse } from '../../types/apiTypes';
@@ -76,6 +80,32 @@ export const authApi = createApi({
       invalidatesTags: ['Auth'],
     }),
 
+    // 휴대폰 인증번호 발송
+    sendPhoneVerification: builder.mutation<
+      SendPhoneVerificationResponse,
+      SendPhoneVerificationRequest
+    >({
+      query: (data) => ({
+        url: '/auth/phone-verifications/send',
+        method: 'POST',
+        body: data,
+      }),
+      transformResponse: (
+        response: ApiResponse<SendPhoneVerificationResponse>
+      ) => response.data,
+    }),
+
+    // 휴대폰 인증번호 확인
+    verifyPhone: builder.mutation<VerifyPhoneResponse, VerifyPhoneRequest>({
+      query: (data) => ({
+        url: '/auth/phone-verifications/verify',
+        method: 'POST',
+        body: data,
+      }),
+      transformResponse: (response: ApiResponse<VerifyPhoneResponse>) =>
+        response.data,
+    }),
+
     // Access Token 갱신
     refreshToken: builder.mutation<{ accessToken: string }, void>({
       query: () => ({
@@ -100,6 +130,8 @@ export const {
   useCompleteSignupMutation,
   useCompleteShopSignupMutation,
   useCompleteArtistSignupMutation,
+  useSendPhoneVerificationMutation,
+  useVerifyPhoneMutation,
   useRefreshTokenMutation,
   useLogoutMutation,
 } = authApi;

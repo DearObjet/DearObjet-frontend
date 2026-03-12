@@ -25,6 +25,8 @@ import {
   useCompleteSignupMutation,
   useCompleteShopSignupMutation,
   useCompleteArtistSignupMutation,
+  useSendPhoneVerificationMutation,
+  useVerifyPhoneMutation,
 } from '../store/api/authApi';
 import type { RootState } from '../store/index';
 import type {
@@ -205,6 +207,7 @@ const LabeledInput = ({
 interface LabeledInputWithButtonProps extends LabeledInputProps {
   buttonLabel: string;
   onButtonClick?: () => void;
+  buttonDisabled?: boolean;
 }
 
 const LabeledInputWithButton = ({
@@ -213,6 +216,7 @@ const LabeledInputWithButton = ({
   type = 'text',
   buttonLabel,
   onButtonClick,
+  buttonDisabled,
   placeholder,
   value,
   onChange,
@@ -235,6 +239,7 @@ const LabeledInputWithButton = ({
         variant="secondaryDark"
         onClick={onButtonClick}
         type="button"
+        disabled={buttonDisabled}
       />
     </div>
   </div>
@@ -295,6 +300,8 @@ export function Signup() {
     useCompleteShopSignupMutation();
   const [completeArtistSignup, { isLoading: isLoadingArtist }] =
     useCompleteArtistSignupMutation();
+  const [sendPhoneVerification] = useSendPhoneVerificationMutation();
+  const [verifyPhone] = useVerifyPhoneMutation();
 
   const isLoading = isLoadingCustomer || isLoadingShop || isLoadingArtist;
 
@@ -314,6 +321,13 @@ export function Signup() {
     specialty: '' as Specialty | '',
   });
 
+  const [verificationCode, setVerificationCode] = useState('');
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [isCodeExpired, setIsCodeExpired] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(180);
+  const [isSendDisabled, setIsSendDisabled] = useState(false);
+
   const isBusinessUser = userType !== '일반회원';
   const visibleTerms = TERMS.filter((term) =>
     term.showForUserTypes.includes(userType)
@@ -324,6 +338,30 @@ export function Signup() {
       navigate('/');
     }
   }, [signupRequired, navigate]);
+
+  useEffect(() => {
+    if (!isCodeSent || isPhoneVerified) return;
+    setTimeLeft(180);
+    setIsCodeExpired(false);
+    setIsSendDisabled(true);
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsCodeExpired(true);
+          setIsSendDisabled(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isCodeSent, isPhoneVerified]);
+
+  const formatTime = (s: number) =>
+    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
   const openPostcode = () => {
     if (!window.daum?.Postcode) {
@@ -348,6 +386,51 @@ export function Signup() {
     }).open();
   };
 
+  const handleSendVerification = async () => {
+    if (!formData.phoneNumber) {
+      alert('휴대폰번호를 입력해주세요.');
+      return;
+    }
+    try {
+      await sendPhoneVerification({
+        phoneNumber: formData.phoneNumber,
+      }).unwrap();
+
+      setIsCodeSent(false);
+      setTimeout(() => setIsCodeSent(true), 0);
+
+      setIsPhoneVerified(false);
+      setIsCodeExpired(false);
+      setVerificationCode('');
+    } catch (error) {
+      console.error('인증번호 발송 실패:', error);
+      alert('인증번호 발송에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    if (!verificationCode) {
+      alert('인증번호를 입력해주세요.');
+      return;
+    }
+    try {
+      const result = await verifyPhone({
+        phoneNumber: formData.phoneNumber,
+        code: verificationCode,
+      }).unwrap();
+
+      if (result.verified) {
+        setIsPhoneVerified(true);
+        setIsSendDisabled(true);
+      } else {
+        alert('인증번호가 올바르지 않습니다.');
+      }
+    } catch (error) {
+      console.error('인증 확인 실패:', error);
+      alert('인증에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -359,6 +442,11 @@ export function Signup() {
     const allRequiredAgreed = requiredTerms.every((key) => agreements[key]);
     if (!allRequiredAgreed) {
       alert('필수 약관에 모두 동의해주세요.');
+      return;
+    }
+
+    if (!isPhoneVerified) {
+      alert('휴대폰 인증을 완료해주세요.');
       return;
     }
 
@@ -377,7 +465,6 @@ export function Signup() {
         };
 
         await completeSignup(requestData).unwrap();
-
         alert('회원가입이 완료되었습니다!');
         navigate('/');
       } catch (error) {
@@ -466,16 +553,70 @@ export function Signup() {
           />
         )}
 
-        <LabeledInputWithButton
-          id="phone"
-          label="휴대폰번호"
-          buttonLabel="휴대폰인증"
-          type="tel"
-          value={formData.phoneNumber}
-          onChange={(e) =>
-            setFormData({ ...formData, phoneNumber: e.target.value })
-          }
-        />
+        <div className="flex flex-col gap-1">
+          <LabeledInputWithButton
+            id="phone"
+            label="휴대폰번호"
+            buttonLabel="휴대폰인증"
+            buttonDisabled={isSendDisabled}
+            type="tel"
+            value={formData.phoneNumber}
+            onChange={(e) => {
+              setFormData({ ...formData, phoneNumber: e.target.value });
+              setIsCodeSent(false);
+              setIsPhoneVerified(false);
+              setIsCodeExpired(false);
+              setIsSendDisabled(false);
+            }}
+            onButtonClick={handleSendVerification}
+          />
+
+          {isCodeSent && !isPhoneVerified && (
+            <>
+              <div
+                className={`flex w-full items-center rounded-md border px-3 py-2 ${
+                  isCodeExpired ? 'border-red-400' : 'border-gray-900'
+                }`}
+              >
+                <input
+                  placeholder="인증코드 6자리"
+                  className="flex-1 text-sm outline-none placeholder:text-gray-400"
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleVerifyCode();
+                    }
+                  }}
+                  maxLength={6}
+                  disabled={isCodeExpired}
+                />
+                <span className="mr-3 text-sm text-red-500">
+                  {formatTime(timeLeft)}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleVerifyCode}
+                  disabled={!verificationCode || isCodeExpired}
+                  className="text-sm text-black disabled:cursor-not-allowed disabled:text-gray-300"
+                >
+                  확인
+                </button>
+              </div>
+
+              {isCodeExpired && (
+                <p className="text-sm text-red-400">
+                  유효시간이 지났어요. &apos;휴대폰 인증&apos;을 다시 해주세요.
+                </p>
+              )}
+            </>
+          )}
+
+          {isPhoneVerified && (
+            <p className="text-sm text-green-600">✓ 휴대폰 인증 완료</p>
+          )}
+        </div>
 
         {isBusinessUser && (
           <>

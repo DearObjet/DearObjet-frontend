@@ -50,3 +50,23 @@ export type Specialty =
   | 'CERAMIC'
   | 'FABRIC_TEXTILE'
   | 'ECO_UPCYCLE';
+
+// 휴대폰 인증 발송
+export interface SendPhoneVerificationRequest {
+  phoneNumber: string;
+}
+
+export interface SendPhoneVerificationResponse {
+  phoneNumber: string;
+  expiresInSec: number;
+}
+
+// 휴대폰 인증 확인
+export interface VerifyPhoneRequest {
+  phoneNumber: string;
+  code: string;
+}
+
+export interface VerifyPhoneResponse {
+  verified: boolean;
+}
