@@ -8,6 +8,7 @@ export interface SelectBoxProps {
   backgroundColor?: string;
   onChange?: (value: string) => void;
   className?: string;
+  error?: string;
 }
 
 export const SelectBox = ({
@@ -18,6 +19,7 @@ export const SelectBox = ({
   backgroundColor,
   onChange,
   className,
+  error,
 }: SelectBoxProps) => {
   const sizeClasses = {
     small: 'px-2 py-1 text-sm',
@@ -33,7 +35,11 @@ export const SelectBox = ({
     <select
       value={value}
       onChange={handleChange}
-      className={`rounded-lg border border-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${sizeClasses[size]} ${className ?? ''}`}
+      className={`rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 ${
+        error
+          ? 'border-red-400 focus:ring-red-400'
+          : 'border-gray-300 focus:ring-blue-500'
+      } ${sizeClasses[size]} ${className ?? ''}`}
       style={{
         ...(backgroundColor ? { backgroundColor } : undefined),
         color: value === '' ? '#B3B3B3' : 'inherit',

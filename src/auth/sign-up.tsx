@@ -178,6 +178,7 @@ interface LabeledInputProps {
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   readOnly?: boolean;
+  error?: string;
 }
 
 const LabeledInput = ({
@@ -189,18 +190,22 @@ const LabeledInput = ({
   value,
   onChange,
   readOnly,
+  error,
 }: LabeledInputProps) => (
   <div className={`flex flex-col gap-1 ${className}`}>
-    <label htmlFor={id}>{label}</label>
+    <label htmlFor={id} className={error ? 'text-red-400' : ''}>
+      {label}
+    </label>
     <Input
       id={id}
       type={type}
       placeholder={placeholder}
-      className="w-full"
+      className={`w-full ${error ? 'border-red-400 focus-visible:ring-red-400' : ''}`}
       value={value}
       onChange={onChange}
       readOnly={readOnly}
     />
+    {error && <p className="text-sm text-red-400">{error}</p>}
   </div>
 );
 
@@ -221,15 +226,18 @@ const LabeledInputWithButton = ({
   value,
   onChange,
   readOnly,
+  error,
 }: LabeledInputWithButtonProps) => (
   <div className="flex flex-col gap-1">
-    <label htmlFor={id}>{label}</label>
+    <label htmlFor={id} className={error ? 'text-red-400' : ''}>
+      {label}
+    </label>
     <div className="flex w-full gap-2">
       <Input
         id={id}
         type={type}
         placeholder={placeholder}
-        className="flex-1"
+        className={`flex-1 ${error ? 'border-red-400 focus-visible:ring-red-400' : ''}`}
         value={value}
         onChange={onChange}
         readOnly={readOnly}
@@ -242,6 +250,7 @@ const LabeledInputWithButton = ({
         disabled={buttonDisabled}
       />
     </div>
+    {error && <p className="text-sm text-red-400">{error}</p>}
   </div>
 );
 
@@ -327,6 +336,7 @@ export function Signup() {
   const [isCodeExpired, setIsCodeExpired] = useState(false);
   const [timeLeft, setTimeLeft] = useState(180);
   const [isSendDisabled, setIsSendDisabled] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const isBusinessUser = userType !== '일반회원';
   const visibleTerms = TERMS.filter((term) =>
@@ -363,6 +373,9 @@ export function Signup() {
   const formatTime = (s: number) =>
     `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
+  const clearError = (key: string) =>
+    setErrors((prev) => ({ ...prev, [key]: '' }));
+
   const openPostcode = () => {
     if (!window.daum?.Postcode) {
       const script = document.createElement('script');
@@ -377,40 +390,44 @@ export function Signup() {
     new window.daum.Postcode({
       oncomplete: (data: DaumPostcodeData) => {
         dispatch(
-          setAddress({
-            zipcode: data.zonecode,
-            roadAddress: data.roadAddress,
-          })
+          setAddress({ zipcode: data.zonecode, roadAddress: data.roadAddress })
         );
+        clearError('roadAddress');
       },
     }).open();
   };
 
   const handleSendVerification = async () => {
     if (!formData.phoneNumber) {
-      alert('휴대폰번호를 입력해주세요.');
+      setErrors((prev) => ({
+        ...prev,
+        phoneNumber: '휴대폰번호를 입력해주세요.',
+      }));
       return;
     }
     try {
       await sendPhoneVerification({
         phoneNumber: formData.phoneNumber,
       }).unwrap();
-
       setIsCodeSent(false);
       setTimeout(() => setIsCodeSent(true), 0);
-
       setIsPhoneVerified(false);
       setIsCodeExpired(false);
       setVerificationCode('');
-    } catch (error) {
-      console.error('인증번호 발송 실패:', error);
-      alert('인증번호 발송에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    } catch {
+      setErrors((prev) => ({
+        ...prev,
+        phoneNumber: '인증번호 발송에 실패했습니다. 잠시 후 다시 시도해주세요.',
+      }));
     }
   };
 
   const handleVerifyCode = async () => {
     if (!verificationCode) {
-      alert('인증번호를 입력해주세요.');
+      setErrors((prev) => ({
+        ...prev,
+        verificationCode: '인증번호를 입력해주세요.',
+      }));
       return;
     }
     try {
@@ -422,37 +439,51 @@ export function Signup() {
       if (result.verified) {
         setIsPhoneVerified(true);
         setIsSendDisabled(true);
+        setErrors((prev) => ({
+          ...prev,
+          phoneVerified: '',
+          verificationCode: '',
+        }));
       } else {
-        alert('인증번호가 올바르지 않습니다.');
+        setErrors((prev) => ({
+          ...prev,
+          verificationCode: '인증번호가 올바르지 않습니다.',
+        }));
       }
-    } catch (error) {
-      console.error('인증 확인 실패:', error);
-      alert('인증에 실패했습니다. 다시 시도해주세요.');
+    } catch {
+      setErrors((prev) => ({
+        ...prev,
+        verificationCode: '인증에 실패했습니다. 다시 시도해주세요.',
+      }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const newErrors: Record<string, string> = {};
+
     const requiredTerms: AgreementKey[] = ['age', 'terms'];
     if (userType !== '일반회원') {
       requiredTerms.push('businessInfo', 'settlement', 'fraud');
     }
 
-    const allRequiredAgreed = requiredTerms.every((key) => agreements[key]);
-    if (!allRequiredAgreed) {
-      alert('필수 약관에 모두 동의해주세요.');
-      return;
-    }
-
-    if (!isPhoneVerified) {
-      alert('휴대폰 인증을 완료해주세요.');
-      return;
+    if (!requiredTerms.every((key) => agreements[key])) {
+      newErrors.terms = '필수 약관에 모두 동의해주세요.';
     }
 
     if (userType === '일반회원') {
-      if (!formData.name || !formData.phoneNumber) {
-        alert('필수 정보를 모두 입력해주세요.');
+      if (!formData.name) newErrors.name = '필수 입력 항목입니다.';
+      if (!formData.phoneNumber) {
+        newErrors.phoneNumber = '필수 입력 항목입니다.';
+      } else if (isCodeSent && !isPhoneVerified) {
+        newErrors.phoneVerified = '휴대폰 인증을 완료해주세요.';
+      } else if (!isPhoneVerified) {
+        newErrors.phoneVerified = '휴대폰 인증을 해주세요.';
+      }
+
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
         return;
       }
 
@@ -463,29 +494,36 @@ export function Signup() {
           smsAgreement: agreements.notification || false,
           marketingAgreement: agreements.marketing || false,
         };
-
         await completeSignup(requestData).unwrap();
-        alert('회원가입이 완료되었습니다!');
         navigate('/');
-      } catch (error) {
-        console.error('회원가입 실패:', error);
-        alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+      } catch {
+        setErrors({ submit: '회원가입에 실패했습니다. 다시 시도해주세요.' });
       }
       return;
     }
 
-    if (
-      !formData.shopName ||
-      !formData.ownerName ||
-      !formData.phoneNumber ||
-      !formData.businessNumber ||
-      !formData.businessType ||
-      !formData.businessCategory ||
-      !formData.specialty ||
-      !roadAddress ||
-      !businessLicenseFile
-    ) {
-      alert('사업자 정보를 모두 입력해주세요.');
+    if (!formData.shopName) newErrors.shopName = '필수 입력 항목입니다.';
+    if (!formData.ownerName) newErrors.ownerName = '필수 입력 항목입니다.';
+    if (!formData.phoneNumber) {
+      newErrors.phoneNumber = '필수 입력 항목입니다.';
+    } else if (isCodeSent && !isPhoneVerified) {
+      newErrors.phoneVerified = '휴대폰 인증을 완료해주세요.';
+    } else if (!isPhoneVerified) {
+      newErrors.phoneVerified = '휴대폰 인증을 해주세요.';
+    }
+    if (!formData.businessNumber)
+      newErrors.businessNumber = '필수 입력 항목입니다.';
+    if (!formData.businessType)
+      newErrors.businessType = '필수 입력 항목입니다.';
+    if (!formData.businessCategory)
+      newErrors.businessCategory = '필수 입력 항목입니다.';
+    if (!formData.specialty) newErrors.specialty = '필수 입력 항목입니다.';
+    if (!roadAddress) newErrors.roadAddress = '필수 입력 항목입니다.';
+    if (!businessLicenseFile)
+      newErrors.businessLicenseFile = '필수 입력 항목입니다.';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
@@ -510,16 +548,19 @@ export function Signup() {
 
     try {
       if (userType === '소품샵') {
-        await completeShopSignup({ request, businessLicenseFile }).unwrap();
+        await completeShopSignup({
+          request,
+          businessLicenseFile: businessLicenseFile!,
+        }).unwrap();
       } else {
-        await completeArtistSignup({ request, businessLicenseFile }).unwrap();
+        await completeArtistSignup({
+          request,
+          businessLicenseFile: businessLicenseFile!,
+        }).unwrap();
       }
-
-      alert('등록 신청이 완료되었습니다!');
       navigate('/');
-    } catch (error) {
-      console.error('가입 실패:', error);
-      alert('등록 신청에 실패했습니다. 다시 시도해주세요.');
+    } catch {
+      setErrors({ submit: '등록 신청에 실패했습니다. 다시 시도해주세요.' });
     }
   };
 
@@ -533,7 +574,10 @@ export function Signup() {
             variant={
               userType === type.value ? 'secondaryDark' : 'secondaryLight'
             }
-            onClick={() => dispatch(setUserType(type.value))}
+            onClick={() => {
+              dispatch(setUserType(type.value));
+              setErrors({});
+            }}
             className="flex-1"
             type="button"
           />
@@ -549,7 +593,11 @@ export function Signup() {
             id="username"
             label="이름"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            error={errors.name}
+            onChange={(e) => {
+              setFormData({ ...formData, name: e.target.value });
+              clearError('name');
+            }}
           />
         )}
 
@@ -561,12 +609,15 @@ export function Signup() {
             buttonDisabled={isSendDisabled}
             type="tel"
             value={formData.phoneNumber}
+            error={errors.phoneNumber}
             onChange={(e) => {
               setFormData({ ...formData, phoneNumber: e.target.value });
               setIsCodeSent(false);
               setIsPhoneVerified(false);
               setIsCodeExpired(false);
               setIsSendDisabled(false);
+              clearError('phoneNumber');
+              clearError('phoneVerified');
             }}
             onButtonClick={handleSendVerification}
           />
@@ -575,14 +626,19 @@ export function Signup() {
             <>
               <div
                 className={`flex w-full items-center rounded-md border px-3 py-2 ${
-                  isCodeExpired ? 'border-red-400' : 'border-gray-900'
+                  isCodeExpired || errors.verificationCode
+                    ? 'border-red-400'
+                    : 'border-gray-900'
                 }`}
               >
                 <input
                   placeholder="인증코드 6자리"
                   className="flex-1 text-sm outline-none placeholder:text-gray-400"
                   value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value)}
+                  onChange={(e) => {
+                    setVerificationCode(e.target.value);
+                    clearError('verificationCode');
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -610,7 +666,16 @@ export function Signup() {
                   유효시간이 지났어요. &apos;휴대폰 인증&apos;을 다시 해주세요.
                 </p>
               )}
+              {errors.verificationCode && !isCodeExpired && (
+                <p className="text-sm text-red-400">
+                  {errors.verificationCode}
+                </p>
+              )}
             </>
+          )}
+
+          {errors.phoneVerified && (
+            <p className="text-sm text-red-400">{errors.phoneVerified}</p>
           )}
 
           {isPhoneVerified && (
@@ -624,33 +689,49 @@ export function Signup() {
               id="shopName"
               label="상호명"
               value={formData.shopName}
-              onChange={(e) =>
-                setFormData({ ...formData, shopName: e.target.value })
-              }
+              error={errors.shopName}
+              onChange={(e) => {
+                setFormData({ ...formData, shopName: e.target.value });
+                clearError('shopName');
+              }}
             />
 
             <LabeledInput
               id="ownerName"
               label="대표자명"
               value={formData.ownerName}
-              onChange={(e) =>
-                setFormData({ ...formData, ownerName: e.target.value })
-              }
+              error={errors.ownerName}
+              onChange={(e) => {
+                setFormData({ ...formData, ownerName: e.target.value });
+                clearError('ownerName');
+              }}
             />
 
             <LabeledInput
               id="shopNumber"
               label="사업자 등록번호"
               value={formData.businessNumber}
-              onChange={(e) =>
-                setFormData({ ...formData, businessNumber: e.target.value })
-              }
+              error={errors.businessNumber}
+              onChange={(e) => {
+                setFormData({ ...formData, businessNumber: e.target.value });
+                clearError('businessNumber');
+              }}
             />
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="shopAddress">사업자 주소지</label>
+              <label
+                htmlFor="shopAddress"
+                className={errors.roadAddress ? 'text-red-400' : ''}
+              >
+                사업자 주소지
+              </label>
               <div className="flex gap-2">
-                <Input id="zipcode" value={zipcode} readOnly />
+                <Input
+                  id="zipcode"
+                  value={zipcode}
+                  readOnly
+                  className={errors.roadAddress ? 'border-red-400' : ''}
+                />
                 <Button
                   label="주소찾기"
                   variant="secondaryDark"
@@ -661,7 +742,7 @@ export function Signup() {
               <div className="flex w-full gap-2">
                 <Input
                   id="shopAddress"
-                  className="w-full"
+                  className={`w-full ${errors.roadAddress ? 'border-red-400' : ''}`}
                   value={roadAddress}
                   readOnly
                 />
@@ -673,45 +754,75 @@ export function Signup() {
                   placeholder="상세주소"
                 />
               </div>
+              {errors.roadAddress && (
+                <p className="text-sm text-red-400">{errors.roadAddress}</p>
+              )}
             </div>
 
             <div className="flex w-full gap-2">
               <div className="flex w-full flex-col">
-                <label htmlFor="businessType">업종</label>
+                <label
+                  htmlFor="businessType"
+                  className={errors.businessType ? 'text-red-400' : ''}
+                >
+                  업종
+                </label>
                 <SelectBox
                   options={BUSINESS_TYPE_OPTIONS}
                   placeholder="업종을 선택해주세요."
                   value={formData.businessType}
-                  onChange={(value) =>
+                  onChange={(value) => {
                     setFormData({
                       ...formData,
                       businessType: value as BusinessType | '',
-                    })
-                  }
+                    });
+                    clearError('businessType');
+                  }}
+                  error={errors.businessType}
                 />
+                {errors.businessType && (
+                  <p className="text-sm text-red-400">{errors.businessType}</p>
+                )}
               </div>
               <div className="flex w-full flex-col">
-                <label htmlFor="businessCategory">업태</label>
+                <label
+                  htmlFor="businessCategory"
+                  className={errors.businessCategory ? 'text-red-400' : ''}
+                >
+                  업태
+                </label>
                 <SelectBox
                   options={BUSINESS_CATEGORY_OPTIONS}
                   value={formData.businessCategory}
                   placeholder="업태를 선택해주세요."
-                  onChange={(value) =>
+                  onChange={(value) => {
                     setFormData({
                       ...formData,
                       businessCategory: value as BusinessCategory | '',
-                    })
-                  }
+                    });
+                    clearError('businessCategory');
+                  }}
+                  error={errors.businessCategory}
                 />
+                {errors.businessCategory && (
+                  <p className="text-sm text-red-400">
+                    {errors.businessCategory}
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="businessCert">사업자등록증 업로드</label>
+              <label
+                htmlFor="businessCert"
+                className={errors.businessLicenseFile ? 'text-red-400' : ''}
+              >
+                사업자등록증 업로드
+              </label>
               <div className="flex w-full gap-2">
                 <Input
                   id="businessCert"
-                  className="flex-1"
+                  className={`flex-1 ${errors.businessLicenseFile ? 'border-red-400' : ''}`}
                   value={businessLicenseFile?.name ?? ''}
                   readOnly
                   placeholder="파일을 선택해주세요"
@@ -723,7 +834,10 @@ export function Signup() {
                   className="hidden"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (file) setBusinessLicenseFile(file);
+                    if (file) {
+                      setBusinessLicenseFile(file);
+                      clearError('businessLicenseFile');
+                    }
                   }}
                 />
                 <Button
@@ -733,21 +847,36 @@ export function Signup() {
                   type="button"
                 />
               </div>
+              {errors.businessLicenseFile && (
+                <p className="text-sm text-red-400">
+                  {errors.businessLicenseFile}
+                </p>
+              )}
             </div>
 
             <div className="flex w-full flex-col gap-2">
-              <label htmlFor="specialty">주요 카테고리</label>
+              <label
+                htmlFor="specialty"
+                className={errors.specialty ? 'text-red-400' : ''}
+              >
+                주요 카테고리
+              </label>
               <SelectBox
                 options={SPECIALTY_OPTIONS}
                 value={formData.specialty}
                 placeholder="주요 카테고리를 선택해주세요."
-                onChange={(value) =>
+                onChange={(value) => {
                   setFormData({
                     ...formData,
                     specialty: value as Specialty | '',
-                  })
-                }
+                  });
+                  clearError('specialty');
+                }}
+                error={errors.specialty}
               />
+              {errors.specialty && (
+                <p className="text-sm text-red-400">{errors.specialty}</p>
+              )}
             </div>
           </>
         )}
@@ -759,9 +888,10 @@ export function Signup() {
               id="agree-all"
               label="전체동의"
               checked={agreements.all}
-              onChange={(isChecked: boolean) =>
-                dispatch(setAllAgreements(isChecked))
-              }
+              onChange={(isChecked: boolean) => {
+                dispatch(setAllAgreements(isChecked));
+                clearError('terms');
+              }}
               className="border-b border-gray-300 pb-2"
             />
             {visibleTerms.map((term) => (
@@ -770,19 +900,27 @@ export function Signup() {
                 term={term}
                 checked={agreements[term.key]}
                 isOpen={openTerms[term.key]}
-                onCheck={(isChecked: boolean) =>
-                  dispatch(setAgreement({ key: term.key, isChecked }))
-                }
+                onCheck={(isChecked: boolean) => {
+                  dispatch(setAgreement({ key: term.key, isChecked }));
+                  clearError('terms');
+                }}
                 onToggle={() => dispatch(toggleTerm(term.key))}
               />
             ))}
           </div>
+          {errors.terms && (
+            <p className="text-sm text-red-400">{errors.terms}</p>
+          )}
         </div>
+
+        {errors.submit && (
+          <p className="text-sm text-red-400">{errors.submit}</p>
+        )}
 
         <div className="flex gap-2">
           <Button
             type="submit"
-            label={isLoading ? '처리 중...' : SUBMIT_BUTTON_LABELS[userType]}
+            label={SUBMIT_BUTTON_LABELS[userType]}
             variant="secondaryDark"
             disabled={isLoading}
             className="flex-1"
