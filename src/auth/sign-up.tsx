@@ -614,7 +614,7 @@ export function Signup() {
           )}
 
           {isPhoneVerified && (
-            <p className="text-sm text-green-600">✓ 휴대폰 인증 완료</p>
+            <p className="text-sm text-blue-200">✓ 휴대폰 인증 완료</p>
           )}
         </div>
 
@@ -680,6 +680,7 @@ export function Signup() {
                 <label htmlFor="businessType">업종</label>
                 <SelectBox
                   options={BUSINESS_TYPE_OPTIONS}
+                  placeholder="업종을 선택해주세요."
                   value={formData.businessType}
                   onChange={(value) =>
                     setFormData({
@@ -694,6 +695,7 @@ export function Signup() {
                 <SelectBox
                   options={BUSINESS_CATEGORY_OPTIONS}
                   value={formData.businessCategory}
+                  placeholder="업태를 선택해주세요."
                   onChange={(value) =>
                     setFormData({
                       ...formData,
@@ -738,6 +740,7 @@ export function Signup() {
               <SelectBox
                 options={SPECIALTY_OPTIONS}
                 value={formData.specialty}
+                placeholder="주요 카테고리를 선택해주세요."
                 onChange={(value) =>
                   setFormData({
                     ...formData,

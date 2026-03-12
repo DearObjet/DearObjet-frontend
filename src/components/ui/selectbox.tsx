@@ -34,7 +34,10 @@ export const SelectBox = ({
       value={value}
       onChange={handleChange}
       className={`rounded-lg border border-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${sizeClasses[size]} ${className ?? ''}`}
-      style={backgroundColor ? { backgroundColor } : undefined}
+      style={{
+        ...(backgroundColor ? { backgroundColor } : undefined),
+        color: value === '' ? '#B3B3B3' : 'inherit',
+      }}
     >
       {placeholder && <option value="">{placeholder}</option>}
       {options.map((opt) => (
