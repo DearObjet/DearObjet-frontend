@@ -8,7 +8,7 @@ import { Routes, Route } from 'react-router';
 import { useAppDispatch, useAppSelector } from './hooks/redux';
 import { Signup } from './auth/sign-up';
 import { OAuthCallback } from './auth/oauth-callback';
-import ShopArtistNotice from './page/shop-artist-notice';
+import ShopArtistNotice from './page/partner-notice';
 import { setThemeMode, setSystemTheme } from './store/slices/themeSlice';
 // import { Button } from './components/ui/button';
 import {
