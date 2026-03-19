@@ -8,17 +8,20 @@ const MessageInput: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isFocusedRef = useRef(false);
 
   const { sendMessage: sendStompMessage, sendTyping } =
     useChatWebSocketContext();
 
-  // 타이핑 중단 로직 (1초 debounce)
+  // 타이핑 중단 로직
   useEffect(() => {
     if (!selectedChatRoomId || !isTyping) return;
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
     typingTimeoutRef.current = setTimeout(() => {
+      // focus 중이면 타이핑 종료 안 함
+      if (isFocusedRef.current) return;
       sendTyping(selectedChatRoomId, false);
       setIsTyping(false);
       typingTimeoutRef.current = null;
@@ -85,6 +88,25 @@ const MessageInput: React.FC = () => {
             value={message}
             onChange={handleChange}
             onKeyPress={handleKeyPress}
+            onFocus={() => {
+              isFocusedRef.current = true;
+              // focus 시 메시지가 있으면 타이핑 시작
+              if (selectedChatRoomId && message.length > 0 && !isTyping) {
+                sendTyping(selectedChatRoomId, true);
+                setIsTyping(true);
+              }
+            }}
+            onBlur={() => {
+              isFocusedRef.current = false;
+              // focus 잃으면 즉시 타이핑 종료
+              if (!selectedChatRoomId) return;
+              sendTyping(selectedChatRoomId, false);
+              setIsTyping(false);
+              if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+                typingTimeoutRef.current = null;
+              }
+            }}
             placeholder="메시지를 입력하세요"
             rows={1}
             className="w-full resize-none rounded-lg border border-gray-200 px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
