@@ -7,6 +7,16 @@ interface ChatListItemProps {
   onClick: () => void;
 }
 
+const formatTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  const formattedHours = hours % 12 || 12;
+  const formattedMinutes = minutes.toString().padStart(2, '0');
+  return `${formattedHours}:${formattedMinutes} ${ampm}`;
+};
+
 const ChatListItem: React.FC<ChatListItemProps> = ({
   chatRoom,
   isSelected,
@@ -19,16 +29,6 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
     lastMessageAt,
     unreadCount,
   } = chatRoom;
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const ampm = hours >= 12 ? 'pm' : 'am';
-    const formattedHours = hours % 12 || 12;
-    const formattedMinutes = minutes.toString().padStart(2, '0');
-    return `${formattedHours}:${formattedMinutes} ${ampm}`;
-  };
 
   return (
     <div

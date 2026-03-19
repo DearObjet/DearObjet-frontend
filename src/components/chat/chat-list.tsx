@@ -10,10 +10,14 @@ const ChatList: React.FC = () => {
   const { selectedChatRoomId, chatRooms } = useSelector(
     (state: RootState) => state.chat
   );
+
+  // 초기 로드용
   const { data, isLoading, error } = useGetChatRoomsQuery();
 
   useEffect(() => {
-    if (data) dispatch(setChatRooms(data));
+    if (data) {
+      dispatch(setChatRooms(data));
+    }
   }, [data, dispatch]);
 
   if (isLoading) {

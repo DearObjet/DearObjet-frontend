@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 
@@ -7,8 +7,9 @@ const ChatHeader: React.FC = () => {
     (state: RootState) => state.chat
   );
 
-  const selectedChatRoom = chatRooms.find(
-    (room) => room.roomId === selectedChatRoomId
+  const selectedChatRoom = useMemo(
+    () => chatRooms.find((room) => room.roomId === selectedChatRoomId),
+    [chatRooms, selectedChatRoomId]
   );
 
   if (!selectedChatRoom) return null;
