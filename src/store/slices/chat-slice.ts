@@ -35,8 +35,11 @@ const chatSlice = createSlice({
       state.messages[roomId] = messages;
     },
 
-    addMessage: (state, action: PayloadAction<MessageResponse>) => {
-      const message = action.payload;
+    addMessage: (
+      state,
+      action: PayloadAction<{ message: MessageResponse; currentUserId: number }>
+    ) => {
+      const { message, currentUserId } = action.payload;
       const { roomId } = message;
 
       if (!state.messages[roomId]) {
@@ -54,6 +57,14 @@ const chatSlice = createSlice({
       if (chatRoom) {
         chatRoom.lastMessage = message.content;
         chatRoom.lastMessageAt = message.createdAt;
+
+        const isMyMessage = message.senderId === currentUserId;
+        const isCurrentRoom = state.selectedChatRoomId === roomId;
+
+        if (!isMyMessage && !isCurrentRoom) {
+          chatRoom.unreadCount = (chatRoom.unreadCount ?? 0) + 1;
+        }
+
         state.chatRooms.sort(
           (a, b) =>
             new Date(b.lastMessageAt).getTime() -
