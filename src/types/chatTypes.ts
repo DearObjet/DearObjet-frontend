@@ -6,6 +6,7 @@ export interface Participant {
   nickname: string;
   profileImageUrl: string;
   joinedAt: string;
+  lastReadAt: string | null;
 }
 
 export interface ChatRoomResponse {
@@ -49,6 +50,7 @@ export interface ChatState {
   selectedChatRoomId: string | null;
   messages: Record<string, MessageResponse[]>;
   typingUsers: Record<string, TypingUser[]>;
+  partnerLastReadAt: Record<string, string | null>;
   loading: boolean;
   error: string | null;
 }

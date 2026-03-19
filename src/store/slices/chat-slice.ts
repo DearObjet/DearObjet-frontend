@@ -11,6 +11,7 @@ const initialState: ChatState = {
   selectedChatRoomId: null,
   messages: {},
   typingUsers: {},
+  partnerLastReadAt: {},
   loading: false,
   error: null,
 };
@@ -73,6 +74,14 @@ const chatSlice = createSlice({
       }
     },
 
+    updatePartnerReadAt: (
+      state,
+      action: PayloadAction<{ roomId: string; readAt: string }>
+    ) => {
+      const { roomId, readAt } = action.payload;
+      state.partnerLastReadAt[roomId] = readAt;
+    },
+
     clearUnreadCount: (state, action: PayloadAction<string>) => {
       const roomId = action.payload;
       const chatRoom = state.chatRooms.find((room) => room.roomId === roomId);
@@ -101,6 +110,7 @@ export const {
   selectChatRoom,
   setMessages,
   addMessage,
+  updatePartnerReadAt,
   clearUnreadCount,
   setTypingUsers,
   clearTypingUsers,

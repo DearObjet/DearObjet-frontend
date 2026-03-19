@@ -4,6 +4,7 @@ import type { RootState } from '../store';
 import {
   addMessage,
   setTypingUsers,
+  updatePartnerReadAt,
   clearUnreadCount,
 } from '../store/slices/chat-slice';
 import { Client } from '@stomp/stompjs';
@@ -133,7 +134,16 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
         try {
           const readReceipt: ReadReceiptDto = JSON.parse(message.body);
           if (readReceipt.userId === currentUser.userId) {
+            // 내가 읽음 → unreadCount 초기화
             dispatch(clearUnreadCount(readReceipt.roomId));
+          } else {
+            // 상대방이 읽음 → partnerLastReadAt 업데이트
+            dispatch(
+              updatePartnerReadAt({
+                roomId: readReceipt.roomId,
+                readAt: readReceipt.readAt,
+              })
+            );
           }
         } catch (e) {
           console.error('Failed to parse read receipt:', e);

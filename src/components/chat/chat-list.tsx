@@ -2,7 +2,11 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 import { useGetChatRoomsQuery } from '../../store/api/chatApi';
-import { setChatRooms, selectChatRoom } from '../../store/slices/chat-slice';
+import {
+  setChatRooms,
+  selectChatRoom,
+  updatePartnerReadAt,
+} from '../../store/slices/chat-slice';
 import ChatListItem from './chat-list-item';
 
 const ChatList: React.FC = () => {
@@ -10,16 +14,29 @@ const ChatList: React.FC = () => {
   const { selectedChatRoomId, chatRooms } = useSelector(
     (state: RootState) => state.chat
   );
-
+  const currentUser = useSelector((state: RootState) => state.auth.user);
   // 초기 로드용
   const { data, isLoading, error } = useGetChatRoomsQuery();
 
   useEffect(() => {
-    if (data) {
-      dispatch(setChatRooms(data));
-    }
-  }, [data, dispatch]);
+    if (!data) return;
+    dispatch(setChatRooms(data));
 
+    // 각 채팅방의 파트너 lastReadAt 업데이트
+    data.forEach((chatRoom) => {
+      const partner = chatRoom.participants.find(
+        (p) => p.userId !== currentUser?.userId
+      );
+      if (partner?.lastReadAt) {
+        dispatch(
+          updatePartnerReadAt({
+            roomId: chatRoom.roomId,
+            readAt: partner.lastReadAt,
+          })
+        );
+      }
+    });
+  }, [data, dispatch, currentUser]);
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
