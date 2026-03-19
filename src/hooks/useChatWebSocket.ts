@@ -29,6 +29,7 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
   const dispatch = useDispatch();
   const clientRef = useRef<Client | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  // 구독된 방 추적용 ref
   const subscribedRoomsRef = useRef<Set<string>>(new Set());
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
@@ -89,6 +90,8 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
   const subscribeToRoom = useCallback(
     (client: Client, roomId: string) => {
       if (!currentUser) return;
+
+      // 이미 구독된 방이면 스킵
       if (subscribedRoomsRef.current.has(roomId)) return;
 
       const currentUserId = currentUser.userId;
@@ -148,11 +151,13 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
         }
       );
 
+      // 구독 완료 후 Set에 등록
       subscribedRoomsRef.current.add(roomId);
     },
     [currentUser, dispatch]
   );
 
+  // 연결 끊길 때 구독 목록 초기화
   useEffect(() => {
     if (!isConnected) subscribedRoomsRef.current.clear();
   }, [isConnected]);
