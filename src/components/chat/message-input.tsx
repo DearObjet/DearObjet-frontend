@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 import { useChatWebSocketContext } from '../../hooks/useChatWebSocketContext';
@@ -6,18 +6,72 @@ import { useChatWebSocketContext } from '../../hooks/useChatWebSocketContext';
 const MessageInput: React.FC = () => {
   const { selectedChatRoomId } = useSelector((state: RootState) => state.chat);
   const [message, setMessage] = useState('');
-  const { sendMessage: sendStompMessage } = useChatWebSocketContext();
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { sendMessage: sendStompMessage, sendTyping } =
+    useChatWebSocketContext();
+
+  // 타이핑 중단 로직 (1초 debounce)
+  useEffect(() => {
+    if (!selectedChatRoomId || !isTyping) return;
+
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+    typingTimeoutRef.current = setTimeout(() => {
+      sendTyping(selectedChatRoomId, false);
+      setIsTyping(false);
+      typingTimeoutRef.current = null;
+    }, 1000);
+
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
+  }, [message, selectedChatRoomId, isTyping, sendTyping]);
 
   const handleSendMessage = useCallback(() => {
     if (!message.trim() || !selectedChatRoomId) return;
+
     sendStompMessage(selectedChatRoomId, message.trim());
+
+    if (isTyping) {
+      sendTyping(selectedChatRoomId, false);
+      setIsTyping(false);
+    }
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+
     setMessage('');
-  }, [message, selectedChatRoomId, sendStompMessage]);
+  }, [message, selectedChatRoomId, isTyping, sendStompMessage, sendTyping]);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    setMessage(newValue);
+
+    if (!selectedChatRoomId) return;
+
+    if (!isTyping && newValue.length > 0) {
+      sendTyping(selectedChatRoomId, true);
+      setIsTyping(true);
+    }
+
+    if (newValue.length === 0 && isTyping) {
+      sendTyping(selectedChatRoomId, false);
+      setIsTyping(false);
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
+      }
     }
   };
 
@@ -29,7 +83,7 @@ const MessageInput: React.FC = () => {
         <div className="relative flex-1">
           <textarea
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={handleChange}
             onKeyPress={handleKeyPress}
             placeholder="메시지를 입력하세요"
             rows={1}

@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 import MessageItem from './message-item';
+import TypingIndicator from './typing-indicator';
 
 const MessageList: React.FC = () => {
-  const { selectedChatRoomId, messages } = useSelector(
+  const { selectedChatRoomId, messages, typingUsers } = useSelector(
     (state: RootState) => state.chat
   );
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -14,9 +15,15 @@ const MessageList: React.FC = () => {
     [selectedChatRoomId, messages]
   );
 
+  // 타이핑 중인 상대방 여부
+  const isPartnerTyping = useMemo(() => {
+    if (!selectedChatRoomId) return false;
+    return (typingUsers[selectedChatRoomId] || []).length > 0;
+  }, [selectedChatRoomId, typingUsers]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [currentMessages]);
+  }, [currentMessages, isPartnerTyping]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -59,6 +66,9 @@ const MessageList: React.FC = () => {
           ))}
         </React.Fragment>
       ))}
+
+      {/* 타이핑 인디케이터 */}
+      {isPartnerTyping && <TypingIndicator />}
       <div ref={messagesEndRef} />
     </div>
   );
