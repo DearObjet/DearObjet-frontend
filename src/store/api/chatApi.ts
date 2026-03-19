@@ -1,98 +1,78 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type {
-  ChatState,
   ChatRoomResponse,
-  MessageResponse,
-  TypingUser,
+  MessageSyncResponse,
+  CreateChatRoomRequest,
 } from '../../types/chatTypes';
+import type { ApiResponse } from '../../types/apiTypes';
 
-const initialState: ChatState = {
-  chatRooms: [],
-  selectedChatRoomId: null,
-  messages: {},
-  typingUsers: {},
-  loading: false,
-  error: null,
-};
+interface GetLatestMessagesParams {
+  roomId: string;
+  limit?: number;
+}
 
-const chatSlice = createSlice({
-  name: 'chat',
-  initialState,
-  reducers: {
-    setChatRooms: (state, action: PayloadAction<ChatRoomResponse[]>) => {
-      state.chatRooms = action.payload;
+export const chatApi = createApi({
+  reducerPath: 'chatApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem('accessToken');
+      if (token) headers.set('Authorization', `Bearer ${token}`);
+      return headers;
     },
+  }),
+  tagTypes: ['ChatRooms', 'Messages'],
+  endpoints: (builder) => ({
+    getChatRooms: builder.query<ChatRoomResponse[], void>({
+      query: () => '/chat/rooms',
+      transformResponse: (response: ApiResponse<ChatRoomResponse[]>) =>
+        response.data,
+      providesTags: ['ChatRooms'],
+    }),
 
-    selectChatRoom: (state, action: PayloadAction<string | null>) => {
-      state.selectedChatRoomId = action.payload;
-    },
+    createChatRoom: builder.mutation<ChatRoomResponse, CreateChatRoomRequest>({
+      query: (body) => ({ url: '/chat/rooms', method: 'POST', body }),
+      transformResponse: (response: ApiResponse<ChatRoomResponse>) =>
+        response.data,
+      invalidatesTags: ['ChatRooms'],
+    }),
 
-    setMessages: (
-      state,
-      action: PayloadAction<{ roomId: string; messages: MessageResponse[] }>
-    ) => {
-      const { roomId, messages } = action.payload;
-      state.messages[roomId] = messages;
-    },
+    getOrCreateDirectChat: builder.mutation<ChatRoomResponse, number>({
+      query: (partnerId) => ({
+        url: `/chat/rooms/direct/${partnerId}`,
+        method: 'POST',
+      }),
+      transformResponse: (response: ApiResponse<ChatRoomResponse>) =>
+        response.data,
+      invalidatesTags: ['ChatRooms'],
+    }),
 
-    addMessage: (state, action: PayloadAction<MessageResponse>) => {
-      const message = action.payload;
-      const { roomId } = message;
+    getLatestMessages: builder.query<
+      MessageSyncResponse,
+      GetLatestMessagesParams
+    >({
+      query: ({ roomId, limit = 50 }) =>
+        `/chat/rooms/${roomId}/messages/latest?limit=${limit}`,
+      transformResponse: (response: ApiResponse<MessageSyncResponse>) =>
+        response.data,
+      providesTags: (result, error, { roomId }) => [
+        { type: 'Messages', id: roomId },
+      ],
+    }),
 
-      if (!state.messages[roomId]) {
-        state.messages[roomId] = [];
-      }
-
-      const isDuplicate = state.messages[roomId].some(
-        (m) => m.id === message.id
-      );
-      if (!isDuplicate) {
-        state.messages[roomId].push(message);
-      }
-
-      const chatRoom = state.chatRooms.find((room) => room.roomId === roomId);
-      if (chatRoom) {
-        chatRoom.lastMessage = message.content;
-        chatRoom.lastMessageAt = message.createdAt;
-        state.chatRooms.sort(
-          (a, b) =>
-            new Date(b.lastMessageAt).getTime() -
-            new Date(a.lastMessageAt).getTime()
-        );
-      }
-    },
-
-    clearUnreadCount: (state, action: PayloadAction<string>) => {
-      const roomId = action.payload;
-      const chatRoom = state.chatRooms.find((room) => room.roomId === roomId);
-      if (chatRoom) {
-        chatRoom.unreadCount = 0;
-      }
-    },
-
-    setTypingUsers: (
-      state,
-      action: PayloadAction<{ roomId: string; typingUsers: TypingUser[] }>
-    ) => {
-      const { roomId, typingUsers } = action.payload;
-      state.typingUsers[roomId] = typingUsers;
-    },
-
-    clearTypingUsers: (state, action: PayloadAction<string>) => {
-      const roomId = action.payload;
-      state.typingUsers[roomId] = [];
-    },
-  },
+    markAsRead: builder.mutation<void, string>({
+      query: (roomId) => ({
+        url: `/chat/rooms/${roomId}/read`,
+        method: 'POST',
+      }),
+    }),
+  }),
 });
 
 export const {
-  setChatRooms,
-  selectChatRoom,
-  setMessages,
-  addMessage,
-  clearUnreadCount,
-  setTypingUsers,
-  clearTypingUsers,
-} = chatSlice.actions;
-
-export default chatSlice.reducer;
+  useGetChatRoomsQuery,
+  useCreateChatRoomMutation,
+  useGetOrCreateDirectChatMutation,
+  useGetLatestMessagesQuery,
+  useMarkAsReadMutation,
+} = chatApi;

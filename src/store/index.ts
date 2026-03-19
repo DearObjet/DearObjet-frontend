@@ -3,8 +3,10 @@ import signupReducer from './slices/signup-slice';
 import signupAddressReducer from './slices/signup-address-slice';
 import themeReducer from './slices/themeSlice';
 import authReducer from './slices/authSlice';
+import chatReducer from './slices/chat-slice';
 import { themeApi } from './api/themeApi';
 import { authApi } from './api/authApi';
+import { chatApi } from './api/chatApi';
 
 export const store = configureStore({
   reducer: {
@@ -12,8 +14,10 @@ export const store = configureStore({
     signupAddress: signupAddressReducer,
     theme: themeReducer,
     auth: authReducer,
+    chat: chatReducer,
     [themeApi.reducerPath]: themeApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
+    [chatApi.reducerPath]: chatApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
