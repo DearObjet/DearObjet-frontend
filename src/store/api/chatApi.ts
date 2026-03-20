@@ -17,6 +17,12 @@ interface SyncMessagesParams {
   limit?: number;
 }
 
+interface GetMessagesBeforeParams {
+  roomId: string;
+  beforeMessageId: number;
+  limit?: number;
+}
+
 export const chatApi = createApi({
   reducerPath: 'chatApi',
   baseQuery: fetchBaseQuery({
@@ -79,6 +85,16 @@ export const chatApi = createApi({
       transformResponse: (response: ApiResponse<MessageSyncResponse>) =>
         response.data,
     }),
+
+    getMessagesBefore: builder.query<
+      MessageSyncResponse,
+      GetMessagesBeforeParams
+    >({
+      query: ({ roomId, beforeMessageId, limit = 50 }) =>
+        `/chat/rooms/${roomId}/messages/before?beforeMessageId=${beforeMessageId}&limit=${limit}`,
+      transformResponse: (response: ApiResponse<MessageSyncResponse>) =>
+        response.data,
+    }),
   }),
 });
 
@@ -89,4 +105,5 @@ export const {
   useGetLatestMessagesQuery,
   useMarkAsReadMutation,
   useSyncMessagesQuery,
+  useGetMessagesBeforeQuery,
 } = chatApi;

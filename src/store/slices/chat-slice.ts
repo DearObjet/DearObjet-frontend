@@ -107,6 +107,20 @@ const chatSlice = createSlice({
       const roomId = action.payload;
       state.typingUsers[roomId] = [];
     },
+
+    prependMessages: (
+      state,
+      action: PayloadAction<{ roomId: string; messages: MessageResponse[] }>
+    ) => {
+      const { roomId, messages } = action.payload;
+      if (!state.messages[roomId]) {
+        state.messages[roomId] = [];
+      }
+      // 중복 제거 후 앞에 추가
+      const existingIds = new Set(state.messages[roomId].map((m) => m.id));
+      const newMessages = messages.filter((m) => !existingIds.has(m.id));
+      state.messages[roomId] = [...newMessages, ...state.messages[roomId]];
+    },
   },
 });
 
@@ -119,6 +133,7 @@ export const {
   clearUnreadCount,
   setTypingUsers,
   clearTypingUsers,
+  prependMessages,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
