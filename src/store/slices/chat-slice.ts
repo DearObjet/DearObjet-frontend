@@ -38,9 +38,13 @@ const chatSlice = createSlice({
 
     addMessage: (
       state,
-      action: PayloadAction<{ message: MessageResponse; currentUserId: number }>
+      action: PayloadAction<{
+        message: MessageResponse;
+        currentUserId: number;
+        skipUnreadUpdate?: boolean;
+      }>
     ) => {
-      const { message, currentUserId } = action.payload;
+      const { message, currentUserId, skipUnreadUpdate } = action.payload;
       const { roomId } = message;
 
       if (!state.messages[roomId]) {
@@ -55,6 +59,7 @@ const chatSlice = createSlice({
       }
 
       const chatRoom = state.chatRooms.find((room) => room.roomId === roomId);
+
       if (chatRoom) {
         chatRoom.lastMessage = message.content;
         chatRoom.lastMessageAt = message.createdAt;
@@ -62,7 +67,7 @@ const chatSlice = createSlice({
         const isMyMessage = message.senderId === currentUserId;
         const isCurrentRoom = state.selectedChatRoomId === roomId;
 
-        if (!isMyMessage && !isCurrentRoom) {
+        if (!skipUnreadUpdate && !isMyMessage && !isCurrentRoom) {
           chatRoom.unreadCount = (chatRoom.unreadCount ?? 0) + 1;
         }
 

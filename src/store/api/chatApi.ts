@@ -11,6 +11,12 @@ interface GetLatestMessagesParams {
   limit?: number;
 }
 
+interface SyncMessagesParams {
+  roomId: string;
+  afterMessageId?: number;
+  limit?: number;
+}
+
 export const chatApi = createApi({
   reducerPath: 'chatApi',
   baseQuery: fetchBaseQuery({
@@ -66,6 +72,13 @@ export const chatApi = createApi({
         method: 'POST',
       }),
     }),
+
+    syncMessages: builder.query<MessageSyncResponse, SyncMessagesParams>({
+      query: ({ roomId, afterMessageId = 0, limit = 200 }) =>
+        `/chat/rooms/${roomId}/messages/sync?afterMessageId=${afterMessageId}&limit=${limit}`,
+      transformResponse: (response: ApiResponse<MessageSyncResponse>) =>
+        response.data,
+    }),
   }),
 });
 
@@ -75,4 +88,5 @@ export const {
   useGetOrCreateDirectChatMutation,
   useGetLatestMessagesQuery,
   useMarkAsReadMutation,
+  useSyncMessagesQuery,
 } = chatApi;

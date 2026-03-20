@@ -1,6 +1,6 @@
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '../store';
+import type { AppDispatch, RootState } from '../store';
 import {
   addMessage,
   setTypingUsers,
@@ -10,6 +10,7 @@ import {
 import { Client } from '@stomp/stompjs';
 import type { IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { chatApi } from '../store/api/chatApi';
 import type {
   MessageResponse,
   TypingIndicatorDto,
@@ -27,11 +28,12 @@ interface ChatWebSocketHook {
 }
 
 export const useChatWebSocket = (): ChatWebSocketHook => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const clientRef = useRef<Client | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  // 구독된 방 추적용 ref
   const subscribedRoomsRef = useRef<Set<string>>(new Set());
+  const lastMessageIdsRef = useRef<Record<string, number>>({});
+  const isReconnectingRef = useRef(false);
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
@@ -88,18 +90,56 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
     });
   }, []);
 
+  // 재연결 시 누락 메시지 복구
+  const syncMissingMessages = useCallback(async () => {
+    const roomsWithMessages = Object.keys(lastMessageIdsRef.current);
+
+    if (roomsWithMessages.length === 0) return;
+
+    for (const roomId of roomsWithMessages) {
+      const afterMessageId = lastMessageIdsRef.current[roomId];
+
+      try {
+        const result = await dispatch(
+          chatApi.endpoints.syncMessages.initiate(
+            { roomId, afterMessageId, limit: 200 },
+            { forceRefetch: true }
+          )
+        ).unwrap();
+
+        result.messages.forEach((message) => {
+          dispatch(
+            addMessage({
+              message,
+              currentUserId: currentUser!.userId,
+              skipUnreadUpdate: true, // unreadCount 중복 증가 방지
+            })
+          );
+        });
+      } catch (e) {
+        console.error(`[${roomId}] 메시지 동기화 실패:`, e);
+      }
+    }
+  }, [dispatch, currentUser]);
+
+  const syncMissingMessagesRef = useRef(syncMissingMessages);
+
+  useEffect(() => {
+    syncMissingMessagesRef.current = syncMissingMessages;
+  }, [syncMissingMessages]);
+
   const subscribeToRoom = useCallback(
     (client: Client, roomId: string) => {
-      if (!currentUser) return;
-
-      // 이미 구독된 방이면 스킵
-      if (subscribedRoomsRef.current.has(roomId)) return;
+      if (!currentUser || subscribedRoomsRef.current.has(roomId)) return;
 
       const currentUserId = currentUser.userId;
 
       client.subscribe(`/topic/chat/${roomId}`, (message: IMessage) => {
         try {
           const chatMessage: MessageResponse = JSON.parse(message.body);
+
+          lastMessageIdsRef.current[roomId] = chatMessage.id;
+
           dispatch(addMessage({ message: chatMessage, currentUserId }));
         } catch (e) {
           console.error('Failed to parse message:', e);
@@ -191,6 +231,16 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
 
     client.onConnect = () => {
       setIsConnected(true);
+
+      // 재연결 시 누락 메시지 복구
+      if (isReconnectingRef.current) {
+        syncMissingMessagesRef.current();
+        dispatch(chatApi.util.invalidateTags(['ChatRooms']));
+      }
+
+      // 다음 연결부터는 재연결로 처리
+      isReconnectingRef.current = true;
+
       client.subscribe('/user/queue/errors', (message: IMessage) => {
         try {
           const error: WebSocketError = JSON.parse(message.body);
@@ -224,7 +274,7 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
         setIsConnected(false);
       }
     };
-  }, [currentUser, accessToken]);
+  }, [currentUser, accessToken, dispatch]);
 
   // 모든 채팅방 구독
   useEffect(() => {
@@ -240,12 +290,15 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
     subscribeToRoom(clientRef.current, selectedChatRoomId);
   }, [isConnected, selectedChatRoomId, subscribeToRoom]);
 
-  return {
-    isConnected,
-    sendMessage,
-    sendTyping,
-    markAsRead,
-    joinRoom,
-    leaveRoom,
-  };
+  return useMemo(
+    () => ({
+      isConnected,
+      sendMessage,
+      sendTyping,
+      markAsRead,
+      joinRoom,
+      leaveRoom,
+    }),
+    [isConnected, sendMessage, sendTyping, markAsRead, joinRoom, leaveRoom]
+  );
 };
