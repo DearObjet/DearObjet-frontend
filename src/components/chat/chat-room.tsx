@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import type { RootState } from '../../store';
 import { useChatWebSocketContext } from '../../hooks/useChatWebSocketContext';
 import {
@@ -12,6 +13,7 @@ import {
   setMessages,
   updatePartnerReadAt,
 } from '../../store/slices/chat-slice';
+
 import ChatHeader from './chat-header';
 import MessageList from './message-list';
 import MessageInput from './message-input';
@@ -27,7 +29,6 @@ const ChatRoom: React.FC = () => {
   const currentMessages = selectedChatRoomId
     ? messages[selectedChatRoomId]
     : null;
-  // ref로 최신값 유지 (dependency 무한루프 방지)
   const chatRoomsRef = useRef(chatRooms);
   const currentUserRef = useRef(currentUser);
 
@@ -100,7 +101,13 @@ const ChatRoom: React.FC = () => {
     markAsRead(selectedChatRoomId);
     markAsReadApi(selectedChatRoomId);
     dispatch(clearUnreadCount(selectedChatRoomId));
-  }, [currentMessages?.length, selectedChatRoomId]); // eslint-disable-line
+  }, [
+    currentMessages?.length,
+    selectedChatRoomId,
+    dispatch,
+    markAsRead,
+    markAsReadApi,
+  ]);
 
   return (
     <div className="flex h-full flex-col bg-white">

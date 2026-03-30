@@ -1,15 +1,16 @@
 import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch, RootState } from '../store';
-import {
-  addMessage,
-  setTypingUsers,
-  updatePartnerReadAt,
-  clearUnreadCount,
-} from '../store/slices/chat-slice';
 import { Client } from '@stomp/stompjs';
 import type { IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+
+import type { RootState, AppDispatch } from '../store';
+import {
+  addMessage,
+  setTypingUsers,
+  clearUnreadCount,
+  updatePartnerReadAt,
+} from '../store/slices/chat-slice';
 import { chatApi } from '../store/api/chatApi';
 import type {
   MessageResponse,
@@ -41,8 +42,55 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
     (state: RootState) => state.chat
   );
 
+  // 재연결 시 누락 메시지 복구
+  const syncMissingMessages = useCallback(async () => {
+    const roomsWithMessages = Object.keys(lastMessageIdsRef.current);
+
+    if (roomsWithMessages.length === 0) return;
+
+    for (const roomId of roomsWithMessages) {
+      const afterMessageId = lastMessageIdsRef.current[roomId];
+
+      try {
+        const result = await dispatch(
+          chatApi.endpoints.syncMessages.initiate(
+            {
+              roomId,
+              afterMessageId,
+              limit: 200,
+            },
+            { forceRefetch: true }
+          )
+        ).unwrap();
+
+        if (result.messages.length > 0) {
+          result.messages.forEach((message) => {
+            dispatch(
+              addMessage({
+                message,
+                currentUserId: currentUser!.userId,
+                skipUnreadUpdate: true,
+              })
+            );
+          });
+        }
+      } catch (e) {
+        console.error(`[${roomId}] 메시지 동기화 실패:`, e);
+      }
+    }
+  }, [dispatch, currentUser]);
+
+  const syncMissingMessagesRef = useRef(syncMissingMessages);
+
+  useEffect(() => {
+    syncMissingMessagesRef.current = syncMissingMessages;
+  }, [syncMissingMessages]);
+
   const sendMessage = useCallback((roomId: string, content: string) => {
-    if (!clientRef.current?.connected) return;
+    if (!clientRef.current?.connected) {
+      console.error('WebSocket not connected');
+      return;
+    }
     clientRef.current.publish({
       destination: `/app/chat/${roomId}/send`,
       headers: { 'content-type': 'application/json;charset=UTF-8' },
@@ -90,44 +138,6 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
     });
   }, []);
 
-  // 재연결 시 누락 메시지 복구
-  const syncMissingMessages = useCallback(async () => {
-    const roomsWithMessages = Object.keys(lastMessageIdsRef.current);
-
-    if (roomsWithMessages.length === 0) return;
-
-    for (const roomId of roomsWithMessages) {
-      const afterMessageId = lastMessageIdsRef.current[roomId];
-
-      try {
-        const result = await dispatch(
-          chatApi.endpoints.syncMessages.initiate(
-            { roomId, afterMessageId, limit: 200 },
-            { forceRefetch: true }
-          )
-        ).unwrap();
-
-        result.messages.forEach((message) => {
-          dispatch(
-            addMessage({
-              message,
-              currentUserId: currentUser!.userId,
-              skipUnreadUpdate: true, // unreadCount 중복 증가 방지
-            })
-          );
-        });
-      } catch (e) {
-        console.error(`[${roomId}] 메시지 동기화 실패:`, e);
-      }
-    }
-  }, [dispatch, currentUser]);
-
-  const syncMissingMessagesRef = useRef(syncMissingMessages);
-
-  useEffect(() => {
-    syncMissingMessagesRef.current = syncMissingMessages;
-  }, [syncMissingMessages]);
-
   const subscribeToRoom = useCallback(
     (client: Client, roomId: string) => {
       if (!currentUser || subscribedRoomsRef.current.has(roomId)) return;
@@ -138,6 +148,7 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
         try {
           const chatMessage: MessageResponse = JSON.parse(message.body);
 
+          // 마지막 메시지 ID 업데이트
           lastMessageIdsRef.current[roomId] = chatMessage.id;
 
           dispatch(addMessage({ message: chatMessage, currentUserId }));
@@ -174,10 +185,8 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
         try {
           const readReceipt: ReadReceiptDto = JSON.parse(message.body);
           if (readReceipt.userId === currentUser.userId) {
-            // 내가 읽음 → unreadCount 초기화
             dispatch(clearUnreadCount(readReceipt.roomId));
           } else {
-            // 상대방이 읽음 → partnerLastReadAt 업데이트
             dispatch(
               updatePartnerReadAt({
                 roomId: readReceipt.roomId,
@@ -194,24 +203,24 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
         `/topic/chat/${roomId}/presence`,
         (message: IMessage) => {
           try {
-            JSON.parse(message.body);
+            const presence = JSON.parse(message.body);
+            console.log(`[${roomId}] presence:`, presence);
           } catch (e) {
             console.error('Failed to parse presence event:', e);
           }
         }
       );
 
-      // 구독 완료 후 Set에 등록
       subscribedRoomsRef.current.add(roomId);
     },
     [currentUser, dispatch]
   );
 
-  // 연결 끊길 때 구독 목록 초기화
   useEffect(() => {
     if (!isConnected) subscribedRoomsRef.current.clear();
   }, [isConnected]);
 
+  // 1. WebSocket 연결
   useEffect(() => {
     if (!currentUser) {
       setIsConnected(false);
@@ -238,13 +247,12 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
         dispatch(chatApi.util.invalidateTags(['ChatRooms']));
       }
 
-      // 다음 연결부터는 재연결로 처리
-      isReconnectingRef.current = true;
+      isReconnectingRef.current = true; // 다음 연결부터는 재연결로 처리
 
       client.subscribe('/user/queue/errors', (message: IMessage) => {
         try {
           const error: WebSocketError = JSON.parse(message.body);
-          console.error('WebSocket Error:', error);
+          console.error('❌ WebSocket Error:', error);
         } catch (e) {
           console.error('Failed to parse error message:', e);
         }
@@ -252,21 +260,25 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
     };
 
     client.onStompError = (frame) => {
-      console.error('STOMP Error:', frame.headers['message']);
+      console.error('❌ STOMP Error:', frame.headers['message']);
       setIsConnected(false);
     };
 
     client.onWebSocketError = (error) => {
-      console.error('WebSocket Error:', error);
+      console.error('❌ WebSocket Error:', error);
       setIsConnected(false);
     };
 
     client.onWebSocketClose = () => {
+      console.warn('⚠️ WebSocket Closed');
       setIsConnected(false);
     };
 
     client.activate();
     clientRef.current = client;
+
+    // 연결 해제 테스트용 - 나중에 제거
+    // (window as any).stompClient = client;
 
     return () => {
       if (clientRef.current?.active) {
@@ -276,7 +288,7 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
     };
   }, [currentUser, accessToken, dispatch]);
 
-  // 모든 채팅방 구독
+  // 2. 모든 채팅방 구독
   useEffect(() => {
     if (!isConnected || !clientRef.current || chatRooms.length === 0) return;
     chatRooms.forEach((room) => {
@@ -284,7 +296,7 @@ export const useChatWebSocket = (): ChatWebSocketHook => {
     });
   }, [isConnected, chatRooms, subscribeToRoom]);
 
-  // 선택된 채팅방 구독
+  // 3. 선택된 채팅방 구독
   useEffect(() => {
     if (!isConnected || !clientRef.current || !selectedChatRoomId) return;
     subscribeToRoom(clientRef.current, selectedChatRoomId);

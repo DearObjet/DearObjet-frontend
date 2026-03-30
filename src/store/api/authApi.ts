@@ -10,7 +10,7 @@ import type {
 import type { RootState } from '../index';
 import type { ApiResponse } from '../../types/apiTypes';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const authApi = createApi({
   reducerPath: 'authApi',

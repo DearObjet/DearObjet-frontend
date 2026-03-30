@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import type { RootState } from '../../store';
 import { useGetChatRoomsQuery } from '../../store/api/chatApi';
 import {
@@ -7,15 +8,15 @@ import {
   selectChatRoom,
   updatePartnerReadAt,
 } from '../../store/slices/chat-slice';
+
 import ChatListItem from './chat-list-item';
 
 const ChatList: React.FC = () => {
   const dispatch = useDispatch();
+  const currentUser = useSelector((state: RootState) => state.auth.user);
   const { selectedChatRoomId, chatRooms } = useSelector(
     (state: RootState) => state.chat
   );
-  const currentUser = useSelector((state: RootState) => state.auth.user);
-  // 초기 로드용
   const { data, isLoading, error } = useGetChatRoomsQuery();
 
   useEffect(() => {
@@ -37,6 +38,12 @@ const ChatList: React.FC = () => {
       }
     });
   }, [data, dispatch, currentUser]);
+
+  const handleSelectRoom = useCallback(
+    (roomId: string) => dispatch(selectChatRoom(roomId)),
+    [dispatch]
+  );
+
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -50,6 +57,8 @@ const ChatList: React.FC = () => {
       <div className="flex h-full items-center justify-center p-4">
         <p className="text-center text-red-500">
           채팅방 목록을 불러오는데 실패했습니다.
+          <br />
+          <span className="text-xs">{JSON.stringify(error)}</span>
         </p>
       </div>
     );
@@ -65,11 +74,14 @@ const ChatList: React.FC = () => {
 
   return (
     <div className="flex h-full flex-col bg-white">
+      {/* 헤더 */}
       <div className="border-b border-gray-200 p-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold">Contacts</h2>
           <span className="text-sm text-gray-500">{chatRooms.length}</span>
         </div>
+
+        {/* 검색 바 */}
         <div className="relative">
           <input
             type="text"
@@ -91,13 +103,15 @@ const ChatList: React.FC = () => {
           </svg>
         </div>
       </div>
+
+      {/* 채팅방 목록 */}
       <div className="flex-1 overflow-y-auto">
         {chatRooms.map((chatRoom) => (
           <ChatListItem
             key={chatRoom.roomId}
             chatRoom={chatRoom}
             isSelected={selectedChatRoomId === chatRoom.roomId}
-            onClick={() => dispatch(selectChatRoom(chatRoom.roomId))}
+            onClick={() => handleSelectRoom(chatRoom.roomId)}
           />
         ))}
       </div>

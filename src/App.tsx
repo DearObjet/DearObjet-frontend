@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from './hooks/redux';
 import { Signup } from './auth/sign-up';
 import { OAuthCallback } from './auth/oauth-callback';
 import ShopArtistNotice from './page/shop-artist-notice';
+import ChatPage from './page/chat';
 import { setThemeMode, setSystemTheme } from './store/slices/themeSlice';
 import { Button } from './components/ui/button';
 import {
@@ -59,7 +60,7 @@ function MainPage() {
   // 카카오 시작하기 버튼 눌렀을 때
   const handleKakaoLogin = () => {
     const API_BASE_URL =
-      import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+      import.meta.env.VITE_BASE_URL || 'http://localhost:8080';
     window.location.href = `${API_BASE_URL}/oauth2/authorization/kakao`;
   };
 
@@ -209,6 +210,7 @@ function App() {
       <Route path="/oauth/callback" element={<OAuthCallback />} />
       <Route path="/shop-artist-notice" element={<ShopArtistNotice />} />
       <Route path="/admin" element={<ThemeCustomizer />} />
+      <Route path="/messages" element={<ChatPage />} />
     </Routes>
   );
 }

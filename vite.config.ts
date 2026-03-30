@@ -7,6 +7,9 @@ const dirname = new URL('./.storybook/', import.meta.url).pathname;
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    global: 'window',
+  },
   test: {
     projects: [
       {

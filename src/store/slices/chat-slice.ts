@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
 import type {
   ChatState,
   ChatRoomResponse,
@@ -47,10 +48,12 @@ const chatSlice = createSlice({
       const { message, currentUserId, skipUnreadUpdate } = action.payload;
       const { roomId } = message;
 
+      // 메시지 추가
       if (!state.messages[roomId]) {
         state.messages[roomId] = [];
       }
 
+      // 중복 체크
       const isDuplicate = state.messages[roomId].some(
         (m) => m.id === message.id
       );
@@ -58,12 +61,15 @@ const chatSlice = createSlice({
         state.messages[roomId].push(message);
       }
 
+      // 채팅방 목록 업데이트
       const chatRoom = state.chatRooms.find((room) => room.roomId === roomId);
 
       if (chatRoom) {
+        // lastMessage 업데이트
         chatRoom.lastMessage = message.content;
         chatRoom.lastMessageAt = message.createdAt;
 
+        // 상대방 메시지이고, 현재 선택된 방이 아닐 때만 unreadCount 증가
         const isMyMessage = message.senderId === currentUserId;
         const isCurrentRoom = state.selectedChatRoomId === roomId;
 
@@ -71,11 +77,20 @@ const chatSlice = createSlice({
           chatRoom.unreadCount = (chatRoom.unreadCount ?? 0) + 1;
         }
 
+        // 최신 메시지 방을 위로 정렬
         state.chatRooms.sort(
           (a, b) =>
             new Date(b.lastMessageAt).getTime() -
             new Date(a.lastMessageAt).getTime()
         );
+      }
+    },
+
+    clearUnreadCount: (state, action: PayloadAction<string>) => {
+      const roomId = action.payload;
+      const chatRoom = state.chatRooms.find((room) => room.roomId === roomId);
+      if (chatRoom) {
+        chatRoom.unreadCount = 0;
       }
     },
 
@@ -85,14 +100,6 @@ const chatSlice = createSlice({
     ) => {
       const { roomId, readAt } = action.payload;
       state.partnerLastReadAt[roomId] = readAt;
-    },
-
-    clearUnreadCount: (state, action: PayloadAction<string>) => {
-      const roomId = action.payload;
-      const chatRoom = state.chatRooms.find((room) => room.roomId === roomId);
-      if (chatRoom) {
-        chatRoom.unreadCount = 0;
-      }
     },
 
     setTypingUsers: (
@@ -113,9 +120,11 @@ const chatSlice = createSlice({
       action: PayloadAction<{ roomId: string; messages: MessageResponse[] }>
     ) => {
       const { roomId, messages } = action.payload;
+
       if (!state.messages[roomId]) {
         state.messages[roomId] = [];
       }
+
       // 중복 제거 후 앞에 추가
       const existingIds = new Set(state.messages[roomId].map((m) => m.id));
       const newMessages = messages.filter((m) => !existingIds.has(m.id));
@@ -129,8 +138,8 @@ export const {
   selectChatRoom,
   setMessages,
   addMessage,
-  updatePartnerReadAt,
   clearUnreadCount,
+  updatePartnerReadAt,
   setTypingUsers,
   clearTypingUsers,
   prependMessages,

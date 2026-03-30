@@ -6,9 +6,11 @@ import React, {
   useCallback,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import type { AppDispatch, RootState } from '../../store';
 import { useGetMessagesBeforeQuery } from '../../store/api/chatApi';
 import { prependMessages } from '../../store/slices/chat-slice';
+
 import MessageItem from './message-item';
 import TypingIndicator from './typing-indicator';
 
@@ -81,13 +83,12 @@ const MessageList: React.FC = () => {
     }
   }, [currentMessages]);
 
-  // RTK Query로 이전 메시지 조회
+  // 이전 메시지 조회
   const { data: olderMessages } = useGetMessagesBeforeQuery(
     { roomId: selectedChatRoomId!, beforeMessageId: beforeMessageId! },
     { skip: !selectedChatRoomId || !beforeMessageId }
   );
 
-  // 이전 메시지 응답 처리
   useEffect(() => {
     if (!olderMessages || !selectedChatRoomId) return;
 
@@ -192,8 +193,7 @@ const MessageList: React.FC = () => {
         </React.Fragment>
       ))}
 
-      {/* 스크롤이 맨 아래일 때만 타이핑 인디케이터 표시 */}
-      {/* sticky 타이핑 표시 추가 */}
+      {/*  타이핑 & 타이핑 인디케이터 표시 */}
       {isPartnerTyping &&
         (isAtBottomLocal ? (
           <TypingIndicator />

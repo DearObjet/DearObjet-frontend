@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+
 import signupReducer from './slices/signup-slice';
 import signupAddressReducer from './slices/signup-address-slice';
 import themeReducer from './slices/themeSlice';
@@ -22,7 +23,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(themeApi.middleware)
-      .concat(authApi.middleware),
+      .concat(authApi.middleware)
+      .concat(chatApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
