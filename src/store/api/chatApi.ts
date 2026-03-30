@@ -24,6 +24,13 @@ interface GetMessagesBeforeParams {
   limit?: number;
 }
 
+interface UserListItem {
+  userId: number;
+  name: string;
+  category: string;
+  status: string;
+}
+
 export const chatApi = createApi({
   reducerPath: 'chatApi',
   baseQuery: fetchBaseQuery({
@@ -39,6 +46,13 @@ export const chatApi = createApi({
   tagTypes: ['ChatRooms', 'Messages', 'UnreadCount'],
   endpoints: (builder) => ({
     // ===== 채팅방 관련 =====
+
+    // GET /api/user/list - 유저 조회
+    getUserList: builder.query<UserListItem[], string | void>({
+      query: (search = '') => `/users/list${search ? `?search=${search}` : ''}`,
+      transformResponse: (response: ApiResponse<UserListItem[]>) =>
+        response.data,
+    }),
 
     // GET /api/chat/rooms - 채팅방 목록 조회
     getChatRooms: builder.query<ChatRoomResponse[], void>({
@@ -149,6 +163,7 @@ export const chatApi = createApi({
 });
 
 export const {
+  useGetUserListQuery,
   useGetChatRoomsQuery,
   useCreateChatRoomMutation,
   useGetOrCreateDirectChatMutation,
