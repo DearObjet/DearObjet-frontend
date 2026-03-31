@@ -7,7 +7,6 @@ import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from './hooks/redux';
 import { Signup } from './auth/sign-up';
 import { OAuthCallback } from './auth/oauth-callback';
-import ShopArtistNotice from './page/shop-artist-notice';
 import { setThemeMode, setSystemTheme } from './store/slices/themeSlice';
 import { Button } from './components/ui/button';
 import {
@@ -207,7 +206,6 @@ function App() {
       <Route path="/" element={<MainPage />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/oauth/callback" element={<OAuthCallback />} />
-      <Route path="/shop-artist-notice" element={<ShopArtistNotice />} />
       <Route path="/admin" element={<ThemeCustomizer />} />
     </Routes>
   );

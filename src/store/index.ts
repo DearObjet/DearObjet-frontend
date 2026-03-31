@@ -5,6 +5,7 @@ import themeReducer from './slices/themeSlice';
 import authReducer from './slices/authSlice';
 import { themeApi } from './api/themeApi';
 import { authApi } from './api/authApi';
+import { noticeApi } from './api/noticeApi';
 
 export const store = configureStore({
   reducer: {
@@ -14,11 +15,13 @@ export const store = configureStore({
     auth: authReducer,
     [themeApi.reducerPath]: themeApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
+    [noticeApi.reducerPath]: noticeApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(themeApi.middleware)
-      .concat(authApi.middleware),
+      .concat(authApi.middleware)
+      .concat(noticeApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
