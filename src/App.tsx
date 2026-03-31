@@ -15,6 +15,8 @@ import {
   useGetUserThemeQuery,
 } from './store/api/themeApi';
 import { ThemeCustomizer } from './page/admin/theme-customizer';
+import { useGetCurrentUserQuery } from './store/api/authApi';
+import { setUser } from './store/slices/authSlice';
 
 function MainPage() {
   const [currentNoticePage, setCurrentNoticePage] = useState(1);
@@ -59,7 +61,7 @@ function MainPage() {
   // 카카오 시작하기 버튼 눌렀을 때
   const handleKakaoLogin = () => {
     const API_BASE_URL =
-      import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+      import.meta.env.VITE_BASE_URL || 'http://localhost:8080';
     window.location.href = `${API_BASE_URL}/oauth2/authorization/kakao`;
   };
 
@@ -172,7 +174,7 @@ function MainPage() {
 
 function App() {
   const dispatch = useAppDispatch();
-  const isAuthenticated = true;
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const themeMode = useAppSelector((state) => state.theme.mode);
 
   // 시스템 테마 로드 (모든 사용자)
@@ -182,6 +184,13 @@ function App() {
   const { data: userTheme } = useGetUserThemeQuery(undefined, {
     skip: !isAuthenticated,
   });
+
+  const { data: user, isSuccess: isUserSuccess } = useGetCurrentUserQuery(
+    undefined,
+    {
+      skip: !isAuthenticated,
+    }
+  );
 
   // 초기 다크모드 적용
   useEffect(() => {
@@ -201,6 +210,13 @@ function App() {
       dispatch(setThemeMode(userTheme.mode));
     }
   }, [userTheme, dispatch]);
+
+  // 사용자 정보 저장
+  useEffect(() => {
+    if (isUserSuccess && user) {
+      dispatch(setUser(user));
+    }
+  }, [isUserSuccess, user, dispatch]);
 
   return (
     <Routes>

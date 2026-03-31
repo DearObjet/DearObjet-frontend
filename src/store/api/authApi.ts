@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { CompleteSignupRequest } from '../../types/authTypes';
+
 import type { RootState } from '../index';
+import type { AuthUser, CompleteSignupRequest } from '../../types/authTypes';
 import type { ApiResponse } from '../../types/apiTypes';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const authApi = createApi({
   reducerPath: 'authApi',
@@ -12,6 +13,7 @@ export const authApi = createApi({
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.accessToken;
+
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
@@ -20,6 +22,13 @@ export const authApi = createApi({
   }),
   tagTypes: ['Auth'],
   endpoints: (builder) => ({
+    // 현재 사용자 최소 정보 조회
+    getCurrentUser: builder.query<AuthUser, void>({
+      query: () => '/users/me',
+      transformResponse: (response: ApiResponse<AuthUser>) => response.data,
+      providesTags: ['Auth'],
+    }),
+
     // 회원가입 완료
     completeSignup: builder.mutation<void, CompleteSignupRequest>({
       query: (data) => ({
@@ -27,11 +36,11 @@ export const authApi = createApi({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Auth'],
       transformResponse: (response: ApiResponse<void>) => response.data,
+      invalidatesTags: ['Auth'],
     }),
 
-    // Access Token 갱신
+    // Access Token 발급
     refreshToken: builder.mutation<{ accessToken: string }, void>({
       query: () => ({
         url: '/auth/token/refresh',
@@ -52,6 +61,7 @@ export const authApi = createApi({
 });
 
 export const {
+  useGetCurrentUserQuery,
   useCompleteSignupMutation,
   useRefreshTokenMutation,
   useLogoutMutation,
