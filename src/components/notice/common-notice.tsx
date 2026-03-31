@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { NoticeList } from './notice-list';
 import type { NoticeItem } from './notice-list';
 
@@ -7,28 +6,44 @@ import LeftShiftIcon from '../../assets/left-shift.svg';
 import TwoRightShiftIcon from '../../assets/two-right-shift.svg';
 import TwoLeftShiftIcon from '../../assets/two-left-shift.svg';
 
-const categories = ['전체', '이벤트', '일반', '이용안내'];
+const USER_CATEGORIES = [
+  { label: '전체', value: null },
+  { label: '주요공지', value: 'IMPORTANT' },
+  { label: '일반', value: 'GENERAL' },
+  { label: '축제', value: 'FESTIVAL' },
+  { label: '문화공연', value: 'CULTURE_PERFORMANCE' },
+  { label: '이벤트', value: 'EVENT' },
+] as const;
+
+const ARTIST_SHOP_CATEGORIES = [
+  { label: '전체', value: null },
+  { label: '주요공지', value: 'IMPORTANT' },
+  { label: '일반', value: 'GENERAL' },
+] as const;
 
 interface NoticeProps {
+  target: 'USER' | 'ARTIST_SHOP';
   noticeData: NoticeItem[];
+  totalPages: number;
+  currentPage: number;
+  selectedCategory: string | null;
+  onPageChange: (page: number) => void;
+  onCategoryChange: (category: string | null) => void;
   onSelectNotice: (notice: NoticeItem) => void;
 }
 
-function CommonNotice({ noticeData, onSelectNotice }: NoticeProps) {
-  const [selectedCategory, setSelectedCategory] = useState('전체');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
-
-  const filteredNotices =
-    selectedCategory === '전체'
-      ? noticeData
-      : noticeData.filter((notice) => notice.type === selectedCategory);
-
-  const totalPages = Math.ceil(filteredNotices.length / itemsPerPage);
-
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentNotices = filteredNotices.slice(indexOfFirst, indexOfLast);
+function CommonNotice({
+  target,
+  noticeData,
+  totalPages,
+  currentPage,
+  selectedCategory,
+  onPageChange,
+  onCategoryChange,
+  onSelectNotice,
+}: NoticeProps) {
+  const categories =
+    target === 'USER' ? USER_CATEGORIES : ARTIST_SHOP_CATEGORIES;
 
   const maxPageButtons = 5;
   const startPage =
@@ -40,45 +55,48 @@ function CommonNotice({ noticeData, onSelectNotice }: NoticeProps) {
   ) => {
     switch (type) {
       case 'left':
-        setCurrentPage(Math.max(startPage - maxPageButtons, 1));
+        onPageChange(Math.max(startPage - maxPageButtons, 1));
         break;
       case 'right':
-        setCurrentPage(Math.min(endPage + 1, totalPages));
+        onPageChange(Math.min(endPage + 1, totalPages));
         break;
       case 'two-left':
-        setCurrentPage(1);
+        onPageChange(1);
         break;
       case 'two-right':
-        setCurrentPage(totalPages);
+        onPageChange(totalPages);
         break;
     }
   };
 
   return (
-    <section className="flex flex-col justify-between rounded-xl bg-white px-[3.125rem] pb-[1.6875rem] pt-10">
-      <div>
+    <section className="flex flex-1 flex-col justify-between rounded-xl bg-white px-[3.125rem] pb-[1.6875rem] pt-10">
+      {' '}
+      <div className="flex flex-1 flex-col">
         <h3 className="hidden">공지사항 리스트</h3>
         <div className="mb-[2.6875rem] flex gap-4">
           {categories.map((category) => (
             <button
-              key={category}
+              key={category.label}
               className="relative rounded-none bg-white text-sm font-medium text-gray-900 hover:border-white focus:outline-none"
-              onClick={() => {
-                setSelectedCategory(category);
-                setCurrentPage(1);
-              }}
+              onClick={() => onCategoryChange(category.value)}
             >
-              {category}
-              {selectedCategory === category && (
+              {category.label}
+              {selectedCategory === category.value && (
                 <span className="absolute bottom-0 left-1/2 h-[2px] w-[58px] -translate-x-1/2 bg-gray-900"></span>
               )}
             </button>
           ))}
         </div>
 
-        <NoticeList notices={currentNotices} onSelectNotice={onSelectNotice} />
+        {noticeData.length === 0 ? (
+          <div className="flex flex-1 items-center justify-center text-gray-400">
+            등록된 공지사항이 없습니다
+          </div>
+        ) : (
+          <NoticeList notices={noticeData} onSelectNotice={onSelectNotice} />
+        )}
       </div>
-
       <div className="mt-4 flex items-center justify-center gap-2">
         <button
           className="rounded-none border-gray-300 bg-white px-3 py-1 text-gray-300 hover:border-gray-300 focus:outline-none"
@@ -110,7 +128,7 @@ function CommonNotice({ noticeData, onSelectNotice }: NoticeProps) {
                 ? 'bg-gray-100 text-gray-500'
                 : 'bg-white text-gray-300'
             }`}
-            onClick={() => setCurrentPage(startPage + i)}
+            onClick={() => onPageChange(startPage + i)}
           >
             {startPage + i}
           </button>
