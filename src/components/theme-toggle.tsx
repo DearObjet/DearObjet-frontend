@@ -1,7 +1,7 @@
 import { Moon, Sun } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
-import { useUpdateUserThemeMutation } from '../store/api/themeApi';
-import { toggleTheme } from '../store/slices/themeSlice';
+import { useUpdateUserThemeMutation } from '../store/api/theme-api';
+import { toggleTheme } from '../store/slices/theme-slice';
 
 export function ThemeToggle() {
   const dispatch = useAppDispatch();

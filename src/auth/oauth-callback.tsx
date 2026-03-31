@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useAppDispatch } from '../hooks/redux';
-import { setSignupRequired } from '../store/slices/authSlice';
-import { setAccessToken } from '../store/slices/authSlice';
-import { useRefreshTokenMutation } from '../store/api/authApi';
+import { setSignupRequired } from '../store/slices/auth-slice';
+import { setAccessToken } from '../store/slices/auth-slice';
+import { useRefreshTokenMutation } from '../store/api/auth-api';
 
 export function OAuthCallback() {
   const navigate = useNavigate();

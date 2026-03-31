@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import signupReducer from './slices/signup-slice';
 import signupAddressReducer from './slices/signup-address-slice';
-import themeReducer from './slices/themeSlice';
-import authReducer from './slices/authSlice';
-import { themeApi } from './api/themeApi';
-import { authApi } from './api/authApi';
-import { noticeApi } from './api/noticeApi';
+import themeReducer from './slices/theme-slice';
+import authReducer from './slices/auth-slice';
+import { themeApi } from './api/theme-api';
+import { authApi } from './api/auth-api';
+import { noticeApi } from './api/notice-api';
 
 export const store = configureStore({
   reducer: {

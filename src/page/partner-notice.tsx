@@ -6,7 +6,7 @@ import { toNoticeItem } from '../components/notice/notice-list';
 import {
   useGetNoticesQuery,
   useGetNoticeDetailQuery,
-} from '../store/api/noticeApi';
+} from '../store/api/notice-api';
 
 function PartnerNotice() {
   const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(null);

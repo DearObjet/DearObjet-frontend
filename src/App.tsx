@@ -7,12 +7,12 @@ import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from './hooks/redux';
 import { Signup } from './auth/sign-up';
 import { OAuthCallback } from './auth/oauth-callback';
-import { setThemeMode, setSystemTheme } from './store/slices/themeSlice';
+import { setThemeMode, setSystemTheme } from './store/slices/theme-slice';
 import { Button } from './components/ui/button';
 import {
   useGetSystemThemeQuery,
   useGetUserThemeQuery,
-} from './store/api/themeApi';
+} from './store/api/theme-api';
 import { ThemeCustomizer } from './page/admin/theme-customizer';
 
 function MainPage() {

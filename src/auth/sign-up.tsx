@@ -27,14 +27,14 @@ import {
   useCompleteArtistSignupMutation,
   useSendPhoneVerificationMutation,
   useVerifyPhoneMutation,
-} from '../store/api/authApi';
+} from '../store/api/auth-api';
 import type { RootState } from '../store/index';
 import type {
   CompleteSignupRequest,
   BusinessType,
   BusinessCategory,
   Specialty,
-} from '../types/authTypes';
+} from '../types/auth-types';
 
 declare global {
   interface Window {

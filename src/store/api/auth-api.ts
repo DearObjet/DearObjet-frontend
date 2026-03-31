@@ -6,9 +6,9 @@ import type {
   SendPhoneVerificationResponse,
   VerifyPhoneRequest,
   VerifyPhoneResponse,
-} from '../../types/authTypes';
+} from '../../types/auth-types';
 import type { RootState } from '../index';
-import type { ApiResponse } from '../../types/apiTypes';
+import type { ApiResponse } from '../../types/api-types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 

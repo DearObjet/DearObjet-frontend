@@ -3,13 +3,13 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
   useResetSystemThemeMutation,
   useUpdateSystemThemeMutation,
-} from '../../store/api/themeApi';
-import { ThemeToggle } from '../../components/ThemeToggle';
+} from '../../store/api/theme-api';
+import { ThemeToggle } from '../../components/theme-toggle';
 import { Button } from '../../components/ui/button';
-import type { SystemTheme } from '../../types/themeTypes';
+import type { SystemTheme } from '../../types/theme-types';
 import { ColorInput } from '../../components/ui/colorinput';
-import { DEFAULT_SYSTEM_THEME } from '../../constants/defaultTheme';
-import { resetToDefaultTheme } from '../../store/slices/themeSlice';
+import { DEFAULT_SYSTEM_THEME } from '../../constants/default-theme';
+import { resetToDefaultTheme } from '../../store/slices/theme-slice';
 
 export function ThemeCustomizer() {
   const dispatch = useAppDispatch();

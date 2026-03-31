@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { SystemTheme } from '../../types/themeTypes';
-import { DEFAULT_SYSTEM_THEME } from '../../constants/defaultTheme';
+import type { SystemTheme } from '../../types/theme-types';
+import { DEFAULT_SYSTEM_THEME } from '../../constants/default-theme';
 
 interface UserThemePreference {
   mode: 'light' | 'dark';
