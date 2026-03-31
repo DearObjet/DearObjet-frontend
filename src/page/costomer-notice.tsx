@@ -43,7 +43,7 @@ const noticeData: NoticeItem[] = [
   },
 ];
 
-function Notice() {
+function CustomerNotice() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const noticeId = searchParams.get('id');
@@ -103,4 +103,4 @@ function Notice() {
   );
 }
 
-export default Notice;
+export default CustomerNotice;

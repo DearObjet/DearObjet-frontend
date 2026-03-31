@@ -43,7 +43,7 @@ const noticeData: NoticeItem[] = [
   },
 ];
 
-function ShopArtistNotice() {
+function PartnerNotice() {
   const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(
     noticeData.find((notice) => notice.type === '주요공지') || null
   );
@@ -89,4 +89,4 @@ function ShopArtistNotice() {
   );
 }
 
-export default ShopArtistNotice;
+export default PartnerNotice;

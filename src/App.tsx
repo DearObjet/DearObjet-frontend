@@ -8,7 +8,6 @@ import { Routes, Route } from 'react-router';
 import { useAppDispatch, useAppSelector } from './hooks/redux';
 import { Signup } from './auth/sign-up';
 import { OAuthCallback } from './auth/oauth-callback';
-import ShopArtistNotice from './page/partner-notice';
 import { setThemeMode, setSystemTheme } from './store/slices/themeSlice';
 // import { Button } from './components/ui/button';
 import {
@@ -17,7 +16,8 @@ import {
 } from './store/api/themeApi';
 import { ThemeCustomizer } from './page/admin/theme-customizer';
 
-import Notice from './page/costomer-notice';
+import PartnerNotice from './page/partner-notice';
+// import CustomerNotice from './page/costomer-notice';
 
 function MainPage() {
   // const [currentNoticePage, setCurrentNoticePage] = useState(1);
@@ -67,7 +67,7 @@ function MainPage() {
   // };
 
   return (
-    <Notice></Notice>
+    <PartnerNotice></PartnerNotice>
     // <div className="flex min-h-screen w-[120rem] items-center justify-center gap-3">
     //   <div className="flex gap-3">
     //     <div className="flex w-[62.68rem] flex-col gap-3">
@@ -211,7 +211,7 @@ function App() {
       <Route path="/" element={<MainPage />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/oauth/callback" element={<OAuthCallback />} />
-      <Route path="/shop-artist-notice" element={<ShopArtistNotice />} />
+      <Route path="/partner-notice" element={<PartnerNotice />} />
       <Route path="/admin" element={<ThemeCustomizer />} />
     </Routes>
   );
