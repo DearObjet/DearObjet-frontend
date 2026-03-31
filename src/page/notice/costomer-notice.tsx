@@ -1,43 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import CommonNotice from '../../components/notice/common-notice';
 import type { NoticeItem } from '../../components/notice/notice-list';
 import { toNoticeItem } from '../../components/notice/notice-list';
-import { fetchNotices, fetchNoticeDetail } from './api';
+import {
+  useGetNoticesQuery,
+  useGetNoticeDetailQuery,
+} from '../../store/api/noticeApi';
 
 function CustomerNotice() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const noticeId = searchParams.get('id');
 
-  const [noticeData, setNoticeData] = useState<NoticeItem[]>([]);
-  const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchNotices({
-      target: 'USER',
-      category: selectedCategory,
-      page: currentPage,
-    })
-      .then(({ data }) => {
-        setNoticeData(data.items.map(toNoticeItem));
-        setTotalPages(data.totalPages);
-      })
-      .catch(console.error);
-  }, [currentPage, selectedCategory]);
+  const { data } = useGetNoticesQuery({
+    target: 'USER',
+    category: selectedCategory,
+    page: currentPage,
+  });
 
-  useEffect(() => {
-    if (!noticeId) {
-      setSelectedNotice(null);
-      return;
-    }
-    fetchNoticeDetail(Number(noticeId))
-      .then(({ data }) => setSelectedNotice(toNoticeItem(data)))
-      .catch(console.error);
-  }, [noticeId]);
+  const noticeData = data?.items.map(toNoticeItem) ?? [];
+  const totalPages = data?.totalPages ?? 1;
+
+  const { data: noticeDetail } = useGetNoticeDetailQuery(Number(noticeId), {
+    skip: !noticeId,
+  });
+
+  const selectedNotice = noticeDetail ? toNoticeItem(noticeDetail) : null;
 
   const handleSelectNotice = (notice: NoticeItem) => {
     setSearchParams({ id: String(notice.noticeId) });

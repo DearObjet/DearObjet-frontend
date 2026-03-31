@@ -1,42 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Aside from '../../components/aside/aside';
 import CommonNotice from '../../components/notice/common-notice';
 import type { NoticeItem } from '../../components/notice/notice-list';
 import { toNoticeItem } from '../../components/notice/notice-list';
-import { fetchNotices, fetchNoticeDetail } from './api';
+import {
+  useGetNoticesQuery,
+  useGetNoticeDetailQuery,
+} from '../../store/api/noticeApi';
 
 function PartnerNotice() {
-  const [noticeData, setNoticeData] = useState<NoticeItem[]>([]);
   const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedNoticeId, setSelectedNoticeId] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetchNotices({
-      target: 'ARTIST_SHOP',
-      category: selectedCategory,
-      page: currentPage,
-    })
-      .then(({ data }) => {
-        const converted = data.items.map(toNoticeItem);
-        setNoticeData(converted);
-        setTotalPages(data.totalPages);
-        if (currentPage === 1 && !selectedNotice) {
-          const important = converted.find((n) => n.type === '주요공지');
-          setSelectedNotice(important ?? converted[0] ?? null);
-        }
-      })
-      .catch(console.error);
-  }, [currentPage, selectedCategory]);
+  const { data } = useGetNoticesQuery({
+    target: 'ARTIST_SHOP',
+    category: selectedCategory,
+    page: currentPage,
+  });
 
-  const handleSelectNotice = async (notice: NoticeItem) => {
-    try {
-      const { data } = await fetchNoticeDetail(notice.noticeId);
-      setSelectedNotice(toNoticeItem(data));
-    } catch (e) {
-      console.error(e);
-    }
+  const noticeData = data?.items.map(toNoticeItem) ?? [];
+  const totalPages = data?.totalPages ?? 1;
+
+  useGetNoticeDetailQuery(selectedNoticeId!, {
+    skip: selectedNoticeId === null,
+    selectFromResult: ({ data }) => {
+      if (data) setSelectedNotice(toNoticeItem(data));
+      return {};
+    },
+  });
+
+  const handleSelectNotice = (notice: NoticeItem) => {
+    setSelectedNoticeId(notice.noticeId);
   };
 
   const handleCategoryChange = (category: string | null) => {
