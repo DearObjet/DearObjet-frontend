@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Aside from '../components/aside/aside';
-import CommonNotice from '../components/notice/common-notice';
-import type { NoticeItem } from '../components/notice/notice-list';
+import Aside from '../../components/aside/aside';
+import CommonNotice from '../../components/notice/common-notice';
+import type { NoticeItem } from '../../components/notice/notice-list';
 
 const noticeData: NoticeItem[] = [
   {

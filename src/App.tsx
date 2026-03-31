@@ -16,8 +16,8 @@ import {
 } from './store/api/themeApi';
 import { ThemeCustomizer } from './page/admin/theme-customizer';
 
-import PartnerNotice from './page/partner-notice';
-// import CustomerNotice from './page/costomer-notice';
+import PartnerNotice from './page/notice/partner-notice';
+// import CustomerNotice from './page/notice/costomer-notice';
 
 function MainPage() {
   // const [currentNoticePage, setCurrentNoticePage] = useState(1);

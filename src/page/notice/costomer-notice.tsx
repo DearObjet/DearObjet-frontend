@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import CommonNotice from '../components/notice/common-notice';
-import type { NoticeItem } from '../components/notice/notice-list';
+import CommonNotice from '../../components/notice/common-notice';
+import type { NoticeItem } from '../../components/notice/notice-list';
 
 const noticeData: NoticeItem[] = [
   {
