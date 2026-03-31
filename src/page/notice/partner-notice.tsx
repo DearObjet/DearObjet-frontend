@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Aside from '../../components/aside/aside';
 import CommonNotice from '../../components/notice/common-notice';
 import type { NoticeItem } from '../../components/notice/notice-list';
@@ -23,13 +23,15 @@ function PartnerNotice() {
   const noticeData = data?.items.map(toNoticeItem) ?? [];
   const totalPages = data?.totalPages ?? 1;
 
-  useGetNoticeDetailQuery(selectedNoticeId!, {
+  const { data: noticeDetail } = useGetNoticeDetailQuery(selectedNoticeId!, {
     skip: selectedNoticeId === null,
-    selectFromResult: ({ data }) => {
-      if (data) setSelectedNotice(toNoticeItem(data));
-      return {};
-    },
   });
+
+  useEffect(() => {
+    if (noticeDetail) {
+      setSelectedNotice(toNoticeItem(noticeDetail));
+    }
+  }, [noticeDetail]);
 
   const handleSelectNotice = (notice: NoticeItem) => {
     setSelectedNoticeId(notice.noticeId);
