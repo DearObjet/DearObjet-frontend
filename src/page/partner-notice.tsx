@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import Aside from '../../components/aside/aside';
-import CommonNotice from '../../components/notice/common-notice';
-import type { NoticeItem } from '../../components/notice/notice-list';
-import { toNoticeItem } from '../../components/notice/notice-list';
+import Aside from '../components/aside/aside';
+import CommonNotice from '../components/notice/common-notice';
+import type { NoticeItem } from '../components/notice/notice-list';
+import { toNoticeItem } from '../components/notice/notice-list';
 import {
   useGetNoticesQuery,
   useGetNoticeDetailQuery,
-} from '../../store/api/noticeApi';
+} from '../store/api/noticeApi';
 
 function PartnerNotice() {
   const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(null);

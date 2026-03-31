@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import CommonNotice from '../../components/notice/common-notice';
-import type { NoticeItem } from '../../components/notice/notice-list';
-import { toNoticeItem } from '../../components/notice/notice-list';
+import CommonNotice from '../components/notice/common-notice';
+import type { NoticeItem } from '../components/notice/notice-list';
+import { toNoticeItem } from '../components/notice/notice-list';
 import {
   useGetNoticesQuery,
   useGetNoticeDetailQuery,
-} from '../../store/api/noticeApi';
+} from '../store/api/noticeApi';
 
 function CustomerNotice() {
   const [searchParams, setSearchParams] = useSearchParams();
