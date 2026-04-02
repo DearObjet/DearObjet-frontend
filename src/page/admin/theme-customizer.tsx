@@ -11,7 +11,7 @@ import { ColorInput } from '../../components/ui/colorinput';
 import { DEFAULT_SYSTEM_THEME } from '../../constants/default-theme';
 import { resetToDefaultTheme } from '../../store/slices/theme-slice';
 
-export function ThemeCustomizer() {
+export const ThemeCustomizer = () => {
   const dispatch = useAppDispatch();
   const currentTheme = useAppSelector((state) => state.theme.systemTheme);
   const [updateTheme, { isLoading: isUpdating }] =
@@ -783,4 +783,4 @@ export function ThemeCustomizer() {
       </div>
     </div>
   );
-}
+};

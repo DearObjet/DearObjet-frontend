@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 
 import UserProfile from '../user-profile';
@@ -8,7 +8,7 @@ import { MessageCircleMore } from 'lucide-react';
 
 import DearObjectLogo from '../../assets/dear-objet-logo.svg';
 
-const Aside: React.FC = () => {
+export const Aside = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeMenu, setActiveMenu] = useState(location.pathname);
@@ -214,5 +214,3 @@ const Aside: React.FC = () => {
     </aside>
   );
 };
-
-export default Aside;

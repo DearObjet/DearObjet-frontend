@@ -32,7 +32,7 @@ interface NoticeProps {
   onSelectNotice: (notice: NoticeItem) => void;
 }
 
-function CommonNotice({
+export const CommonNotice = ({
   target,
   noticeData,
   totalPages,
@@ -41,7 +41,7 @@ function CommonNotice({
   onPageChange,
   onCategoryChange,
   onSelectNotice,
-}: NoticeProps) {
+}: NoticeProps) => {
   const categories =
     target === 'USER' ? USER_CATEGORIES : ARTIST_SHOP_CATEGORIES;
 
@@ -158,6 +158,4 @@ function CommonNotice({
       </div>
     </section>
   );
-}
-
-export default CommonNotice;
+};

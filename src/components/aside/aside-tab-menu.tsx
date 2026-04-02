@@ -1,7 +1,7 @@
 import type { ComponentType, SVGProps } from 'react';
 
 export interface ButtonProps {
-  icon?: ComponentType<SVGProps<SVGSVGElement>>; // optional로 변경
+  icon?: ComponentType<SVGProps<SVGSVGElement>>;
   label: string;
   className?: string;
   disabled?: boolean;

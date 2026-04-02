@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import CommonNotice from '../components/notice/common-notice';
+
+import { CommonNotice } from '../components/notice/common-notice';
 import type { NoticeItem } from '../components/notice/notice-list';
 import { toNoticeItem } from '../components/notice/notice-list';
+
 import {
   useGetNoticesQuery,
   useGetNoticeDetailQuery,
 } from '../store/api/notice-api';
 
-function CustomerNotice() {
+export const CustomerNotice = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const noticeId = searchParams.get('id');
@@ -81,6 +83,4 @@ function CustomerNotice() {
       </div>
     </div>
   );
-}
-
-export default CustomerNotice;
+};

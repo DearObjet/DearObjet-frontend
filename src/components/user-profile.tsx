@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface UserProfileProps {
   variant?: 'author' | 'aside';
   userName: string;
@@ -11,7 +9,7 @@ interface UserProfileProps {
   onAction?: () => void;
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({
+export const UserProfile = ({
   variant,
   userName,
   userId,
@@ -19,7 +17,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
   className = '',
   isSelected = false,
   onAction,
-}) => {
+}: UserProfileProps) => {
   const defaultImage = '';
 
   if (variant === 'author') {
@@ -65,5 +63,3 @@ const UserProfile: React.FC<UserProfileProps> = ({
 
   return null;
 };
-
-export default UserProfile;

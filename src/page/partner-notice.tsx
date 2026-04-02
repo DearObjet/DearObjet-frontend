@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import Aside from '../components/aside/aside';
-import CommonNotice from '../components/notice/common-notice';
+import { Aside } from '../components/aside/aside';
+import { CommonNotice } from '../components/notice/common-notice';
 import type { NoticeItem } from '../components/notice/notice-list';
 import { toNoticeItem } from '../components/notice/notice-list';
 import {
@@ -8,7 +8,7 @@ import {
   useGetNoticeDetailQuery,
 } from '../store/api/notice-api';
 
-function PartnerNotice() {
+export const PartnerNotice = () => {
   const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -87,6 +87,4 @@ function PartnerNotice() {
       </div>
     </div>
   );
-}
-
-export default PartnerNotice;
+};

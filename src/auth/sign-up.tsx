@@ -287,7 +287,7 @@ const TermItemComponent = ({
   </>
 );
 
-export function Signup() {
+export const Signup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -929,4 +929,4 @@ export function Signup() {
       </form>
     </div>
   );
-}
+};

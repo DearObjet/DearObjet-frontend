@@ -6,11 +6,30 @@ interface ColorInputProps {
   onChange: (value: string) => void;
 }
 
-export const ColorInput: React.FC<ColorInputProps> = ({
-  label,
-  value,
-  onChange,
-}) => {
+export const ColorInput = ({ label, value, onChange }: ColorInputProps) => {
+  // 헬퍼 함수
+  const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : { r: 0, g: 0, b: 0 };
+  };
+
+  const rgbToHex = (rgb: string): string => {
+    const [r, g, b] = rgb.split(' ').map(Number);
+
+    // 유효하지 않은 값 처리
+    if (isNaN(r) || isNaN(g) || isNaN(b)) {
+      return '#000000';
+    }
+
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+  };
+
   const [hexValue, setHexValue] = useState(rgbToHex(value));
 
   useEffect(() => {
@@ -58,26 +77,3 @@ export const ColorInput: React.FC<ColorInputProps> = ({
     </div>
   );
 };
-
-// 헬퍼 함수
-function hexToRgb(hex: string): { r: number; g: number; b: number } {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
-    : { r: 0, g: 0, b: 0 };
-}
-
-function rgbToHex(rgb: string): string {
-  const [r, g, b] = rgb.split(' ').map(Number);
-
-  // 유효하지 않은 값 처리
-  if (isNaN(r) || isNaN(g) || isNaN(b)) {
-    return '#000000';
-  }
-
-  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
-}

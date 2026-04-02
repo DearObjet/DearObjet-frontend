@@ -1,5 +1,3 @@
-import React from 'react';
-
 export interface NoticeItem {
   noticeId: number;
   type: string;
@@ -32,7 +30,7 @@ export const CATEGORY_LABEL: Record<NoticeApiItem['category'], string> = {
   EVENT: '이벤트',
 };
 
-export function toNoticeItem(item: NoticeApiItem): NoticeItem {
+export const toNoticeItem = (item: NoticeApiItem): NoticeItem => {
   return {
     noticeId: item.noticeId,
     type: CATEGORY_LABEL[item.category],
@@ -44,17 +42,14 @@ export function toNoticeItem(item: NoticeApiItem): NoticeItem {
     }),
     content: item.body,
   };
-}
+};
 
 interface NoticeListProps {
   notices: NoticeItem[];
   onSelectNotice: (notice: NoticeItem) => void;
 }
 
-export const NoticeList: React.FC<NoticeListProps> = ({
-  notices,
-  onSelectNotice,
-}) => {
+export const NoticeList = ({ notices, onSelectNotice }: NoticeListProps) => {
   return (
     <div className="flex flex-col gap-5">
       {notices.map((notice) => (

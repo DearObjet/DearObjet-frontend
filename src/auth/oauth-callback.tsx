@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
+
 import { useAppDispatch } from '../hooks/redux';
 import { setSignupRequired } from '../store/slices/auth-slice';
 import { setAccessToken } from '../store/slices/auth-slice';
 import { useRefreshTokenMutation } from '../store/api/auth-api';
 
-export function OAuthCallback() {
+export const OAuthCallback = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [refreshToken, { isLoading }] = useRefreshTokenMutation();
@@ -57,4 +58,4 @@ export function OAuthCallback() {
   }
 
   return null;
-}
+};

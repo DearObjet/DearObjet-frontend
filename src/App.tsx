@@ -15,7 +15,7 @@ import {
 } from './store/api/theme-api';
 import { ThemeCustomizer } from './page/admin/theme-customizer';
 
-function MainPage() {
+const MainPage = () => {
   const [currentNoticePage, setCurrentNoticePage] = useState(1);
   const noticesPerPage = 5;
 
@@ -167,9 +167,9 @@ function MainPage() {
       </div>
     </div>
   );
-}
+};
 
-function App() {
+export const App = () => {
   const dispatch = useAppDispatch();
   const isAuthenticated = true;
   const themeMode = useAppSelector((state) => state.theme.mode);
@@ -209,6 +209,4 @@ function App() {
       <Route path="/admin" element={<ThemeCustomizer />} />
     </Routes>
   );
-}
-
-export default App;
+};

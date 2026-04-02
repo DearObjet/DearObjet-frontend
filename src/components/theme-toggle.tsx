@@ -1,9 +1,10 @@
 import { Moon, Sun } from 'lucide-react';
+
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { useUpdateUserThemeMutation } from '../store/api/theme-api';
 import { toggleTheme } from '../store/slices/theme-slice';
 
-export function ThemeToggle() {
+export const ThemeToggle = () => {
   const dispatch = useAppDispatch();
   const mode = useAppSelector((state) => state.theme.mode);
   // const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
@@ -37,4 +38,4 @@ export function ThemeToggle() {
       )}
     </button>
   );
-}
+};

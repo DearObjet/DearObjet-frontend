@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import UserProfile from './user-profile';
+import { UserProfile } from './user-profile';
 
 const meta = {
   title: 'Components/UserProfile',
