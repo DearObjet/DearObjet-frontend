@@ -6,6 +6,7 @@ import authReducer from '../features/auth/slices/auth-slice';
 import { themeApi } from '../features/admin/theme';
 import { authApi } from '../features/auth';
 import { noticeApi } from '../features/notice';
+import { signupApi } from '../features/signup';
 
 export const store = configureStore({
   reducer: {
@@ -16,12 +17,14 @@ export const store = configureStore({
     [themeApi.reducerPath]: themeApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [noticeApi.reducerPath]: noticeApi.reducer,
+    [signupApi.reducerPath]: signupApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(themeApi.middleware)
       .concat(authApi.middleware)
-      .concat(noticeApi.middleware),
+      .concat(noticeApi.middleware)
+      .concat(signupApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -1,14 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import type { RootState } from '../../../app/store';
-import type {
-  CompleteBusinessSignupRequest,
-  CompleteSignupRequest,
-  SendPhoneVerificationRequest,
-  SendPhoneVerificationResponse,
-  VerifyPhoneRequest,
-  VerifyPhoneResponse,
-} from '../types/auth-types';
 import type { ApiResponse } from '../../../shared/types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -28,85 +20,6 @@ export const authApi = createApi({
   }),
   tagTypes: ['Auth'],
   endpoints: (builder) => ({
-    // 일반회원 가입
-    completeSignup: builder.mutation<void, CompleteSignupRequest>({
-      query: (data) => ({
-        url: '/users/complete',
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['Auth'],
-      // transformResponse: (response: ApiResponse<void>) => response.data,
-    }),
-
-    // 소품샵 가입
-    completeShopSignup: builder.mutation<
-      void,
-      { request: CompleteBusinessSignupRequest; businessLicenseFile: File }
-    >({
-      query: ({ request, businessLicenseFile }) => {
-        const formData = new FormData();
-        formData.append(
-          'request',
-          new Blob([JSON.stringify(request)], { type: 'application/json' })
-        );
-        formData.append('businessLicenseFile', businessLicenseFile);
-        return {
-          url: '/users/complete/shop',
-          method: 'POST',
-          body: formData,
-        };
-      },
-      invalidatesTags: ['Auth'],
-    }),
-
-    // 작가 가입
-    completeArtistSignup: builder.mutation<
-      void,
-      { request: CompleteBusinessSignupRequest; businessLicenseFile: File }
-    >({
-      query: ({ request, businessLicenseFile }) => {
-        const formData = new FormData();
-        formData.append(
-          'request',
-          new Blob([JSON.stringify(request)], { type: 'application/json' })
-        );
-        formData.append('businessLicenseFile', businessLicenseFile);
-        return {
-          url: '/users/complete/artist',
-          method: 'POST',
-          body: formData,
-        };
-      },
-      invalidatesTags: ['Auth'],
-    }),
-
-    // 휴대폰 인증번호 발송
-    sendPhoneVerification: builder.mutation<
-      SendPhoneVerificationResponse,
-      SendPhoneVerificationRequest
-    >({
-      query: (data) => ({
-        url: '/auth/phone-verifications/send',
-        method: 'POST',
-        body: data,
-      }),
-      transformResponse: (
-        response: ApiResponse<SendPhoneVerificationResponse>
-      ) => response.data,
-    }),
-
-    // 휴대폰 인증번호 확인
-    verifyPhone: builder.mutation<VerifyPhoneResponse, VerifyPhoneRequest>({
-      query: (data) => ({
-        url: '/auth/phone-verifications/verify',
-        method: 'POST',
-        body: data,
-      }),
-      transformResponse: (response: ApiResponse<VerifyPhoneResponse>) =>
-        response.data,
-    }),
-
     // Access Token 갱신
     refreshToken: builder.mutation<{ accessToken: string }, void>({
       query: () => ({
@@ -127,12 +40,4 @@ export const authApi = createApi({
   }),
 });
 
-export const {
-  useCompleteSignupMutation,
-  useCompleteShopSignupMutation,
-  useCompleteArtistSignupMutation,
-  useSendPhoneVerificationMutation,
-  useVerifyPhoneMutation,
-  useRefreshTokenMutation,
-  useLogoutMutation,
-} = authApi;
+export const { useRefreshTokenMutation, useLogoutMutation } = authApi;

@@ -20,17 +20,19 @@ import {
 import { setAddress, setDetailAddress } from '../slices/signup-address-slice';
 
 import type { RootState } from '../../../app/store';
+import type {
+  BusinessCategory,
+  BusinessType,
+  CompleteSignupRequest,
+  Specialty,
+} from '../types/signup-types';
 import {
-  type CompleteSignupRequest,
-  type BusinessType,
-  type BusinessCategory,
-  type Specialty,
   useCompleteArtistSignupMutation,
   useCompleteShopSignupMutation,
   useCompleteSignupMutation,
   useSendPhoneVerificationMutation,
   useVerifyPhoneMutation,
-} from '../../auth';
+} from '../api/signup-api';
 
 declare global {
   interface Window {

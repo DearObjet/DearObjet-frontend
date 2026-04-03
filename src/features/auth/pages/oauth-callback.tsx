@@ -19,13 +19,14 @@ export const OAuthCallback = () => {
         navigate('/');
         return;
       }
-
+      console.log(signup, '로그인 확인 로그 1===========');
       try {
         // 백엔드에서 이미 쿠키에 refreshToken을 설정했으므로
         // 이 API 호출로 accessToken을 받아옴
         const result = await refreshToken().unwrap();
         dispatch(setAccessToken(result.accessToken));
 
+        console.log(result, '로그인 확인 로그 3===========');
         if (signup === 'required') {
           // 신규 회원 - 회원가입 페이지로
           dispatch(setSignupRequired(true));
@@ -35,6 +36,7 @@ export const OAuthCallback = () => {
           dispatch(setSignupRequired(false));
           navigate('/');
         }
+        console.log(signup, '로그인 확인 로그 2===========');
       } catch (error) {
         console.error('Token refresh failed:', error);
         alert('로그인 처리 중 오류가 발생했습니다.');
