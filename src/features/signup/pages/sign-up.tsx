@@ -42,7 +42,7 @@ import {
   SUBMIT_BUTTON_LABELS,
   TERMS,
   USER_TYPES,
-} from '../constants/signgup-constants';
+} from '../constants/signup-constants';
 
 declare global {
   interface Window {

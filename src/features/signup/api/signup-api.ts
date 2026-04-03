@@ -10,7 +10,7 @@ import type {
 } from '../types/signup-types';
 import type { ApiResponse } from '../../../shared/types/api-types';
 import { createBaseQuery } from '../../../shared/constants';
-import { SIGNUP_ENDPOINTS } from '../constants/signgup-constants';
+import { SIGNUP_ENDPOINTS } from '../constants/signup-constants';
 
 export const signupApi = createApi({
   reducerPath: 'signupApi',

@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { AgreementKey, UserType } from '../types/signup-types';
-import { TERMS } from '../constants/signgup-constants';
+import { TERMS } from '../constants/signup-constants';
 
 interface SetAgreementPayload {
   key: AgreementKey;
