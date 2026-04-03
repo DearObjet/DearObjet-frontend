@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { NoticeList } from './notice-list';
-
 import type { NoticeItem } from '../types/notice-types';
+import { NoticeList } from './notice-list';
 
 const meta = {
   title: 'Components/NoticeList',

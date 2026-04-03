@@ -1,7 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 
 import type { NoticeApiItem } from '../types/notice-types';
-
 import { createBaseQuery } from '../../../shared/constants';
 import {
   ITEMS_PER_PAGE,

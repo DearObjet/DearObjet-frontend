@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { fn } from 'storybook/test';
-import { Button, type ButtonProps } from './button';
 import { ChevronDown } from 'lucide-react';
+import { fn } from 'storybook/test';
+
+import { Button, type ButtonProps } from './button';
 
 const meta = {
   title: 'Example/Button',

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 
-import KakaoLogo from '../../assets/kakao-logo.svg';
-
 import { Button } from '../../shared/components/ui';
 
 import { API_BASE_URL } from '../../shared/constants';
+
+import KakaoLogo from '../../assets/kakao-logo.svg';
 
 export const HomePage = () => {
   const [currentNoticePage, setCurrentNoticePage] = useState(1);

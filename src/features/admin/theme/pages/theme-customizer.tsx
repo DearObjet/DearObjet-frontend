@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
+
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 
+import { Button, ColorInput } from '../../../../shared/components/ui';
+
+import { resetToDefaultTheme } from '../slices/theme-slice';
 import {
   useResetSystemThemeMutation,
   useUpdateSystemThemeMutation,
 } from '../api/theme-api';
 import type { SystemTheme } from '../types/theme-types';
-
-import { Button, ColorInput } from '../../../../shared/components/ui';
-import { ThemeToggle } from '../components/theme-toggle';
-
-import { resetToDefaultTheme } from '../slices/theme-slice';
 import { DEFAULT_SYSTEM_THEME } from '../constants/default-theme';
+import { ThemeToggle } from '../components/theme-toggle';
 
 export const ThemeCustomizer = () => {
   const dispatch = useAppDispatch();

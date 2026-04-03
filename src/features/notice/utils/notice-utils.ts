@@ -1,5 +1,5 @@
-import { CATEGORY_LABEL } from '../constants/notice-constants';
 import type { NoticeApiItem, NoticeItem } from '../types/notice-types';
+import { CATEGORY_LABEL } from '../constants/notice-constants';
 
 export const toNoticeItem = (item: NoticeApiItem): NoticeItem => {
   return {

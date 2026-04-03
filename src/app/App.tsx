@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Routes, Route } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from './hooks';
+
 import {
   useGetSystemThemeQuery,
   useGetUserThemeQuery,

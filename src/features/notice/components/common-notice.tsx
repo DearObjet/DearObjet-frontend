@@ -1,11 +1,9 @@
 import type { NoticeItem } from '../types/notice-types';
-
-import { NoticeList } from './notice-list';
-
 import {
   ARTIST_SHOP_CATEGORIES,
   USER_CATEGORIES,
 } from '../constants/notice-constants';
+import { NoticeList } from './notice-list';
 
 import RightShiftIcon from '../../../assets/right-shift.svg';
 import LeftShiftIcon from '../../../assets/left-shift.svg';

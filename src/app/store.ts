@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+
 import signupReducer from '../features/signup/slices/signup-slice';
 import signupAddressReducer from '../features/signup/slices/signup-address-slice';
 import themeReducer from '../features/admin/theme/slices/theme-slice';

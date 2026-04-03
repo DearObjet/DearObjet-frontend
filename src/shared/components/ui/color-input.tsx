@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { type ChangeEvent, useState, useEffect } from 'react';
 
 interface ColorInputProps {
   label: string;
@@ -36,7 +36,7 @@ export const ColorInput = ({ label, value, onChange }: ColorInputProps) => {
     setHexValue(rgbToHex(value));
   }, [value]);
 
-  const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleHexChange = (e: ChangeEvent<HTMLInputElement>) => {
     const hex = e.target.value;
     setHexValue(hex);
 
@@ -46,7 +46,7 @@ export const ColorInput = ({ label, value, onChange }: ColorInputProps) => {
     }
   };
 
-  const handleColorPickerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleColorPickerChange = (e: ChangeEvent<HTMLInputElement>) => {
     const hex = e.target.value;
     setHexValue(hex);
     const rgb = hexToRgb(hex);

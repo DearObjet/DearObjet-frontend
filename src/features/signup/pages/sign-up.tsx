@@ -1,7 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import {
+  type ChangeEvent,
+  type FormEvent,
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
 import { useNavigate } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
 import { ChevronRight } from 'lucide-react';
+
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 
 import {
   Input,
@@ -18,30 +25,29 @@ import {
   initialState as signupInitialState,
 } from '../slices/signup-slice';
 import { setAddress, setDetailAddress } from '../slices/signup-address-slice';
-
-import type { RootState } from '../../../app/store';
-import type {
-  AgreementKey,
-  BusinessCategory,
-  BusinessType,
-  CompleteSignupRequest,
-  Specialty,
-  TermItem,
-} from '../types/signup-types';
 import {
-  useCompleteArtistSignupMutation,
-  useCompleteShopSignupMutation,
   useCompleteSignupMutation,
+  useCompleteShopSignupMutation,
+  useCompleteArtistSignupMutation,
   useSendPhoneVerificationMutation,
   useVerifyPhoneMutation,
 } from '../api/signup-api';
+import type { RootState } from '../../../app/store';
+import type {
+  AgreementKey,
+  TermItem,
+  BusinessType,
+  BusinessCategory,
+  Specialty,
+  CompleteSignupRequest,
+} from '../types/signup-types';
 import {
-  BUSINESS_CATEGORY_OPTIONS,
-  BUSINESS_TYPE_OPTIONS,
-  SPECIALTY_OPTIONS,
-  SUBMIT_BUTTON_LABELS,
-  TERMS,
   USER_TYPES,
+  TERMS,
+  SUBMIT_BUTTON_LABELS,
+  BUSINESS_TYPE_OPTIONS,
+  BUSINESS_CATEGORY_OPTIONS,
+  SPECIALTY_OPTIONS,
 } from '../constants/signup-constants';
 
 declare global {
@@ -70,7 +76,7 @@ interface LabeledInputProps {
   placeholder?: string;
   className?: string;
   value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   readOnly?: boolean;
   error?: string;
 }
@@ -182,18 +188,18 @@ const TermItemComponent = ({
 );
 
 export const Signup = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { userType, openTerms, agreements } = useSelector(
+  const { userType, openTerms, agreements } = useAppSelector(
     (state: RootState) => state.signup ?? signupInitialState
   );
 
-  const signupRequired = useSelector(
+  const signupRequired = useAppSelector(
     (state: RootState) => state.auth.signupRequired
   );
 
-  const { zipcode, roadAddress, detailAddress } = useSelector(
+  const { zipcode, roadAddress, detailAddress } = useAppSelector(
     (state: RootState) => state.signupAddress
   );
 
@@ -352,7 +358,7 @@ export const Signup = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const newErrors: Record<string, string> = {};

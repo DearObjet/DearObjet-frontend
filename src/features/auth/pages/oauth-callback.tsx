@@ -2,8 +2,9 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { useAppDispatch } from '../../../app/hooks';
-import { useRefreshTokenMutation } from '../api/auth-api';
+
 import { setAccessToken, setSignupRequired } from '../slices/auth-slice';
+import { useRefreshTokenMutation } from '../api/auth-api';
 
 export const OAuthCallback = () => {
   const navigate = useNavigate();

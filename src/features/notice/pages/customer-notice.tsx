@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
-import { CommonNotice } from '../components/common-notice';
-
 import { useGetNoticeDetailQuery, useGetNoticesQuery } from '../api/notice-api';
 import { toNoticeItem } from '../utils/notice-utils';
 import type { NoticeItem } from '../types/notice-types';
+import { CommonNotice } from '../components/common-notice';
 
 export const CustomerNotice = () => {
   const [searchParams, setSearchParams] = useSearchParams();

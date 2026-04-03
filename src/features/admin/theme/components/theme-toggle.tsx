@@ -1,9 +1,9 @@
+import { Moon, Sun } from 'lucide-react';
+
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 
-import { useUpdateUserThemeMutation } from '../api/theme-api';
 import { toggleTheme } from '../slices/theme-slice';
-
-import { Moon, Sun } from 'lucide-react';
+import { useUpdateUserThemeMutation } from '../api/theme-api';
 
 export const ThemeToggle = () => {
   const dispatch = useAppDispatch();

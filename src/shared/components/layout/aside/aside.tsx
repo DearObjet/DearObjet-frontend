@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router';
+import { MessageCircleMore } from 'lucide-react';
 
 import { UserProfile } from './user-profile';
 import { Asidetab } from './aside-tab-menu';
-
-import { MessageCircleMore } from 'lucide-react';
 
 import DearObjectLogo from '../../../../assets/dear-objet-logo.svg';
 
