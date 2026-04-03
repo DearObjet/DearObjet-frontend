@@ -1,29 +1,19 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 
-import type { RootState } from '../../../app/store';
 import type { ApiResponse } from '../../../shared/types';
+import { createBaseQuery } from '../../../shared/constants';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { AUTH_ENDPOINTS } from '../constants/auth-constants';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_BASE_URL,
-    credentials: 'include',
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.accessToken;
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: createBaseQuery(),
   tagTypes: ['Auth'],
   endpoints: (builder) => ({
     // Access Token 갱신
     refreshToken: builder.mutation<{ accessToken: string }, void>({
       query: () => ({
-        url: '/auth/token/refresh',
+        url: AUTH_ENDPOINTS.REFRESH_TOKEN,
         method: 'POST',
       }),
       transformResponse: (response: ApiResponse<{ accessToken: string }>) =>
@@ -33,7 +23,7 @@ export const authApi = createApi({
     // 로그아웃
     logout: builder.mutation<void, void>({
       query: () => ({
-        url: '/auth/logout',
+        url: AUTH_ENDPOINTS.LOGOUT,
         method: 'POST',
       }),
     }),

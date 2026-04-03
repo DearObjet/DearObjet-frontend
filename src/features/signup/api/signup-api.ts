@@ -1,6 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 
-import type { RootState } from '../../../app/store';
 import type {
   CompleteBusinessSignupRequest,
   CompleteSignupRequest,
@@ -10,28 +9,18 @@ import type {
   VerifyPhoneResponse,
 } from '../types/signup-types';
 import type { ApiResponse } from '../../../shared/types/api-types';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { createBaseQuery } from '../../../shared/constants';
+import { SIGNUP_ENDPOINTS } from '../constants/signgup-constants';
 
 export const signupApi = createApi({
   reducerPath: 'signupApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_BASE_URL,
-    credentials: 'include',
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.accessToken;
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: createBaseQuery(),
   tagTypes: ['Signup'],
   endpoints: (builder) => ({
     // 일반회원 가입
     completeSignup: builder.mutation<void, CompleteSignupRequest>({
       query: (data) => ({
-        url: '/users/complete',
+        url: SIGNUP_ENDPOINTS.COMPLETE_SIGNUP,
         method: 'POST',
         body: data,
       }),
@@ -52,7 +41,7 @@ export const signupApi = createApi({
         );
         formData.append('businessLicenseFile', businessLicenseFile);
         return {
-          url: '/users/complete/shop',
+          url: SIGNUP_ENDPOINTS.COMPLETE_SHOP_SIGNUP,
           method: 'POST',
           body: formData,
         };
@@ -73,7 +62,7 @@ export const signupApi = createApi({
         );
         formData.append('businessLicenseFile', businessLicenseFile);
         return {
-          url: '/users/complete/artist',
+          url: SIGNUP_ENDPOINTS.COMPLETE_ARTIST_SIGNUP,
           method: 'POST',
           body: formData,
         };
@@ -87,7 +76,7 @@ export const signupApi = createApi({
       SendPhoneVerificationRequest
     >({
       query: (data) => ({
-        url: '/auth/phone-verifications/send',
+        url: SIGNUP_ENDPOINTS.COMPLETE_PHONE_VERIFICATION,
         method: 'POST',
         body: data,
       }),
@@ -99,7 +88,7 @@ export const signupApi = createApi({
     // 휴대폰 인증번호 확인
     verifyPhone: builder.mutation<VerifyPhoneResponse, VerifyPhoneRequest>({
       query: (data) => ({
-        url: '/auth/phone-verifications/verify',
+        url: SIGNUP_ENDPOINTS.COMPLETE_VERIFY_PHONE,
         method: 'POST',
         body: data,
       }),

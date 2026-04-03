@@ -1,4 +1,4 @@
-import type { SystemTheme } from '../../features/admin/theme/types/theme-types';
+import type { SystemTheme } from '../types/theme-types';
 
 export const DEFAULT_SYSTEM_THEME: SystemTheme = {
   primary: {

@@ -5,6 +5,8 @@ import KakaoLogo from '../../assets/kakao-logo.svg';
 
 import { Button } from '../../shared/components/ui';
 
+import { API_BASE_URL } from '../../shared/constants';
+
 export const HomePage = () => {
   const [currentNoticePage, setCurrentNoticePage] = useState(1);
   const noticesPerPage = 5;
@@ -47,8 +49,6 @@ export const HomePage = () => {
 
   // 카카오 시작하기 버튼 눌렀을 때
   const handleKakaoLogin = () => {
-    const API_BASE_URL =
-      import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
     window.location.href = `${API_BASE_URL}/oauth2/authorization/kakao`;
   };
 

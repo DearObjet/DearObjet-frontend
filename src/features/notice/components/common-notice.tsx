@@ -2,25 +2,15 @@ import type { NoticeItem } from '../types/notice-types';
 
 import { NoticeList } from './notice-list';
 
+import {
+  ARTIST_SHOP_CATEGORIES,
+  USER_CATEGORIES,
+} from '../constants/notice-constants';
+
 import RightShiftIcon from '../../../assets/right-shift.svg';
 import LeftShiftIcon from '../../../assets/left-shift.svg';
 import TwoRightShiftIcon from '../../../assets/two-right-shift.svg';
 import TwoLeftShiftIcon from '../../../assets/two-left-shift.svg';
-
-const USER_CATEGORIES = [
-  { label: '전체', value: null },
-  { label: '주요공지', value: 'IMPORTANT' },
-  { label: '일반', value: 'GENERAL' },
-  { label: '축제', value: 'FESTIVAL' },
-  { label: '문화공연', value: 'CULTURE_PERFORMANCE' },
-  { label: '이벤트', value: 'EVENT' },
-] as const;
-
-const ARTIST_SHOP_CATEGORIES = [
-  { label: '전체', value: null },
-  { label: '주요공지', value: 'IMPORTANT' },
-  { label: '일반', value: 'GENERAL' },
-] as const;
 
 interface NoticeProps {
   target: 'USER' | 'ARTIST_SHOP';

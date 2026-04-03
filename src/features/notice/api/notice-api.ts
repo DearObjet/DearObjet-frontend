@@ -1,11 +1,12 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
-import type { RootState } from '../../../app/store';
+import { createApi } from '@reduxjs/toolkit/query/react';
 
 import type { NoticeApiItem } from '../types/notice-types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const ITEMS_PER_PAGE = 10;
+import { createBaseQuery } from '../../../shared/constants';
+import {
+  ITEMS_PER_PAGE,
+  NOTICE_ENDPOINTS,
+} from '../constants/notice-constants';
 
 interface NoticeListParams {
   target: 'USER' | 'ARTIST_SHOP';
@@ -21,17 +22,7 @@ interface NoticeListResponse {
 
 export const noticeApi = createApi({
   reducerPath: 'noticeApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_BASE_URL,
-    credentials: 'include',
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.accessToken;
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: createBaseQuery(),
   tagTypes: ['Notice'],
   endpoints: (builder) => ({
     getNotices: builder.query<NoticeListResponse, NoticeListParams>({
@@ -42,7 +33,7 @@ export const noticeApi = createApi({
           size: String(ITEMS_PER_PAGE),
         });
         if (category) params.set('category', category);
-        return `/api/v1/notices?${params.toString()}`;
+        return `${NOTICE_ENDPOINTS.NOTICES}?${params.toString()}`;
       },
       transformResponse: (response: { data: NoticeListResponse }) =>
         response.data,
@@ -50,7 +41,7 @@ export const noticeApi = createApi({
     }),
 
     getNoticeDetail: builder.query<NoticeApiItem, number>({
-      query: (noticeId) => `/api/v1/notices/${noticeId}`,
+      query: (noticeId) => NOTICE_ENDPOINTS.NOTICE_DETAIL(noticeId),
       transformResponse: (response: { data: NoticeApiItem }) => response.data,
       providesTags: ['Notice'],
     }),

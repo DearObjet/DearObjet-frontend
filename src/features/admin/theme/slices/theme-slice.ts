@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import type { SystemTheme } from '../types/theme-types';
 
-import { DEFAULT_SYSTEM_THEME } from '../../../../shared/constants';
+import { DEFAULT_SYSTEM_THEME } from '../constants/default-theme';
 
 interface ThemeState {
   mode: 'light' | 'dark';

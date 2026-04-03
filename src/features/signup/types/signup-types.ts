@@ -20,6 +20,26 @@ export interface CompleteBusinessSignupRequest {
   ownerName: string;
 }
 
+export type AgreementKey =
+  | 'all'
+  | 'age'
+  | 'terms'
+  | 'businessInfo'
+  | 'settlement'
+  | 'fraud'
+  | 'customerData'
+  | 'marketing'
+  | 'notification';
+
+export interface TermItem {
+  key: AgreementKey;
+  label: string;
+  hasDetail: boolean;
+  showForUserTypes: UserType[];
+}
+
+export type UserType = '일반회원' | '작가' | '소품샵';
+
 export type BusinessType = 'SERVICE' | 'WHOLESALE_RETAIL';
 
 export type BusinessCategory =

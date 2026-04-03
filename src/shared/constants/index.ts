@@ -1,1 +1,1 @@
-export { DEFAULT_SYSTEM_THEME } from './default-theme';
+export { createBaseQuery, API_BASE_URL } from './api-config';

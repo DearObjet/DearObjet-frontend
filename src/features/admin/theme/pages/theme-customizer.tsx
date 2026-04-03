@@ -11,7 +11,7 @@ import { Button, ColorInput } from '../../../../shared/components/ui';
 import { ThemeToggle } from '../components/theme-toggle';
 
 import { resetToDefaultTheme } from '../slices/theme-slice';
-import { DEFAULT_SYSTEM_THEME } from '../../../../shared/constants';
+import { DEFAULT_SYSTEM_THEME } from '../constants/default-theme';
 
 export const ThemeCustomizer = () => {
   const dispatch = useAppDispatch();

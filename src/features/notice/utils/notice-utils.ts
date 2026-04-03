@@ -1,12 +1,5 @@
+import { CATEGORY_LABEL } from '../constants/notice-constants';
 import type { NoticeApiItem, NoticeItem } from '../types/notice-types';
-
-export const CATEGORY_LABEL: Record<NoticeApiItem['category'], string> = {
-  IMPORTANT: '주요공지',
-  GENERAL: '일반',
-  FESTIVAL: '축제',
-  CULTURE_PERFORMANCE: '문화공연',
-  EVENT: '이벤트',
-};
 
 export const toNoticeItem = (item: NoticeApiItem): NoticeItem => {
   return {
