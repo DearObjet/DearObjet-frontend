@@ -3,7 +3,7 @@ import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 
 import KakaoLogo from '../../assets/kakao-logo.svg';
 
-import { Button } from '../../shared/components/ui/button';
+import { Button } from '../../shared/components/ui';
 
 export const HomePage = () => {
   const [currentNoticePage, setCurrentNoticePage] = useState(1);

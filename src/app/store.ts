@@ -3,9 +3,9 @@ import signupReducer from '../features/signup/slices/signup-slice';
 import signupAddressReducer from '../features/signup/slices/signup-address-slice';
 import themeReducer from '../features/admin/theme/slices/theme-slice';
 import authReducer from '../features/auth/slices/auth-slice';
-import { themeApi } from '../features/admin/theme/api/theme-api';
-import { authApi } from '../features/auth/api/auth-api';
-import { noticeApi } from '../features/notice/api/notice-api';
+import { themeApi } from '../features/admin/theme';
+import { authApi } from '../features/auth';
+import { noticeApi } from '../features/notice';
 
 export const store = configureStore({
   reducer: {

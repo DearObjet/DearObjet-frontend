@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from './hooks';
 import {
   useGetSystemThemeQuery,
   useGetUserThemeQuery,
-} from '../features/admin/theme/api/theme-api';
+} from '../features/admin/theme';
 import {
   setSystemTheme,
   setThemeMode,
@@ -13,7 +13,7 @@ import {
 
 import { HomePage } from '../pages/home/home-page';
 import { Signup } from '../features/signup/pages/sign-up';
-import { OAuthCallback } from '../features/auth/pages/oauth-callback';
+import { OAuthCallback } from '../features/auth';
 import { ThemeCustomizer } from '../features/admin/theme/pages/theme-customizer';
 
 import '../App.css';

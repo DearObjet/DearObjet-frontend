@@ -7,12 +7,11 @@ import {
 } from '../api/theme-api';
 import type { SystemTheme } from '../types/theme-types';
 
-import { Button } from '../../../../shared/components/ui/button';
-import { ColorInput } from '../../../../shared/components/ui/color-input';
+import { Button, ColorInput } from '../../../../shared/components/ui';
 import { ThemeToggle } from '../components/theme-toggle';
 
-import { DEFAULT_SYSTEM_THEME } from '../../../../shared/constants/default-theme';
 import { resetToDefaultTheme } from '../slices/theme-slice';
+import { DEFAULT_SYSTEM_THEME } from '../../../../shared/constants';
 
 export const ThemeCustomizer = () => {
   const dispatch = useAppDispatch();

@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
-import { Button } from './button';
-import type { ButtonProps } from './button';
+import { Button, type ButtonProps } from './button';
 import { ChevronDown } from 'lucide-react';
 
 const meta = {

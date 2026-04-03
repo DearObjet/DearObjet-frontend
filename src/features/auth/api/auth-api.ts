@@ -9,7 +9,7 @@ import type {
   VerifyPhoneRequest,
   VerifyPhoneResponse,
 } from '../types/auth-types';
-import type { ApiResponse } from '../../../shared/types/api-types';
+import type { ApiResponse } from '../../../shared/types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 

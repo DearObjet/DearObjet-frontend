@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { useGetNoticeDetailQuery, useGetNoticesQuery } from '../api/notice-api';
 
-import { Aside } from '../../../shared/components/layout/aside/aside';
+import { Aside } from '../../../shared/components/layout';
 import { CommonNotice } from '../components/common-notice';
 import type { NoticeItem } from '../types/notice-types';
 import { toNoticeItem } from '../utils/notice-utils';

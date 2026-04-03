@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChevronRight } from 'lucide-react';
 
-import { Input } from '../../../shared/components/ui/input';
-import { Button } from '../../../shared/components/ui/button';
-import { Checkbox } from '../../../shared/components/ui/checkbox';
-import { SelectBox } from '../../../shared/components/ui/selectbox';
+import {
+  Input,
+  Button,
+  Checkbox,
+  SelectBox,
+} from '../../../shared/components/ui';
 
 import {
   setUserType,
@@ -18,19 +20,17 @@ import {
 import { setAddress, setDetailAddress } from '../slices/signup-address-slice';
 
 import type { RootState } from '../../../app/store';
-import type {
-  CompleteSignupRequest,
-  BusinessType,
-  BusinessCategory,
-  Specialty,
-} from '../../auth/types/auth-types';
 import {
+  type CompleteSignupRequest,
+  type BusinessType,
+  type BusinessCategory,
+  type Specialty,
   useCompleteArtistSignupMutation,
   useCompleteShopSignupMutation,
   useCompleteSignupMutation,
   useSendPhoneVerificationMutation,
   useVerifyPhoneMutation,
-} from '../../auth/api/auth-api';
+} from '../../auth';
 
 declare global {
   interface Window {
