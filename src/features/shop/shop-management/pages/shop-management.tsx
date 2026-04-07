@@ -1,10 +1,14 @@
-import { Aside } from '../../../../shared/components/layout';
+import { useState } from 'react';
 
-import { Button } from '../../../../shared/components/ui';
-import { Input } from '../../../../shared/components/ui';
 import { ImagePlus } from 'lucide-react';
 
+import { Aside } from '../../../../shared/components/layout';
+import { Button } from '../../../../shared/components/ui';
+import { Input } from '../../../../shared/components/ui';
+
 export const ShopManagement = () => {
+  const [isRegistering, setIsRegistering] = useState(false);
+
   return (
     <div className="flex h-screen w-screen">
       <Aside />
@@ -18,11 +22,29 @@ export const ShopManagement = () => {
             <section className="flex flex-col rounded-xl bg-white px-[3.125rem] pb-[1.6875rem] pt-4">
               <div className="flex items-center justify-between border-b pb-3">
                 <h3>클래스 등록하기</h3>
-                <Button
-                  variant="secondaryDark"
-                  className="flex items-center justify-center px-4 py-2 text-xs"
-                  label="새 클래스 등록"
-                />
+                {!isRegistering ? (
+                  <Button
+                    variant="secondaryDark"
+                    className="flex items-center justify-center px-4 py-2 text-xs"
+                    label="새 클래스 등록"
+                    onClick={() => setIsRegistering(true)}
+                  />
+                ) : (
+                  <div className="flex gap-1">
+                    <Button
+                      variant="secondaryDark"
+                      className="flex items-center justify-center px-4 py-2 text-xs"
+                      label="취소"
+                      onClick={() => setIsRegistering(false)}
+                    />
+                    <Button
+                      variant="secondaryDark"
+                      className="flex items-center justify-center px-4 py-2 text-xs"
+                      label="저장"
+                      onClick={() => setIsRegistering(false)}
+                    />
+                  </div>
+                )}
               </div>
 
               <div>
@@ -31,7 +53,7 @@ export const ShopManagement = () => {
                     <p className="text-sm font-medium">
                       클래스 이름을 등록해주세요
                     </p>
-                    <Input className="w-full" disabled />
+                    <Input className="w-full" disabled={!isRegistering} />
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -40,7 +62,7 @@ export const ShopManagement = () => {
                     </p>
                     <textarea
                       className="h-[7.0625rem] w-full resize-none rounded-lg border border-gray-500 px-3 py-2 text-sm disabled:border-gray-200 disabled:bg-white"
-                      disabled
+                      disabled={!isRegistering}
                     />
                   </div>
 
@@ -49,12 +71,12 @@ export const ShopManagement = () => {
                       <p className="text-sm font-medium">
                         결제 금액을 작성해주세요 (1인 기준입니다)
                       </p>
-                      <Input className="w-full" disabled />
+                      <Input className="w-full" disabled={!isRegistering} />
                     </div>
 
                     <div className="flex w-full flex-col gap-2">
                       <p className="text-sm font-medium">최대 예약인원</p>
-                      <Input className="w-full" disabled />
+                      <Input className="w-full" disabled={!isRegistering} />
                     </div>
                   </div>
 
@@ -62,12 +84,16 @@ export const ShopManagement = () => {
                     <p className="text-sm font-medium">
                       클래스 유의 사항을 작성해주세요
                     </p>
-                    <Input className="w-full" disabled />
+                    <Input className="w-full" disabled={!isRegistering} />
                   </div>
 
                   <div className="flex flex-col gap-2">
                     <p className="text-sm font-medium">사진을 추가해주세요</p>
-                    <button className="flex h-[5.625rem] w-[5.625rem] items-center justify-center rounded-lg bg-gray-200">
+                    <button
+                      className="flex h-[5.625rem] w-[5.625rem] items-center justify-center rounded-lg bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={!isRegistering}
+                      type="button"
+                    >
                       <ImagePlus className="h-5 w-5" />
                     </button>
                   </div>
