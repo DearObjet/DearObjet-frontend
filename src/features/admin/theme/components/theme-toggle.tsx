@@ -8,8 +8,7 @@ import { useUpdateUserThemeMutation } from '../api/theme-api';
 export const ThemeToggle = () => {
   const dispatch = useAppDispatch();
   const mode = useAppSelector((state) => state.theme.mode);
-  // const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
-  const isAuthenticated = true;
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const [updateUserTheme] = useUpdateUserThemeMutation();
 
   const handleToggle = async () => {
