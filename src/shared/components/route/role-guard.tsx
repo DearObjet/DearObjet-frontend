@@ -3,9 +3,7 @@ import { useSelector } from 'react-redux';
 
 import type { RootState } from '../../../app/store';
 
-import type { UserRole } from '../../../features/auth';
-
-import { ROUTES } from '../../constants';
+import { ROUTES, type UserRole } from '../../constants';
 
 interface RoleGuardProps {
   allowedRoles: UserRole[];
