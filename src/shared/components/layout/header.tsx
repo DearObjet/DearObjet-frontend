@@ -2,8 +2,7 @@ import { Link, NavLink } from 'react-router';
 import { useSelector } from 'react-redux';
 
 import type { RootState } from '../../../app/store';
-import { ROUTES } from '../../constants/routes';
-import { NAV_ITEMS } from '../../constants/layout';
+import { ROUTES, NAV_ITEMS } from '../../constants';
 
 import DearObjetBlackLogo from '../../../assets/dear-objet-black-logo.svg';
 import UserRoundIcon from '../../../assets/user-round.svg';
@@ -63,7 +62,7 @@ export const Header = () => {
           <div className="shrink-0">
             {user && (
               <Link
-                to={ROUTES.MYPAGE}
+                to={ROUTES.MY}
                 aria-label="마이페이지"
                 className="flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-150 hover:bg-theme-200"
               >

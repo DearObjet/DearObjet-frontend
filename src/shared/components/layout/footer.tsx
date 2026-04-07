@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import { type MouseEvent } from 'react';
 import { ChevronRight } from 'lucide-react';
 
-import { INFO_LINKS, PARTNER_LINKS } from '../../constants/layout';
+import { INFO_LINKS, PARTNER_LINKS } from '../../constants';
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
