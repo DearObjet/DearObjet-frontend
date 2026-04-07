@@ -31,14 +31,17 @@ export const ShopManagement = () => {
                     <p className="text-sm font-medium">
                       클래스 이름을 등록해주세요
                     </p>
-                    <Input className="w-full border-gray-200" />
+                    <Input className="w-full" disabled />
                   </div>
 
                   <div className="flex flex-col gap-2">
                     <p className="text-sm font-medium">
                       클래스 소개글을 작성해주세요
                     </p>
-                    <textarea className="h-[7.0625rem] w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm" />
+                    <textarea
+                      className="h-[7.0625rem] w-full resize-none rounded-lg border border-gray-500 px-3 py-2 text-sm disabled:border-gray-200 disabled:bg-white"
+                      disabled
+                    />
                   </div>
 
                   <div className="flex gap-2">
@@ -46,12 +49,12 @@ export const ShopManagement = () => {
                       <p className="text-sm font-medium">
                         결제 금액을 작성해주세요 (1인 기준입니다)
                       </p>
-                      <Input className="w-full border-gray-200" />
+                      <Input className="w-full" disabled />
                     </div>
 
                     <div className="flex w-full flex-col gap-2">
                       <p className="text-sm font-medium">최대 예약인원</p>
-                      <Input className="w-full border-gray-200" />
+                      <Input className="w-full" disabled />
                     </div>
                   </div>
 
@@ -59,7 +62,7 @@ export const ShopManagement = () => {
                     <p className="text-sm font-medium">
                       클래스 유의 사항을 작성해주세요
                     </p>
-                    <Input className="w-full" />
+                    <Input className="w-full" disabled />
                   </div>
 
                   <div className="flex flex-col gap-2">
