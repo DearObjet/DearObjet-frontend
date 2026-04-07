@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, type ChangeEvent } from 'react';
 
-import { ImagePlus } from 'lucide-react';
+import { ImagePlus, X } from 'lucide-react';
 
 import { Aside } from '../../../../shared/components/layout';
 import { Button } from '../../../../shared/components/ui';
@@ -8,6 +8,24 @@ import { Input } from '../../../../shared/components/ui';
 
 export const ShopManagement = () => {
   const [isRegistering, setIsRegistering] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+
+  const handleImageAdd = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (images.length >= 5) return;
+    const url = URL.createObjectURL(file);
+    setImages((prev) => [...prev, url]);
+  };
+
+  const handleImageRemove = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleCancel = () => {
+    setIsRegistering(false);
+    setImages([]);
+  };
 
   return (
     <div className="flex h-screen w-screen">
@@ -35,7 +53,7 @@ export const ShopManagement = () => {
                       variant="secondaryDark"
                       className="flex items-center justify-center px-4 py-2 text-xs"
                       label="취소"
-                      onClick={() => setIsRegistering(false)}
+                      onClick={handleCancel}
                     />
                     <Button
                       variant="secondaryDark"
@@ -89,13 +107,44 @@ export const ShopManagement = () => {
 
                   <div className="flex flex-col gap-2">
                     <p className="text-sm font-medium">사진을 추가해주세요</p>
-                    <button
-                      className="flex h-[5.625rem] w-[5.625rem] items-center justify-center rounded-lg bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
-                      disabled={!isRegistering}
-                      type="button"
-                    >
-                      <ImagePlus className="h-5 w-5" />
-                    </button>
+                    <div className="flex flex-row gap-2">
+                      {images.length < 5 && (
+                        <label
+                          className={`flex h-[5.625rem] w-[5.625rem] flex-shrink-0 items-center justify-center rounded-lg bg-gray-200 ${
+                            !isRegistering
+                              ? 'cursor-not-allowed opacity-50'
+                              : 'cursor-pointer'
+                          }`}
+                        >
+                          <ImagePlus className="h-5 w-5" />
+                          <input
+                            type="file"
+                            accept="image/jpg, image/jpeg, image/png"
+                            className="hidden"
+                            disabled={!isRegistering}
+                            onChange={handleImageAdd}
+                          />
+                        </label>
+                      )}
+                      {images.map((url, index) => (
+                        <div
+                          key={index}
+                          className="relative h-[5.625rem] w-[5.625rem] flex-shrink-0"
+                        >
+                          <img
+                            src={url}
+                            alt={`uploaded-${index}`}
+                            className="h-full w-full rounded-lg object-cover"
+                          />
+                          <Button
+                            variant="icon"
+                            className="absolute right-1 top-1 flex h-4 w-4"
+                            onClick={() => handleImageRemove(index)}
+                            icon={<X />}
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </form>
               </div>
