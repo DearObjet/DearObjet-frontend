@@ -26,3 +26,12 @@ export const PARTNER_LINKS = [
     isBold: true,
   },
 ] as const;
+
+// role
+export const USER_ROLE = {
+  TEMP: 'TEMP',
+  CUSTOMER: 'CUSTOMER',
+  ARTIST: 'ARTIST',
+  SHOP: 'SHOP',
+  ADMIN: 'ADMIN',
+} as const;
