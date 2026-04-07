@@ -22,7 +22,7 @@ export const Input = ({
   ...props
 }: InputProps) => {
   const baseClasses =
-    'border border-gray-500 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-offset-1 focus:ring-blue-500';
+    'border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-offset-1 focus:ring-blue-500';
 
   const sizeClasses = {
     small: 'px-2 py-1 text-sm',
