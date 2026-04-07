@@ -1,4 +1,4 @@
-export type UserRole = 'TEMP' | 'CUSTOMER' | 'ARTIST' | 'SHOP';
+import type { UserRole } from '../../../shared/constants';
 
 export interface AuthUser {
   userId: number;
