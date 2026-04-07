@@ -16,6 +16,7 @@ import { HomePage } from '../pages/home/home-page';
 import { Signup } from '../features/signup/pages/sign-up';
 import { OAuthCallback } from '../features/auth';
 import { ThemeCustomizer } from '../features/admin/theme/pages/theme-customizer';
+import { ShopManagement } from '../features/shop/shop-management/pages/shop-management';
 
 import '../App.css';
 
@@ -57,6 +58,7 @@ export const App = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/oauth/callback" element={<OAuthCallback />} />
       <Route path="/admin" element={<ThemeCustomizer />} />
+      <Route path="/dashboard/2" element={<ShopManagement />} />
     </Routes>
   );
 };
