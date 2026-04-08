@@ -75,7 +75,8 @@ export const Header = () => {
           </nav>
 
           {/* 유저 액션 영역 */}
-          <div className="flex shrink-0">
+          <div className="flex w-[9rem] shrink-0 items-center justify-center gap-2">
+            {/* <div className="flex shrink-0"> */}
             {user && (
               <>
                 <Link
