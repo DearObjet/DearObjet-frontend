@@ -4,11 +4,27 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../../app/store';
 import { ROUTES, NAV_ITEMS } from '../../constants';
 
+import { Button } from '../ui';
+
 import DearObjetBlackLogo from '../../../assets/dear-objet-black-logo.svg';
 import UserRoundIcon from '../../../assets/user-round.svg';
+import { useAppDispatch } from '../../../app/hooks';
+import { useLogoutMutation, clearAuth } from '../../../features/auth';
 
 export const Header = () => {
+  const dispatch = useAppDispatch();
+  const [logout] = useLogoutMutation();
   const user = useSelector((state: RootState) => state.auth.user);
+
+  const handleLogout = async () => {
+    try {
+      await logout().unwrap();
+    } catch {
+      // 서버 에러여도 클라이언트 상태는 초기화
+    } finally {
+      dispatch(clearAuth());
+    }
+  };
 
   return (
     <header className="w-full">
@@ -59,21 +75,30 @@ export const Header = () => {
           </nav>
 
           {/* 유저 액션 영역 */}
-          <div className="shrink-0">
+          <div className="flex w-[9rem] shrink-0 items-center justify-center gap-2">
             {user && (
-              <Link
-                to={ROUTES.MY}
-                aria-label="마이페이지"
-                className="flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-150 hover:bg-theme-200"
-              >
-                <img
-                  src={UserRoundIcon}
-                  alt=""
-                  width={24}
-                  height={24}
-                  className="h-6 w-auto"
+              <>
+                <Link
+                  to={ROUTES.MY}
+                  aria-label="마이페이지"
+                  className="flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-150 hover:bg-theme-200"
+                >
+                  <img
+                    src={UserRoundIcon}
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="h-6 w-auto"
+                  />
+                </Link>
+                <Button
+                  label="로그아웃"
+                  variant="secondaryLight"
+                  onClick={handleLogout}
+                  size="small"
+                  type="button"
                 />
-              </Link>
+              </>
             )}
           </div>
         </div>
