@@ -3,7 +3,12 @@ import { RouterProvider } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from './hooks';
 
-import { setUser, useGetCurrentUserQuery } from '../features/auth';
+import {
+  setAccessToken,
+  setUser,
+  useGetCurrentUserQuery,
+  useRefreshTokenOnInitQuery,
+} from '../features/auth';
 import {
   useGetSystemThemeQuery,
   useGetUserThemeQuery,
@@ -21,6 +26,7 @@ export const App = () => {
   const accessToken = useAppSelector((state) => state.auth.accessToken);
   const themeMode = useAppSelector((state) => state.theme.mode);
 
+  const { data: refreshData } = useRefreshTokenOnInitQuery();
   const { data: systemTheme, isSuccess } = useGetSystemThemeQuery();
 
   const { data: userTheme } = useGetUserThemeQuery(undefined, {
@@ -30,6 +36,13 @@ export const App = () => {
   const { data: currentUser } = useGetCurrentUserQuery(undefined, {
     skip: !accessToken,
   });
+
+  // init
+  useEffect(() => {
+    if (refreshData?.accessToken) {
+      dispatch(setAccessToken(refreshData.accessToken));
+    }
+  }, [refreshData, dispatch]);
 
   // 유저정보 조회
   useEffect(() => {

@@ -18,6 +18,16 @@ export const authApi = createApi({
       providesTags: ['Auth'],
     }),
 
+    // 앱 시작 시 세션 복구
+    refreshTokenOnInit: builder.query<{ accessToken: string }, void>({
+      query: () => ({
+        url: AUTH_ENDPOINTS.REFRESH_TOKEN,
+        method: 'POST',
+      }),
+      transformResponse: (response: ApiResponse<{ accessToken: string }>) =>
+        response.data,
+    }),
+
     // Access Token 갱신
     refreshToken: builder.mutation<{ accessToken: string }, void>({
       query: () => ({
@@ -34,12 +44,14 @@ export const authApi = createApi({
         url: AUTH_ENDPOINTS.LOGOUT,
         method: 'POST',
       }),
+      invalidatesTags: ['Auth'],
     }),
   }),
 });
 
 export const {
   useGetCurrentUserQuery,
+  useRefreshTokenOnInitQuery,
   useRefreshTokenMutation,
   useLogoutMutation,
 } = authApi;

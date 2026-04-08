@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router';
 
 import { useAppDispatch } from '../../../app/hooks';
 
+import { ROUTES } from '../../../shared/constants';
+
 import { setAccessToken, setSignupRequired } from '../slices/auth-slice';
 import { useRefreshTokenMutation } from '../api/auth-api';
 
@@ -17,7 +19,7 @@ export const OAuthCallback = () => {
       const signup = searchParams.get('signup');
 
       if (!signup) {
-        navigate('/');
+        navigate(ROUTES.HOME);
         return;
       }
 
@@ -30,16 +32,16 @@ export const OAuthCallback = () => {
         if (signup === 'required') {
           // 신규 회원 - 회원가입 페이지로
           dispatch(setSignupRequired(true));
-          navigate('/signup');
+          navigate(ROUTES.SIGNUP);
         } else if (signup === 'completed') {
           // 기존 회원 - 메인으로
           dispatch(setSignupRequired(false));
-          navigate('/');
+          navigate(ROUTES.HOME);
         }
       } catch (error) {
         console.error('Token refresh failed:', error);
         alert('로그인 처리 중 오류가 발생했습니다.');
-        navigate('/');
+        navigate(ROUTES.HOME);
       }
     };
 
