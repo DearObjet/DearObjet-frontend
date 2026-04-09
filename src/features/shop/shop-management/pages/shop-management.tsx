@@ -6,9 +6,19 @@ import { Aside } from '../../../../shared/components/layout';
 import { Button } from '../../../../shared/components/ui';
 import { Input } from '../../../../shared/components/ui';
 
+import { useCreateClassMutation } from '../api/class-api';
+
 export const ShopManagement = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [images, setImages] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [className, setClassName] = useState('');
+  const [classDescription, setClassDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [maxCapacity, setMaxCapacity] = useState('');
+  const [notes, setNotes] = useState('');
+
+  const [createClass] = useCreateClassMutation();
 
   const handleImageAdd = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -16,15 +26,35 @@ export const ShopManagement = () => {
     if (images.length >= 5) return;
     const url = URL.createObjectURL(file);
     setImages((prev) => [...prev, url]);
+    setImageFiles((prev) => [...prev, file]);
   };
 
   const handleImageRemove = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleCancel = () => {
     setIsRegistering(false);
     setImages([]);
+    setImageFiles([]);
+    setClassName('');
+    setClassDescription('');
+    setPrice('');
+    setMaxCapacity('');
+    setNotes('');
+  };
+
+  const handleSave = async () => {
+    await createClass({
+      className,
+      classDescription,
+      price: Number(price),
+      maxCapacity: Number(maxCapacity),
+      notes,
+      classImageFiles: imageFiles,
+    });
+    setIsRegistering(false);
   };
 
   return (
@@ -59,7 +89,7 @@ export const ShopManagement = () => {
                       variant="secondaryDark"
                       className="flex items-center justify-center px-4 py-2 text-xs"
                       label="저장"
-                      onClick={() => setIsRegistering(false)}
+                      onClick={handleSave}
                     />
                   </div>
                 )}
@@ -71,7 +101,12 @@ export const ShopManagement = () => {
                     <p className="text-sm font-medium">
                       클래스 이름을 등록해주세요
                     </p>
-                    <Input className="w-full" disabled={!isRegistering} />
+                    <Input
+                      className="w-full"
+                      disabled={!isRegistering}
+                      value={className}
+                      onChange={(e) => setClassName(e.target.value)}
+                    />
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -81,6 +116,8 @@ export const ShopManagement = () => {
                     <textarea
                       className="h-[7.0625rem] w-full resize-none rounded-lg border border-gray-500 px-3 py-2 text-sm disabled:border-gray-200 disabled:bg-white"
                       disabled={!isRegistering}
+                      value={classDescription}
+                      onChange={(e) => setClassDescription(e.target.value)}
                     />
                   </div>
 
@@ -89,12 +126,22 @@ export const ShopManagement = () => {
                       <p className="text-sm font-medium">
                         결제 금액을 작성해주세요 (1인 기준입니다)
                       </p>
-                      <Input className="w-full" disabled={!isRegistering} />
+                      <Input
+                        className="w-full"
+                        disabled={!isRegistering}
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                      />
                     </div>
 
                     <div className="flex w-full flex-col gap-2">
                       <p className="text-sm font-medium">최대 예약인원</p>
-                      <Input className="w-full" disabled={!isRegistering} />
+                      <Input
+                        className="w-full"
+                        disabled={!isRegistering}
+                        value={maxCapacity}
+                        onChange={(e) => setMaxCapacity(e.target.value)}
+                      />
                     </div>
                   </div>
 
@@ -102,7 +149,12 @@ export const ShopManagement = () => {
                     <p className="text-sm font-medium">
                       클래스 유의 사항을 작성해주세요
                     </p>
-                    <Input className="w-full" disabled={!isRegistering} />
+                    <Input
+                      className="w-full"
+                      disabled={!isRegistering}
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                    />
                   </div>
 
                   <div className="flex flex-col gap-2">
