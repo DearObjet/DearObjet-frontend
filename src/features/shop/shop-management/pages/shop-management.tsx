@@ -219,7 +219,19 @@ export const ShopManagement = () => {
                 </div>
               </div>
 
-              <div></div>
+              <div>
+                <article className="flex flex-col">
+                  <img
+                    src="/"
+                    alt="이미지"
+                    className="h-[8rem] w-[11.1875rem] bg-gray-700 object-cover"
+                  />
+                  <div className="h-[6.4375rem] w-[11.1875rem] bg-gray-200 p-4">
+                    <p className="text-xs">어쩌구 클래스명</p>
+                    <span className="text-[10px]">최대인원 6명</span>
+                  </div>
+                </article>
+              </div>
             </section>
           </div>
         </main>
