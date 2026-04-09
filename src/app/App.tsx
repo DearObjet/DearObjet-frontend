@@ -1,64 +1,74 @@
 import { useEffect } from 'react';
-import { Routes, Route } from 'react-router';
+import { RouterProvider } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from './hooks';
 
 import {
+  setAccessToken,
+  setUser,
+  useGetCurrentUserQuery,
+  useRefreshTokenOnInitQuery,
+} from '../features/auth';
+import {
   useGetSystemThemeQuery,
   useGetUserThemeQuery,
-} from '../features/admin/theme';
-import {
   setSystemTheme,
   setThemeMode,
-} from '../features/admin/theme/slices/theme-slice';
+} from '../features/admin/theme';
 
-import { HomePage } from '../pages/home/home-page';
-import { Signup } from '../features/signup/pages/sign-up';
-import { OAuthCallback } from '../features/auth';
-import { ThemeCustomizer } from '../features/admin/theme/pages/theme-customizer';
-import { ShopManagement } from '../features/shop/shop-management/pages/shop-management';
+import { router } from './router';
 
 import '../App.css';
 
 export const App = () => {
   const dispatch = useAppDispatch();
-  const isAuthenticated = true;
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const accessToken = useAppSelector((state) => state.auth.accessToken);
   const themeMode = useAppSelector((state) => state.theme.mode);
 
-  // 시스템 테마 로드 (모든 사용자)
+  const { data: refreshData } = useRefreshTokenOnInitQuery();
   const { data: systemTheme, isSuccess } = useGetSystemThemeQuery();
 
-  // 사용자 다크모드 설정 로드 (로그인 시만)
   const { data: userTheme } = useGetUserThemeQuery(undefined, {
     skip: !isAuthenticated,
   });
+
+  const { data: currentUser } = useGetCurrentUserQuery(undefined, {
+    skip: !accessToken,
+  });
+
+  // init
+  useEffect(() => {
+    if (refreshData?.accessToken) {
+      dispatch(setAccessToken(refreshData.accessToken));
+    }
+  }, [refreshData, dispatch]);
+
+  // 유저정보 조회
+  useEffect(() => {
+    if (currentUser) {
+      dispatch(setUser(currentUser));
+    }
+  }, [currentUser, dispatch]);
 
   // 초기 다크모드 적용
   useEffect(() => {
     document.documentElement.classList.toggle('dark', themeMode === 'dark');
   }, [themeMode]);
 
-  // 시스템 테마 적용
-  useEffect(() => {
-    if (isSuccess && systemTheme) {
-      dispatch(setSystemTheme(systemTheme));
-    }
-  }, [systemTheme, isSuccess, dispatch]);
-
-  // 사용자 다크모드 적용
+  // 사용자 다크모드
   useEffect(() => {
     if (userTheme) {
       dispatch(setThemeMode(userTheme.mode));
     }
   }, [userTheme, dispatch]);
 
-  return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/oauth/callback" element={<OAuthCallback />} />
-      <Route path="/admin" element={<ThemeCustomizer />} />
-      <Route path="/dashboard/2" element={<ShopManagement />} />
-    </Routes>
-  );
+  // 시스템 테마
+  useEffect(() => {
+    if (isSuccess && systemTheme) {
+      dispatch(setSystemTheme(systemTheme));
+    }
+  }, [systemTheme, isSuccess, dispatch]);
+
+  return <RouterProvider router={router} />;
 };

@@ -1,9 +1,10 @@
-export type UserRole = 'TEMP' | 'CUSTOMER' | 'ARTIST' | 'SHOP';
+import type { UserRole } from '../../../shared/constants';
 
 export interface AuthUser {
-  userId: number;
-  name: string | null;
-  phoneNumber: string | null;
-  profileImage: string | null;
+  id: number;
+  email: string;
+  name: string;
   role: UserRole;
+  phoneNumber: string | null;
+  userStatus: 'ACTIVE' | 'INACTIVE';
 }
