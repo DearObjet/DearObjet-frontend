@@ -10,6 +10,8 @@ import {
   useGetClassesQuery,
   useGetClassQuery,
   useCreateClassMutation,
+  useUpdateClassMutation,
+  useDeleteClassMutation,
 } from '../api/class-api';
 
 type Mode = 'default' | 'registering' | 'selected' | 'editing';
@@ -30,6 +32,8 @@ export const ShopManagement = () => {
     skip: selectedClassId === null,
   });
   const [createClass] = useCreateClassMutation();
+  const [updateClass] = useUpdateClassMutation();
+  const [deleteClass] = useDeleteClassMutation();
 
   useEffect(() => {
     if (!selectedClassData) return;
@@ -94,9 +98,29 @@ export const ShopManagement = () => {
     if (confirmed) setMode('editing');
   };
 
-  const handleDeleteClick = () => {
+  const handleEditSave = async () => {
+    if (!selectedClassId) return;
+    await updateClass({
+      classId: selectedClassId,
+      className,
+      classDescription,
+      price: Number(price),
+      maxCapacity: Number(maxCapacity),
+      notes,
+      classImageFiles: imageFiles,
+    });
+    handleCancel();
+  };
+
+  const handleDeleteClick = async () => {
     if (!selectedClassData) return;
-    window.confirm(`${selectedClassData.data.className} 삭제하시겠습니까?`);
+    const confirmed = window.confirm(
+      `${selectedClassData.data.className} 삭제하시겠습니까?`
+    );
+    if (confirmed) {
+      await deleteClass(selectedClassId!);
+      handleCancel();
+    }
   };
 
   const isFormDisabled = mode === 'default' || mode === 'selected';
@@ -114,7 +138,7 @@ export const ShopManagement = () => {
             <section className="flex flex-col rounded-xl bg-white px-[3.125rem] pb-[1.6875rem] pt-4">
               <div className="flex items-center justify-between border-b pb-3">
                 <h3>클래스 등록하기</h3>
-                {mode === 'default' && (
+                {(mode === 'default' || mode === 'selected') && (
                   <Button
                     variant="secondaryDark"
                     className="flex items-center justify-center px-4 py-2 text-xs"
@@ -138,14 +162,6 @@ export const ShopManagement = () => {
                     />
                   </div>
                 )}
-                {mode === 'selected' && (
-                  <Button
-                    variant="secondaryDark"
-                    className="flex items-center justify-center px-4 py-2 text-xs"
-                    label="새 클래스 등록"
-                    onClick={() => setMode('registering')}
-                  />
-                )}
                 {mode === 'editing' && (
                   <div className="flex gap-1">
                     <Button
@@ -158,7 +174,7 @@ export const ShopManagement = () => {
                       variant="secondaryDark"
                       className="flex items-center justify-center px-4 py-2 text-xs"
                       label="수정"
-                      onClick={handleCancel}
+                      onClick={handleEditSave}
                     />
                   </div>
                 )}
@@ -262,6 +278,7 @@ export const ShopManagement = () => {
                             className="absolute right-1 top-1 flex h-4 w-4"
                             onClick={() => handleImageRemove(index)}
                             icon={<X />}
+                            disabled={isFormDisabled}
                           />
                         </div>
                       ))}

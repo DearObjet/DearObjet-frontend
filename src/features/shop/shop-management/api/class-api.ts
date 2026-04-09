@@ -57,8 +57,53 @@ export const classApi = createApi({
       },
       invalidatesTags: ['Class'],
     }),
+    updateClass: builder.mutation<
+      CreateClassResponse,
+      CreateClassRequest & { classId: number }
+    >({
+      query: (arg) => {
+        const formData = new FormData();
+
+        const request = new Blob(
+          [
+            JSON.stringify({
+              className: arg.className,
+              classDescription: arg.classDescription,
+              price: arg.price,
+              maxCapacity: arg.maxCapacity,
+              notes: arg.notes,
+            }),
+          ],
+          { type: 'application/json' }
+        );
+
+        formData.append('request', request);
+        arg.classImageFiles?.forEach((file) => {
+          formData.append('classImageFiles', file);
+        });
+
+        return {
+          url: `${CLASS_ENDPOINTS.CLASSES}/${arg.classId}`,
+          method: 'PUT',
+          body: formData,
+        };
+      },
+      invalidatesTags: ['Class'],
+    }),
+    deleteClass: builder.mutation<void, number>({
+      query: (classId) => ({
+        url: `${CLASS_ENDPOINTS.CLASSES}/${classId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Class'],
+    }),
   }),
 });
 
-export const { useGetClassesQuery, useGetClassQuery, useCreateClassMutation } =
-  classApi;
+export const {
+  useGetClassesQuery,
+  useGetClassQuery,
+  useCreateClassMutation,
+  useUpdateClassMutation,
+  useDeleteClassMutation,
+} = classApi;
