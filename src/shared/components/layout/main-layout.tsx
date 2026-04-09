@@ -8,7 +8,9 @@ export const MainLayout = () => {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1" id="main-content">
-        <Outlet />
+        <div className="mx-auto w-full max-w-[120rem] px-6 py-6 md:px-10 xl:px-[19.469rem]">
+          <Outlet />
+        </div>
       </main>
       <Footer />
     </div>
