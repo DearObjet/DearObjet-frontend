@@ -20,6 +20,13 @@ export const classApi = createApi({
       }),
       providesTags: ['Class'],
     }),
+    getClass: builder.query<CreateClassResponse, number>({
+      query: (classId) => ({
+        url: `${CLASS_ENDPOINTS.CLASSES}/${classId}`,
+        method: 'GET',
+      }),
+      providesTags: ['Class'],
+    }),
     createClass: builder.mutation<CreateClassResponse, CreateClassRequest>({
       query: (arg) => {
         const formData = new FormData();
@@ -53,4 +60,5 @@ export const classApi = createApi({
   }),
 });
 
-export const { useGetClassesQuery, useCreateClassMutation } = classApi;
+export const { useGetClassesQuery, useGetClassQuery, useCreateClassMutation } =
+  classApi;

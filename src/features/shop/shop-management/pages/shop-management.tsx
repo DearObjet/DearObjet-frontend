@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from 'react';
+import { useState, useEffect, type ChangeEvent } from 'react';
 
 import { ImagePlus, X } from 'lucide-react';
 
@@ -6,10 +6,17 @@ import { Aside } from '../../../../shared/components/layout';
 import { Button } from '../../../../shared/components/ui';
 import { Input } from '../../../../shared/components/ui';
 
-import { useGetClassesQuery, useCreateClassMutation } from '../api/class-api';
+import {
+  useGetClassesQuery,
+  useGetClassQuery,
+  useCreateClassMutation,
+} from '../api/class-api';
+
+type Mode = 'default' | 'registering' | 'selected' | 'editing';
 
 export const ShopManagement = () => {
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [mode, setMode] = useState<Mode>('default');
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [className, setClassName] = useState('');
@@ -19,7 +26,27 @@ export const ShopManagement = () => {
   const [notes, setNotes] = useState('');
 
   const { data: classListData } = useGetClassesQuery();
+  const { data: selectedClassData } = useGetClassQuery(selectedClassId!, {
+    skip: selectedClassId === null,
+  });
   const [createClass] = useCreateClassMutation();
+
+  useEffect(() => {
+    if (!selectedClassData) return;
+    const classData = selectedClassData.data;
+    setClassName(classData.className);
+    setClassDescription(classData.classDescription);
+    setPrice(String(classData.price));
+    setMaxCapacity(String(classData.maxCapacity));
+    setNotes(classData.notes);
+    setImages(classData.classImageUrls);
+    setImageFiles([]);
+  }, [selectedClassData]);
+
+  const handleClassSelect = (classId: number) => {
+    setSelectedClassId(classId);
+    setMode('selected');
+  };
 
   const handleImageAdd = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -36,7 +63,8 @@ export const ShopManagement = () => {
   };
 
   const handleCancel = () => {
-    setIsRegistering(false);
+    setMode('default');
+    setSelectedClassId(null);
     setImages([]);
     setImageFiles([]);
     setClassName('');
@@ -55,8 +83,23 @@ export const ShopManagement = () => {
       notes,
       classImageFiles: imageFiles,
     });
-    setIsRegistering(false);
+    handleCancel();
   };
+
+  const handleEditClick = () => {
+    if (!selectedClassData) return;
+    const confirmed = window.confirm(
+      `${selectedClassData.data.className} 수정하시겠습니까?`
+    );
+    if (confirmed) setMode('editing');
+  };
+
+  const handleDeleteClick = () => {
+    if (!selectedClassData) return;
+    window.confirm(`${selectedClassData.data.className} 삭제하시겠습니까?`);
+  };
+
+  const isFormDisabled = mode === 'default' || mode === 'selected';
 
   return (
     <div className="flex h-screen w-screen">
@@ -71,14 +114,15 @@ export const ShopManagement = () => {
             <section className="flex flex-col rounded-xl bg-white px-[3.125rem] pb-[1.6875rem] pt-4">
               <div className="flex items-center justify-between border-b pb-3">
                 <h3>클래스 등록하기</h3>
-                {!isRegistering ? (
+                {mode === 'default' && (
                   <Button
                     variant="secondaryDark"
                     className="flex items-center justify-center px-4 py-2 text-xs"
                     label="새 클래스 등록"
-                    onClick={() => setIsRegistering(true)}
+                    onClick={() => setMode('registering')}
                   />
-                ) : (
+                )}
+                {mode === 'registering' && (
                   <div className="flex gap-1">
                     <Button
                       variant="secondaryDark"
@@ -94,6 +138,30 @@ export const ShopManagement = () => {
                     />
                   </div>
                 )}
+                {mode === 'selected' && (
+                  <Button
+                    variant="secondaryDark"
+                    className="flex items-center justify-center px-4 py-2 text-xs"
+                    label="새 클래스 등록"
+                    onClick={() => setMode('registering')}
+                  />
+                )}
+                {mode === 'editing' && (
+                  <div className="flex gap-1">
+                    <Button
+                      variant="secondaryDark"
+                      className="flex items-center justify-center px-4 py-2 text-xs"
+                      label="취소"
+                      onClick={handleCancel}
+                    />
+                    <Button
+                      variant="secondaryDark"
+                      className="flex items-center justify-center px-4 py-2 text-xs"
+                      label="수정"
+                      onClick={handleCancel}
+                    />
+                  </div>
+                )}
               </div>
 
               <div>
@@ -104,7 +172,7 @@ export const ShopManagement = () => {
                     </p>
                     <Input
                       className="w-full"
-                      disabled={!isRegistering}
+                      disabled={isFormDisabled}
                       value={className}
                       onChange={(e) => setClassName(e.target.value)}
                     />
@@ -116,7 +184,7 @@ export const ShopManagement = () => {
                     </p>
                     <textarea
                       className="h-[7.0625rem] w-full resize-none rounded-lg border border-gray-500 px-3 py-2 text-sm disabled:border-gray-200 disabled:bg-white"
-                      disabled={!isRegistering}
+                      disabled={isFormDisabled}
                       value={classDescription}
                       onChange={(e) => setClassDescription(e.target.value)}
                     />
@@ -129,7 +197,7 @@ export const ShopManagement = () => {
                       </p>
                       <Input
                         className="w-full"
-                        disabled={!isRegistering}
+                        disabled={isFormDisabled}
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
                       />
@@ -139,7 +207,7 @@ export const ShopManagement = () => {
                       <p className="text-sm font-medium">최대 예약인원</p>
                       <Input
                         className="w-full"
-                        disabled={!isRegistering}
+                        disabled={isFormDisabled}
                         value={maxCapacity}
                         onChange={(e) => setMaxCapacity(e.target.value)}
                       />
@@ -152,7 +220,7 @@ export const ShopManagement = () => {
                     </p>
                     <Input
                       className="w-full"
-                      disabled={!isRegistering}
+                      disabled={isFormDisabled}
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                     />
@@ -164,7 +232,7 @@ export const ShopManagement = () => {
                       {images.length < 5 && (
                         <label
                           className={`flex h-[5.625rem] w-[5.625rem] flex-shrink-0 items-center justify-center rounded-lg bg-gray-200 ${
-                            !isRegistering
+                            isFormDisabled
                               ? 'cursor-not-allowed opacity-50'
                               : 'cursor-pointer'
                           }`}
@@ -174,7 +242,7 @@ export const ShopManagement = () => {
                             type="file"
                             accept="image/jpg, image/jpeg, image/png"
                             className="hidden"
-                            disabled={!isRegistering}
+                            disabled={isFormDisabled}
                             onChange={handleImageAdd}
                           />
                         </label>
@@ -211,11 +279,13 @@ export const ShopManagement = () => {
                     variant="secondaryLight"
                     className="flex items-center justify-center border-[1px] px-4 py-2 text-xs"
                     label="수정"
+                    onClick={handleEditClick}
                   />
                   <Button
                     variant="secondaryDark"
                     className="flex items-center justify-center px-4 py-2 text-xs"
                     label="삭제"
+                    onClick={handleDeleteClick}
                   />
                 </div>
               </div>
@@ -224,7 +294,12 @@ export const ShopManagement = () => {
                 {classListData?.data.items.map((item) => (
                   <article
                     key={item.classId}
-                    className="flex flex-shrink-0 flex-col"
+                    className={`flex flex-shrink-0 cursor-pointer flex-col ${
+                      selectedClassId === item.classId
+                        ? 'ring-2 ring-blue-500'
+                        : ''
+                    }`}
+                    onClick={() => handleClassSelect(item.classId)}
                   >
                     <img
                       src={item.firstImageUrl}
