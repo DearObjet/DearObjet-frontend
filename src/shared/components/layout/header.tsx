@@ -36,14 +36,12 @@ export const Header = () => {
 
       {/* 메인 헤더 */}
       <div className="border-b border-theme-200">
-        <div className="mx-[19.469rem] mb-[0.5625rem] mt-[0.4375rem] flex items-center">
+        <div className="mx-auto mb-[0.5625rem] mt-[0.4375rem] flex max-w-[120rem] items-center px-[19.469rem]">
           {/* 로고 */}
           <Link to="/" aria-label="Dear Objet" className="shrink-0">
             <img
               src={DearObjetBlackLogo}
               alt="Dear Objet"
-              width={74}
-              height={78}
               className="h-13 w-auto"
             />
           </Link>

@@ -24,7 +24,7 @@ export const Footer = () => {
 
   return (
     <footer className="w-full bg-theme-300">
-      <div className="mx-[19.469rem] py-10">
+      <div className="mx-auto max-w-[120rem] px-[19.469rem] py-10">
         <div className="flex gap-16">
           {/* 고객센터 */}
           <section
