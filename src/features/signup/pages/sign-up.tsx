@@ -243,6 +243,44 @@ export const Signup = () => {
     term.showForUserTypes.includes(userType)
   );
 
+  const formatPhoneNumber = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+  };
+
+  const formatBusinessNumber = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5, 10)}`;
+  };
+
+  const handlePhoneNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+
+    if (raw.length <= 11) {
+      setFormData({ ...formData, phoneNumber: formatPhoneNumber(raw) });
+
+      setIsCodeSent(false);
+      setIsPhoneVerified(false);
+      setIsCodeExpired(false);
+      setIsSendDisabled(false);
+      clearError('phoneNumber');
+      clearError('phoneVerified');
+    }
+  };
+
+  const handleBusinessNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+
+    if (raw.length <= 10) {
+      setFormData({ ...formData, businessNumber: formatBusinessNumber(raw) });
+      clearError('businessNumber');
+    }
+  };
+
   useEffect(() => {
     if (!signupRequired) {
       navigate('/');
@@ -390,7 +428,7 @@ export const Signup = () => {
       try {
         const requestData: CompleteSignupRequest = {
           name: formData.name,
-          phoneNumber: formData.phoneNumber,
+          phoneNumber: formData.phoneNumber.replace(/-/g, ''),
           smsAgreement: agreements.notification || false,
           marketingAgreement: agreements.marketing || false,
         };
@@ -434,12 +472,12 @@ export const Signup = () => {
     const request = {
       marketingAgreement: agreements.marketing || false,
       reviewDataAgreement: agreements.customerData || false,
-      businessNumber: formData.businessNumber,
+      businessNumber: formData.businessNumber.replace(/-/g, ''),
       businessName: formData.shopName,
       name: formData.shopName,
       smsAgreement: agreements.notification || false,
       businessAddress,
-      phoneNumber: formData.phoneNumber,
+      phoneNumber: formData.phoneNumber.replace(/-/g, ''),
       businessType: formData.businessType as BusinessType,
       businessCategory: formData.businessCategory as BusinessCategory,
       specialty: formData.specialty as Specialty,
@@ -510,15 +548,7 @@ export const Signup = () => {
             type="tel"
             value={formData.phoneNumber}
             error={errors.phoneNumber}
-            onChange={(e) => {
-              setFormData({ ...formData, phoneNumber: e.target.value });
-              setIsCodeSent(false);
-              setIsPhoneVerified(false);
-              setIsCodeExpired(false);
-              setIsSendDisabled(false);
-              clearError('phoneNumber');
-              clearError('phoneVerified');
-            }}
+            onChange={handlePhoneNumberChange}
             onButtonClick={handleSendVerification}
           />
 
@@ -612,10 +642,7 @@ export const Signup = () => {
               label="사업자 등록번호"
               value={formData.businessNumber}
               error={errors.businessNumber}
-              onChange={(e) => {
-                setFormData({ ...formData, businessNumber: e.target.value });
-                clearError('businessNumber');
-              }}
+              onChange={handleBusinessNumberChange}
             />
 
             <div className="flex flex-col gap-1">
