@@ -6,7 +6,7 @@ import { Aside } from '../../../../shared/components/layout';
 import { Button } from '../../../../shared/components/ui';
 import { Input } from '../../../../shared/components/ui';
 
-import { useCreateClassMutation } from '../api/class-api';
+import { useGetClassesQuery, useCreateClassMutation } from '../api/class-api';
 
 export const ShopManagement = () => {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -18,6 +18,7 @@ export const ShopManagement = () => {
   const [maxCapacity, setMaxCapacity] = useState('');
   const [notes, setNotes] = useState('');
 
+  const { data: classListData } = useGetClassesQuery();
   const [createClass] = useCreateClassMutation();
 
   const handleImageAdd = (e: ChangeEvent<HTMLInputElement>) => {
@@ -219,18 +220,25 @@ export const ShopManagement = () => {
                 </div>
               </div>
 
-              <div>
-                <article className="flex flex-col">
-                  <img
-                    src="/"
-                    alt="이미지"
-                    className="h-[8rem] w-[11.1875rem] bg-gray-700 object-cover"
-                  />
-                  <div className="h-[6.4375rem] w-[11.1875rem] bg-gray-200 p-4">
-                    <p className="text-xs">어쩌구 클래스명</p>
-                    <span className="text-[10px]">최대인원 6명</span>
-                  </div>
-                </article>
+              <div className="mt-4 flex gap-4 overflow-x-auto">
+                {classListData?.data.items.map((item) => (
+                  <article
+                    key={item.classId}
+                    className="flex flex-shrink-0 flex-col"
+                  >
+                    <img
+                      src={item.firstImageUrl}
+                      alt="이미지"
+                      className="h-[8rem] w-[11.1875rem] bg-gray-700 object-cover"
+                    />
+                    <div className="h-[6.4375rem] w-[11.1875rem] bg-gray-200 p-4">
+                      <p className="text-xs">{item.className}</p>
+                      <span className="text-[10px]">
+                        최대인원 {item.maxCapacity}명
+                      </span>
+                    </div>
+                  </article>
+                ))}
               </div>
             </section>
           </div>

@@ -18,3 +18,18 @@ export interface CreateClassResponse {
     notes: string;
   };
 }
+
+export interface ClassListItem {
+  classId: number;
+  className: string;
+  firstImageUrl: string;
+  maxCapacity: number;
+}
+
+export interface ClassListResponse {
+  data: {
+    items: ClassListItem[];
+    page: number;
+    totalPages: number;
+  };
+}

@@ -1,6 +1,10 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 
-import type { CreateClassRequest, CreateClassResponse } from '../types/class';
+import type {
+  CreateClassRequest,
+  CreateClassResponse,
+  ClassListResponse,
+} from '../types/class';
 import { createBaseQuery } from '../../../../shared/constants';
 import { CLASS_ENDPOINTS } from '../constants/class-constants';
 
@@ -9,6 +13,13 @@ export const classApi = createApi({
   baseQuery: createBaseQuery(),
   tagTypes: ['Class'],
   endpoints: (builder) => ({
+    getClasses: builder.query<ClassListResponse, void>({
+      query: () => ({
+        url: CLASS_ENDPOINTS.CLASSES,
+        method: 'GET',
+      }),
+      providesTags: ['Class'],
+    }),
     createClass: builder.mutation<CreateClassResponse, CreateClassRequest>({
       query: (arg) => {
         const formData = new FormData();
@@ -42,4 +53,4 @@ export const classApi = createApi({
   }),
 });
 
-export const { useCreateClassMutation } = classApi;
+export const { useGetClassesQuery, useCreateClassMutation } = classApi;
