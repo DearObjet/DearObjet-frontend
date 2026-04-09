@@ -26,6 +26,7 @@ export const ShopManagement = () => {
   const [price, setPrice] = useState('');
   const [maxCapacity, setMaxCapacity] = useState('');
   const [notes, setNotes] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { data: classListData } = useGetClassesQuery();
   const { data: selectedClassData } = useGetClassQuery(selectedClassId!, {
@@ -40,12 +41,15 @@ export const ShopManagement = () => {
     const classData = selectedClassData.data;
     setClassName(classData.className);
     setClassDescription(classData.classDescription);
-    setPrice(String(classData.price));
-    setMaxCapacity(String(classData.maxCapacity));
+    setPrice(classData.price.toLocaleString());
+    setMaxCapacity(classData.maxCapacity.toLocaleString());
     setNotes(classData.notes);
     setImages(classData.classImageUrls);
     setImageFiles([]);
   }, [selectedClassData]);
+
+  const clearError = (key: string) =>
+    setErrors((prev) => ({ ...prev, [key]: '' }));
 
   const handleClassSelect = (classId: number) => {
     setSelectedClassId(classId);
@@ -59,11 +63,24 @@ export const ShopManagement = () => {
     const url = URL.createObjectURL(file);
     setImages((prev) => [...prev, url]);
     setImageFiles((prev) => [...prev, file]);
+    clearError('images');
   };
 
   const handleImageRemove = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
     setImageFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handlePriceChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    setPrice(raw ? Number(raw).toLocaleString() : '');
+    clearError('price');
+  };
+
+  const handleMaxCapacityChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    setMaxCapacity(raw ? Number(raw).toLocaleString() : '');
+    clearError('maxCapacity');
   };
 
   const handleCancel = () => {
@@ -76,18 +93,40 @@ export const ShopManagement = () => {
     setPrice('');
     setMaxCapacity('');
     setNotes('');
+    setErrors({});
+  };
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    if (!className) newErrors.className = '필수 입력 항목입니다.';
+    if (!classDescription) newErrors.classDescription = '필수 입력 항목입니다.';
+    if (!price) newErrors.price = '필수 입력 항목입니다.';
+    if (!maxCapacity) newErrors.maxCapacity = '필수 입력 항목입니다.';
+    if (!notes) newErrors.notes = '필수 입력 항목입니다.';
+    if (imageFiles.length === 0)
+      newErrors.images = '사진을 1장 이상 추가해주세요.';
+    return newErrors;
   };
 
   const handleSave = async () => {
-    await createClass({
-      className,
-      classDescription,
-      price: Number(price),
-      maxCapacity: Number(maxCapacity),
-      notes,
-      classImageFiles: imageFiles,
-    });
-    handleCancel();
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    try {
+      await createClass({
+        className,
+        classDescription,
+        price: Number(price.replace(/,/g, '')),
+        maxCapacity: Number(maxCapacity.replace(/,/g, '')),
+        notes,
+        classImageFiles: imageFiles,
+      });
+      handleCancel();
+    } catch {
+      alert('클래스 등록에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   const handleEditClick = () => {
@@ -100,16 +139,25 @@ export const ShopManagement = () => {
 
   const handleEditSave = async () => {
     if (!selectedClassId) return;
-    await updateClass({
-      classId: selectedClassId,
-      className,
-      classDescription,
-      price: Number(price),
-      maxCapacity: Number(maxCapacity),
-      notes,
-      classImageFiles: imageFiles,
-    });
-    handleCancel();
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    try {
+      await updateClass({
+        classId: selectedClassId,
+        className,
+        classDescription,
+        price: Number(price.replace(/,/g, '')),
+        maxCapacity: Number(maxCapacity.replace(/,/g, '')),
+        notes,
+        classImageFiles: imageFiles,
+      });
+      handleCancel();
+    } catch {
+      alert('클래스 수정에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   const handleDeleteClick = async () => {
@@ -118,8 +166,12 @@ export const ShopManagement = () => {
       `${selectedClassData.data.className} 삭제하시겠습니까?`
     );
     if (confirmed) {
-      await deleteClass(selectedClassId!);
-      handleCancel();
+      try {
+        await deleteClass(selectedClassId!);
+        handleCancel();
+      } catch {
+        alert('클래스 삭제에 실패했습니다. 다시 시도해주세요.');
+      }
     }
   };
 
@@ -143,7 +195,18 @@ export const ShopManagement = () => {
                     variant="secondaryDark"
                     className="flex items-center justify-center px-4 py-2 text-xs"
                     label="새 클래스 등록"
-                    onClick={() => setMode('registering')}
+                    onClick={() => {
+                      setSelectedClassId(null);
+                      setImages([]);
+                      setImageFiles([]);
+                      setClassName('');
+                      setClassDescription('');
+                      setPrice('');
+                      setMaxCapacity('');
+                      setNotes('');
+                      setErrors({});
+                      setMode('registering');
+                    }}
                   />
                 )}
                 {mode === 'registering' && (
@@ -190,8 +253,14 @@ export const ShopManagement = () => {
                       className="w-full"
                       disabled={isFormDisabled}
                       value={className}
-                      onChange={(e) => setClassName(e.target.value)}
+                      onChange={(e) => {
+                        setClassName(e.target.value);
+                        clearError('className');
+                      }}
                     />
+                    {errors.className && (
+                      <p className="text-sm text-red-400">{errors.className}</p>
+                    )}
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -202,8 +271,16 @@ export const ShopManagement = () => {
                       className="h-[7.0625rem] w-full resize-none rounded-lg border border-gray-500 px-3 py-2 text-sm disabled:border-gray-200 disabled:bg-white"
                       disabled={isFormDisabled}
                       value={classDescription}
-                      onChange={(e) => setClassDescription(e.target.value)}
+                      onChange={(e) => {
+                        setClassDescription(e.target.value);
+                        clearError('classDescription');
+                      }}
                     />
+                    {errors.classDescription && (
+                      <p className="text-sm text-red-400">
+                        {errors.classDescription}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex gap-2">
@@ -215,8 +292,11 @@ export const ShopManagement = () => {
                         className="w-full"
                         disabled={isFormDisabled}
                         value={price}
-                        onChange={(e) => setPrice(e.target.value)}
+                        onChange={handlePriceChange}
                       />
+                      {errors.price && (
+                        <p className="text-sm text-red-400">{errors.price}</p>
+                      )}
                     </div>
 
                     <div className="flex w-full flex-col gap-2">
@@ -225,8 +305,13 @@ export const ShopManagement = () => {
                         className="w-full"
                         disabled={isFormDisabled}
                         value={maxCapacity}
-                        onChange={(e) => setMaxCapacity(e.target.value)}
+                        onChange={handleMaxCapacityChange}
                       />
+                      {errors.maxCapacity && (
+                        <p className="text-sm text-red-400">
+                          {errors.maxCapacity}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -238,8 +323,14 @@ export const ShopManagement = () => {
                       className="w-full"
                       disabled={isFormDisabled}
                       value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
+                      onChange={(e) => {
+                        setNotes(e.target.value);
+                        clearError('notes');
+                      }}
                     />
+                    {errors.notes && (
+                      <p className="text-sm text-red-400">{errors.notes}</p>
+                    )}
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -283,6 +374,9 @@ export const ShopManagement = () => {
                         </div>
                       ))}
                     </div>
+                    {errors.images && (
+                      <p className="text-sm text-red-400">{errors.images}</p>
+                    )}
                   </div>
                 </form>
               </div>
@@ -311,7 +405,7 @@ export const ShopManagement = () => {
                 {classListData?.data.items.map((item) => (
                   <article
                     key={item.classId}
-                    className={`flex flex-shrink-0 cursor-pointer flex-col`}
+                    className="flex flex-shrink-0 cursor-pointer flex-col"
                     onClick={() => handleClassSelect(item.classId)}
                   >
                     <img
@@ -322,7 +416,7 @@ export const ShopManagement = () => {
                     <div className="h-[6.4375rem] w-[11.1875rem] bg-gray-200 p-4">
                       <p className="text-xs">{item.className}</p>
                       <span className="text-[10px]">
-                        최대인원 {item.maxCapacity}명
+                        최대인원 {item.maxCapacity.toLocaleString()}명
                       </span>
                     </div>
                   </article>
