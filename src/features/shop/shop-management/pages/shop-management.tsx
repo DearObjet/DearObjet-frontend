@@ -311,11 +311,7 @@ export const ShopManagement = () => {
                 {classListData?.data.items.map((item) => (
                   <article
                     key={item.classId}
-                    className={`flex flex-shrink-0 cursor-pointer flex-col ${
-                      selectedClassId === item.classId
-                        ? 'ring-2 ring-blue-500'
-                        : ''
-                    }`}
+                    className={`flex flex-shrink-0 cursor-pointer flex-col`}
                     onClick={() => handleClassSelect(item.classId)}
                   >
                     <img
