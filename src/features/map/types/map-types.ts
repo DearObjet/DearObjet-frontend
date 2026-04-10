@@ -11,6 +11,7 @@ export interface ShopMapItem {
 
 export interface MapContainerProps {
   isLoaded: boolean;
+  isLocating: boolean;
   coordinates: { lat: number; lng: number };
   shops: ShopMapItem[];
   onMarkerClick?: (shopId: number) => void;

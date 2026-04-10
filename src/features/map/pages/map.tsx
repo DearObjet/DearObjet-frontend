@@ -10,7 +10,7 @@ import { useGetShopDetailQuery, useGetShopMarkersQuery } from '../api/map-api';
 export const Map = () => {
   const [selectedShopId, setSelectedShopId] = useState<number | null>(null);
 
-  const { isLoaded, coordinates } = useKakaoMap();
+  const { isLoaded, isLocating, coordinates } = useKakaoMap();
   const { data: shopMapData } = useGetShopMarkersQuery();
   const { data: shopDetail } = useGetShopDetailQuery(selectedShopId!, {
     skip: selectedShopId === null,
@@ -28,6 +28,7 @@ export const Map = () => {
       <div className="flex-1">
         <MapContainer
           isLoaded={isLoaded}
+          isLocating={isLocating}
           coordinates={coordinates}
           shops={shops}
           onMarkerClick={setSelectedShopId}

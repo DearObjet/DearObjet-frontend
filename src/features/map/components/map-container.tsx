@@ -11,6 +11,7 @@ const DEFAULT_LEVEL = 5;
 
 export const MapContainer = ({
   isLoaded,
+  isLocating,
   coordinates,
   shops,
   onMarkerClick,
@@ -35,7 +36,7 @@ export const MapContainer = ({
   }, [isLoaded, coordinates]);
 
   useEffect(() => {
-    if (!isLoaded || !mapInstanceRef.current) return;
+    if (!isLoaded || !mapInstanceRef.current || isLocating) return;
 
     // 기존 소품샵 마커 제거
     markersRef.current.forEach((marker) => marker.setMap(null));
@@ -44,7 +45,7 @@ export const MapContainer = ({
     // 기존 현재 위치 마커 제거
     myMarkerRef.current?.setMap(null);
 
-    // 현재 위치 마커 생성
+    // 현재 위치 마커 생성 (커스텀)
     const myMarkerEl = document.createElement('div');
     myMarkerEl.style.cssText = `
       width: 36px;
@@ -95,12 +96,14 @@ export const MapContainer = ({
 
       markersRef.current.push(marker);
     });
-  }, [isLoaded, shops, coordinates, onMarkerClick]);
+  }, [isLoaded, isLocating, shops, coordinates, onMarkerClick]);
 
-  if (!isLoaded) {
+  if (!isLoaded || isLocating) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-gray-100">
-        <p className="text-sm text-gray-400">지도를 불러오는 중...</p>
+        <p className="text-sm text-gray-400">
+          {!isLoaded ? '지도를 불러오는 중...' : '현재 위치를 찾는 중...'}
+        </p>
       </div>
     );
   }
