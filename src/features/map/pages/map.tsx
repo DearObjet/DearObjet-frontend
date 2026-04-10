@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useCallback } from 'react';
+import { useSearchParams } from 'react-router';
 
 import { useGetShopDetailQuery, useGetShopMarkersQuery } from '../api/map-api';
 import { useKakaoMap } from '../hooks/use-kakao-map';
@@ -8,7 +9,12 @@ import { MapSearchBar } from '../components/map-search-bar';
 import { MapAside } from '../components/map-aside';
 
 export const Map = () => {
-  const [selectedShopId, setSelectedShopId] = useState<number | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // URL에서 shopId 읽기
+  const selectedShopId = searchParams.get('shopId')
+    ? Number(searchParams.get('shopId'))
+    : null;
 
   const { isLoaded, isLocating, coordinates } = useKakaoMap();
   const { data: shopMapData } = useGetShopMarkersQuery();
@@ -17,6 +23,13 @@ export const Map = () => {
   });
 
   const shops = useMemo(() => shopMapData?.shops ?? [], [shopMapData]);
+
+  const handleMarkerClick = useCallback(
+    (shopId: number) => {
+      setSearchParams({ shopId: String(shopId) });
+    },
+    [setSearchParams]
+  );
 
   return (
     <div className="flex h-full w-full">
@@ -31,7 +44,7 @@ export const Map = () => {
           isLocating={isLocating}
           coordinates={coordinates}
           shops={shops}
-          onMarkerClick={setSelectedShopId}
+          onMarkerClick={handleMarkerClick}
         />
       </div>
     </div>
