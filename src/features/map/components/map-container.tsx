@@ -18,41 +18,28 @@ export const MapContainer = ({
 }: MapContainerProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<KakaoMap | null>(null);
-  const markersRef = useRef<KakaoMarker[]>([]);
+  const shopMarkersRef = useRef<KakaoMarker[]>([]);
   const myMarkerRef = useRef<KakaoCustomOverlay | null>(null);
 
+  // 지도 초기화 (카카오 지도 SDK 로드 + 위치 확정 후 1회만 실행)
   useEffect(() => {
-    if (!isLoaded || !mapRef.current) return;
-
-    const center = new window.kakao.maps.LatLng(
-      coordinates.lat,
-      coordinates.lng
-    );
+    if (!isLoaded || isLocating || !mapRef.current) return;
 
     mapInstanceRef.current = new window.kakao.maps.Map(mapRef.current, {
-      center,
+      center: new window.kakao.maps.LatLng(coordinates.lat, coordinates.lng),
       level: DEFAULT_LEVEL,
     });
-  }, [isLoaded, coordinates]);
+  }, [isLoaded, isLocating]);
 
+  // 현재 위치 마커
   useEffect(() => {
-    if (!isLoaded || !mapInstanceRef.current || isLocating) return;
+    if (!isLoaded || isLocating || !mapInstanceRef.current) return;
 
-    // 기존 소품샵 마커 제거
-    markersRef.current.forEach((marker) => marker.setMap(null));
-    markersRef.current = [];
-
-    // 기존 현재 위치 마커 제거
     myMarkerRef.current?.setMap(null);
 
-    // 현재 위치 마커 생성 (커스텀)
-    const myMarkerEl = document.createElement('div');
-    myMarkerEl.style.cssText = `
-      width: 36px;
-      height: 48px;
-      position: relative;
-    `;
-    myMarkerEl.innerHTML = `
+    const el = document.createElement('div');
+    el.style.cssText = 'width: 36px; height: 48px; position: relative;';
+    el.innerHTML = `
       <div style="
         width: 36px;
         height: 36px;
@@ -63,45 +50,48 @@ export const MapContainer = ({
       <div style="
         width: 0;
         height: 0;
-        border-left: 8px solid transparent;
-        border-right: 8px solid transparent;
+        border-left: 12px solid transparent;
+        border-right: 12px solid transparent;
         border-top: 14px solid #FF3B30;
         margin: 0 auto;
-        margin-top: -2px;
+        margin-top:-4.3px;
       "></div>
     `;
 
     myMarkerRef.current = new window.kakao.maps.CustomOverlay({
       position: new window.kakao.maps.LatLng(coordinates.lat, coordinates.lng),
-      content: myMarkerEl,
+      content: el,
       map: mapInstanceRef.current,
       yAnchor: 1,
     });
+  }, [isLoaded, isLocating, coordinates]);
 
-    // 소품샵 마커 생성
-    const createMarker = (lat: number, lng: number, title: string) => {
-      return new window.kakao.maps.Marker({
-        position: new window.kakao.maps.LatLng(lat, lng),
-        map: mapInstanceRef.current!,
-        title,
-      });
-    };
+  // 소품샵 마커
+  useEffect(() => {
+    if (!isLoaded || isLocating || !mapInstanceRef.current) return;
+
+    shopMarkersRef.current.forEach((marker) => marker.setMap(null));
+    shopMarkersRef.current = [];
 
     shops.forEach((shop) => {
-      const marker = createMarker(shop.latitude, shop.longitude, shop.shopName);
+      const marker = new window.kakao.maps.Marker({
+        position: new window.kakao.maps.LatLng(shop.latitude, shop.longitude),
+        map: mapInstanceRef.current!,
+        title: shop.shopName,
+      });
 
       window.kakao.maps.event.addListener(marker, 'click', () => {
         onMarkerClick?.(shop.shopId);
       });
 
-      markersRef.current.push(marker);
+      shopMarkersRef.current.push(marker);
     });
-  }, [isLoaded, isLocating, shops, coordinates, onMarkerClick]);
+  }, [isLoaded, isLocating, shops, onMarkerClick]);
 
   if (!isLoaded || isLocating) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-gray-100">
-        <p className="text-sm text-gray-400">
+      <div className="flex h-full w-full items-center justify-center bg-theme-100">
+        <p className="text-sm text-theme-300">
           {!isLoaded ? '지도를 불러오는 중...' : '현재 위치를 찾는 중...'}
         </p>
       </div>

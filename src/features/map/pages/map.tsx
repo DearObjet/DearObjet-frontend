@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
+import { useGetShopDetailQuery, useGetShopMarkersQuery } from '../api/map-api';
 import { useKakaoMap } from '../hooks/use-kakao-map';
 
 import { MapContainer } from '../components/map-container';
 import { MapSearchBar } from '../components/map-search-bar';
 import { MapAside } from '../components/map-aside';
-import { useGetShopDetailQuery, useGetShopMarkersQuery } from '../api/map-api';
 
 export const Map = () => {
   const [selectedShopId, setSelectedShopId] = useState<number | null>(null);
@@ -16,7 +16,7 @@ export const Map = () => {
     skip: selectedShopId === null,
   });
 
-  const shops = shopMapData?.shops ?? [];
+  const shops = useMemo(() => shopMapData?.shops ?? [], [shopMapData]);
 
   return (
     <div className="flex h-full w-full">
