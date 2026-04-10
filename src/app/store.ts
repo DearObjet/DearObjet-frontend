@@ -8,6 +8,7 @@ import { themeApi } from '../features/admin/theme';
 import { authApi } from '../features/auth';
 import { noticeApi } from '../features/notice';
 import { signupApi } from '../features/signup';
+import { mapApi } from '../features/map';
 
 export const store = configureStore({
   reducer: {
@@ -19,13 +20,15 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [noticeApi.reducerPath]: noticeApi.reducer,
     [signupApi.reducerPath]: signupApi.reducer,
+    [mapApi.reducerPath]: mapApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(themeApi.middleware)
       .concat(authApi.middleware)
       .concat(noticeApi.middleware)
-      .concat(signupApi.middleware),
+      .concat(signupApi.middleware)
+      .concat(mapApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

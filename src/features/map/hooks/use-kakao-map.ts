@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { KAKAO_MAP_KEY } from '../constants/map-contants';
+import { KAKAO_MAP_KEY } from '../constants/map-constants';
 
 export const useKakaoMap = () => {
   const [isLoaded, setIsLoaded] = useState(false);

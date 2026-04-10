@@ -22,8 +22,7 @@ export const MapSearchBar = ({ onSearch }: MapSearchBarProps) => {
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           placeholder="검색"
-          style={{ fontSize: 14 }}
-          className="flex-1 outline-none placeholder:text-gray-400"
+          className="flex-1 text-base outline-none placeholder:text-theme-300"
         />
       </div>
     </div>
