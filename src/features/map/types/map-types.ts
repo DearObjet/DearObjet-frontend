@@ -11,12 +11,18 @@ export interface ShopMapItem {
 
 export interface MapContainerProps {
   isLoaded: boolean;
+  coordinates: { lat: number; lng: number };
   shops: ShopMapItem[];
   onMarkerClick?: (shopId: number) => void;
 }
 
 export interface ShopMapResponse {
   shops: ShopMapItem[];
+}
+
+export interface Coordinates {
+  lat: number;
+  lng: number;
 }
 
 export interface ShopPanelProps {

@@ -1,63 +1,101 @@
 import { useEffect, useRef } from 'react';
 
-import type { KakaoMap, KakaoMarker } from '../types/kakao-types';
+import type {
+  KakaoMap,
+  KakaoMarker,
+  KakaoCustomOverlay,
+} from '../types/kakao-types';
 import type { MapContainerProps } from '../types/map-types';
 
-const DEFAULT_LAT = 37.5172;
-const DEFAULT_LNG = 127.0473;
 const DEFAULT_LEVEL = 5;
 
 export const MapContainer = ({
   isLoaded,
+  coordinates,
   shops,
   onMarkerClick,
 }: MapContainerProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<KakaoMap | null>(null);
   const markersRef = useRef<KakaoMarker[]>([]);
+  const myMarkerRef = useRef<KakaoCustomOverlay | null>(null);
 
-  // 지도 초기화
   useEffect(() => {
     if (!isLoaded || !mapRef.current) return;
 
-    const center = new window.kakao.maps.LatLng(DEFAULT_LAT, DEFAULT_LNG);
+    const center = new window.kakao.maps.LatLng(
+      coordinates.lat,
+      coordinates.lng
+    );
 
     mapInstanceRef.current = new window.kakao.maps.Map(mapRef.current, {
       center,
       level: DEFAULT_LEVEL,
     });
-  }, [isLoaded]);
+  }, [isLoaded, coordinates]);
 
-  // 마커 렌더링
   useEffect(() => {
     if (!isLoaded || !mapInstanceRef.current) return;
 
-    // 기존 마커 제거
+    // 기존 소품샵 마커 제거
     markersRef.current.forEach((marker) => marker.setMap(null));
     markersRef.current = [];
 
-    shops.forEach((shop) => {
-      // 마커 위치
-      const markerPosition = new window.kakao.maps.LatLng(
-        shop.latitude,
-        shop.longitude
-      );
+    // 기존 현재 위치 마커 제거
+    myMarkerRef.current?.setMap(null);
 
-      // 마커 생성
-      const marker = new window.kakao.maps.Marker({
-        position: markerPosition,
+    // 현재 위치 마커 생성
+    const myMarkerEl = document.createElement('div');
+    myMarkerEl.style.cssText = `
+      width: 36px;
+      height: 48px;
+      position: relative;
+    `;
+    myMarkerEl.innerHTML = `
+      <div style="
+        width: 36px;
+        height: 36px;
+        background-color: #FF3B30;
+        border-radius: 50%;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      "></div>
+      <div style="
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 14px solid #FF3B30;
+        margin: 0 auto;
+        margin-top: -2px;
+      "></div>
+    `;
+
+    myMarkerRef.current = new window.kakao.maps.CustomOverlay({
+      position: new window.kakao.maps.LatLng(coordinates.lat, coordinates.lng),
+      content: myMarkerEl,
+      map: mapInstanceRef.current,
+      yAnchor: 1,
+    });
+
+    // 소품샵 마커 생성
+    const createMarker = (lat: number, lng: number, title: string) => {
+      return new window.kakao.maps.Marker({
+        position: new window.kakao.maps.LatLng(lat, lng),
         map: mapInstanceRef.current!,
-        title: shop.shopName, // 마커 hover 시 표시될 이름
+        title,
       });
+    };
 
-      // 마커 클릭 이벤트
+    shops.forEach((shop) => {
+      const marker = createMarker(shop.latitude, shop.longitude, shop.shopName);
+
       window.kakao.maps.event.addListener(marker, 'click', () => {
         onMarkerClick?.(shop.shopId);
       });
 
       markersRef.current.push(marker);
     });
-  }, [isLoaded, shops, onMarkerClick]);
+  }, [isLoaded, shops, coordinates, onMarkerClick]);
 
   if (!isLoaded) {
     return (
