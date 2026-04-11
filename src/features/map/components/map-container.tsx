@@ -55,6 +55,7 @@ export const MapContainer = ({
   isLocating,
   coordinates,
   shops,
+  selectedShopId,
   onMarkerClick,
 }: MapContainerProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -72,6 +73,27 @@ export const MapContainer = ({
       level: DEFAULT_LEVEL,
     });
   }, [isLoaded, isLocating]);
+
+  // 선택된 샵으로 지도 이동
+  useEffect(() => {
+    if (
+      !isLoaded ||
+      isLocating ||
+      !mapInstanceRef.current ||
+      selectedShopId === null
+    )
+      return;
+
+    const selectedShop = shops.find((shop) => shop.shopId === selectedShopId);
+    if (!selectedShop) return;
+
+    mapInstanceRef.current.panTo(
+      new window.kakao.maps.LatLng(
+        selectedShop.latitude,
+        selectedShop.longitude
+      )
+    );
+  }, [isLoaded, isLocating, selectedShopId, shops]);
 
   // 현재 위치 마커
   useEffect(() => {

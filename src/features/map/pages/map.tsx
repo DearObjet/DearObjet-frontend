@@ -11,7 +11,6 @@ import { MapAside } from '../components/map-aside';
 export const Map = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // URL에서 shopId 읽기
   const selectedShopId = searchParams.get('shopId')
     ? Number(searchParams.get('shopId'))
     : null;
@@ -44,6 +43,7 @@ export const Map = () => {
           isLocating={isLocating}
           coordinates={coordinates}
           shops={shops}
+          selectedShopId={selectedShopId}
           onMarkerClick={handleMarkerClick}
         />
       </div>

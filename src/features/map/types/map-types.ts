@@ -14,6 +14,7 @@ export interface MapContainerProps {
   isLocating: boolean;
   coordinates: { lat: number; lng: number };
   shops: ShopMapItem[];
+  selectedShopId: number | null;
   onMarkerClick?: (shopId: number) => void;
 }
 
