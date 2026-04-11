@@ -62,6 +62,7 @@ export const MapContainer = ({
   const mapInstanceRef = useRef<KakaoMap | null>(null);
   const shopMarkersRef = useRef<KakaoMarker[]>([]);
   const myMarkerRef = useRef<KakaoCustomOverlay | null>(null);
+  const selectedShopIdRef = useRef<number | null>(selectedShopId);
   const infoOverlayRef = useRef<KakaoCustomOverlay | null>(null);
 
   // 지도 초기화 (카카오 지도 SDK 로드 + 위치 확정 후 1회만 실행)
@@ -74,6 +75,10 @@ export const MapContainer = ({
     });
   }, [isLoaded, isLocating]);
 
+  useEffect(() => {
+    selectedShopIdRef.current = selectedShopId;
+  }, [selectedShopId]);
+
   // 선택된 샵으로 지도 이동
   useEffect(() => {
     if (
@@ -85,6 +90,7 @@ export const MapContainer = ({
       return;
 
     const selectedShop = shops.find((shop) => shop.shopId === selectedShopId);
+
     if (!selectedShop) return;
 
     mapInstanceRef.current.panTo(
@@ -164,6 +170,9 @@ export const MapContainer = ({
 
       // 클릭 이벤트
       window.kakao.maps.event.addListener(marker, 'click', () => {
+        // shopId가 이전 또는 이후와 같으면 return
+        if (selectedShopIdRef.current === shop.shopId) return;
+
         onMarkerClick?.(shop.shopId);
       });
 
