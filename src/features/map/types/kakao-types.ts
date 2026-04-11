@@ -26,11 +26,23 @@ export interface KakaoMarker {
 
 export interface KakaoCustomOverlayOptions {
   position: KakaoLatLng;
-  content: HTMLElement;
-  map: KakaoMap;
+  content: string | HTMLElement;
+  map?: KakaoMap;
   yAnchor?: number;
+  xAnchor?: number;
+  zIndex?: number;
 }
 
 export interface KakaoCustomOverlay {
   setMap: (map: KakaoMap | null) => void;
+}
+
+export interface KakaoInfoWindowOptions {
+  content: string | HTMLElement;
+  removable?: boolean;
+}
+
+export interface KakaoInfoWindow {
+  open: (map: KakaoMap, marker: KakaoMarker) => void;
+  close: () => void;
 }

@@ -6,6 +6,8 @@ import type {
   KakaoMapOptions,
   KakaoCustomOverlay,
   KakaoCustomOverlayOptions,
+  KakaoInfoWindow,
+  KakaoInfoWindowOptions,
 } from './kakao-types';
 
 export {};
@@ -21,6 +23,7 @@ declare global {
         CustomOverlay: new (
           options: KakaoCustomOverlayOptions
         ) => KakaoCustomOverlay;
+        InfoWindow: new (options: KakaoInfoWindowOptions) => KakaoInfoWindow;
         event: {
           addListener: (
             target: KakaoMarker,
