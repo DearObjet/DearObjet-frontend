@@ -37,11 +37,11 @@ export const MapAside = ({ shopDetail }: ShopPanelProps) => {
   return (
     <div className="flex h-full flex-col overflow-y-auto">
       {/* 포스트 사진 그리드 */}
-      <div className="grid grid-cols-[repeat(3,136px)] grid-rows-[repeat(3,136px)] gap-[3px]">
+      <div className="grid grid-cols-[repeat(3,136px)] grid-rows-[repeat(3,136px)] gap-[1.5px]">
         {Array.from({ length: 9 }).map((_, i) => (
           <div
             key={i}
-            className="h-[8.5rem] w-[8.5rem] overflow-hidden bg-theme-200"
+            className="h-[8.375rem] w-[8.375rem] overflow-hidden bg-theme-200"
           />
         ))}
       </div>
