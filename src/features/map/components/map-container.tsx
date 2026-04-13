@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 
+import DearObjectMapMarker from '../../../assets/dear-objet-map-marker.svg';
+
 import type {
   KakaoMap,
   KakaoMarker,
@@ -162,9 +164,16 @@ export const MapContainer = ({
     // 클러스터러 초기화
     clustererRef.current.clear();
 
+    const markerSize = new window.kakao.maps.Size(40, 40);
+    const markerImage = new window.kakao.maps.MarkerImage(
+      DearObjectMapMarker,
+      markerSize
+    );
+
     const newMarkers = shops.map((shop) => {
       const marker = new window.kakao.maps.Marker({
         position: new window.kakao.maps.LatLng(shop.latitude, shop.longitude),
+        image: markerImage,
       });
 
       window.kakao.maps.event.addListener(marker, 'mouseover', () => {

@@ -8,6 +8,8 @@ import type {
   KakaoCustomOverlayOptions,
   KakaoClusterer,
   KakaoClustererOptions,
+  KakaoSize,
+  KakaoMarkerImage,
 } from './kakao-types';
 
 export {};
@@ -20,6 +22,8 @@ declare global {
         Map: new (container: HTMLElement, options: KakaoMapOptions) => KakaoMap;
         LatLng: new (lat: number, lng: number) => KakaoLatLng;
         Marker: new (options: KakaoMarkerOptions) => KakaoMarker;
+        Size: new (width: number, height: number) => KakaoSize;
+        MarkerImage: new (src: string, size: KakaoSize) => KakaoMarkerImage;
         CustomOverlay: new (
           options: KakaoCustomOverlayOptions
         ) => KakaoCustomOverlay;

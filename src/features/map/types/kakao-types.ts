@@ -13,10 +13,18 @@ export interface KakaoLatLng {
   getLng: () => number;
 }
 
+export interface KakaoSize {
+  width: number;
+  height: number;
+}
+
+export type KakaoMarkerImage = object;
+
 export interface KakaoMarkerOptions {
   position: KakaoLatLng;
   map?: KakaoMap;
   title?: string;
+  image?: KakaoMarkerImage;
 }
 
 export interface KakaoMarker {
