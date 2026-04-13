@@ -42,7 +42,7 @@ export const useKakaoMap = () => {
     isScriptAdded.current = true;
 
     const script = document.createElement('script');
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_MAP_KEY}&autoload=false`;
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_MAP_KEY}&autoload=false&libraries=services,clusterer`;
     script.async = true;
     script.onload = () => window.kakao.maps.load(() => setIsLoaded(true));
     document.head.appendChild(script);

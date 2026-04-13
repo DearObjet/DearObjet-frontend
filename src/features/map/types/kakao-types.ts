@@ -36,3 +36,18 @@ export interface KakaoCustomOverlayOptions {
 export interface KakaoCustomOverlay {
   setMap: (map: KakaoMap | null) => void;
 }
+
+export interface KakaoClustererOptions {
+  map: KakaoMap;
+  averageCenter?: boolean;
+  minLevel?: number;
+  disableClickZoom?: boolean;
+  styles?: object[];
+}
+
+export interface KakaoClusterer {
+  addMarkers: (markers: KakaoMarker[]) => void;
+  removeMarkers: (markers: KakaoMarker[]) => void;
+  clear: () => void;
+  setMap: (map: KakaoMap | null) => void;
+}

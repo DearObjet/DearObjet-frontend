@@ -4,6 +4,7 @@ import type {
   KakaoMap,
   KakaoMarker,
   KakaoCustomOverlay,
+  KakaoClusterer,
 } from '../types/kakao-types';
 import type { MapContainerProps } from '../types/map-types';
 
@@ -64,6 +65,7 @@ export const MapContainer = ({
   const myMarkerRef = useRef<KakaoCustomOverlay | null>(null);
   const selectedShopIdRef = useRef<number | null>(selectedShopId);
   const infoOverlayRef = useRef<KakaoCustomOverlay | null>(null);
+  const clustererRef = useRef<KakaoClusterer | null>(null);
 
   // 지도 초기화 (카카오 지도 SDK 로드 + 위치 확정 후 1회만 실행)
   useEffect(() => {
@@ -72,6 +74,13 @@ export const MapContainer = ({
     mapInstanceRef.current = new window.kakao.maps.Map(mapRef.current, {
       center: new window.kakao.maps.LatLng(coordinates.lat, coordinates.lng),
       level: DEFAULT_LEVEL,
+    });
+
+    // 클러스터러 초기화
+    clustererRef.current = new window.kakao.maps.MarkerClusterer({
+      map: mapInstanceRef.current,
+      averageCenter: true, // 클러스터 중심을 마커들의 평균 좌표로
+      minLevel: 4, // 4레벨 이상에서 클러스터링
     });
   }, [isLoaded, isLocating]);
 
@@ -136,24 +145,30 @@ export const MapContainer = ({
     });
   }, [isLoaded, isLocating, coordinates]);
 
-  // 소품샵 마커
+  // 소품샵 마커 + 클러스터링
   useEffect(() => {
-    if (!isLoaded || isLocating || !mapInstanceRef.current) return;
+    if (
+      !isLoaded ||
+      isLocating ||
+      !mapInstanceRef.current ||
+      !clustererRef.current
+    )
+      return;
 
+    // 기존 마커 제거
     shopMarkersRef.current.forEach((marker) => marker.setMap(null));
     shopMarkersRef.current = [];
 
-    shops.forEach((shop) => {
+    // 클러스터러 초기화
+    clustererRef.current.clear();
+
+    const newMarkers = shops.map((shop) => {
       const marker = new window.kakao.maps.Marker({
         position: new window.kakao.maps.LatLng(shop.latitude, shop.longitude),
-        map: mapInstanceRef.current!,
       });
 
-      // mouseover
       window.kakao.maps.event.addListener(marker, 'mouseover', () => {
-        // 기존 오버레이 제거
         infoOverlayRef.current?.setMap(null);
-
         infoOverlayRef.current = new window.kakao.maps.CustomOverlay({
           position: new window.kakao.maps.LatLng(shop.latitude, shop.longitude),
           content: createInfoOverlayContent(shop.shopName),
@@ -162,22 +177,23 @@ export const MapContainer = ({
         });
       });
 
-      // mouseout
       window.kakao.maps.event.addListener(marker, 'mouseout', () => {
         infoOverlayRef.current?.setMap(null);
         infoOverlayRef.current = null;
       });
 
-      // 클릭 이벤트
       window.kakao.maps.event.addListener(marker, 'click', () => {
-        // shopId가 이전 또는 이후와 같으면 return
         if (selectedShopIdRef.current === shop.shopId) return;
-
         onMarkerClick?.(shop.shopId);
       });
 
-      shopMarkersRef.current.push(marker);
+      return marker;
     });
+
+    shopMarkersRef.current = newMarkers;
+
+    // 클러스터러에 마커 추가 (map 직접 설정 대신 클러스터러가 관리)
+    clustererRef.current.addMarkers(newMarkers);
   }, [isLoaded, isLocating, shops, onMarkerClick]);
 
   if (!isLoaded || isLocating) {

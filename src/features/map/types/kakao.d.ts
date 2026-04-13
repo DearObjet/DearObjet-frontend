@@ -6,6 +6,8 @@ import type {
   KakaoMapOptions,
   KakaoCustomOverlay,
   KakaoCustomOverlayOptions,
+  KakaoClusterer,
+  KakaoClustererOptions,
 } from './kakao-types';
 
 export {};
@@ -23,11 +25,12 @@ declare global {
         ) => KakaoCustomOverlay;
         event: {
           addListener: (
-            target: KakaoMarker,
+            target: KakaoMarker | KakaoMap,
             type: string,
             handler: () => void
           ) => void;
         };
+        MarkerClusterer: new (options: KakaoClustererOptions) => KakaoClusterer;
       };
     };
   }
