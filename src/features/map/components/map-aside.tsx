@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Star, MessageCircle, Share2 } from 'lucide-react';
 
 import { Button } from '../../../shared/components/ui';
@@ -6,8 +6,9 @@ import { Button } from '../../../shared/components/ui';
 import type { ShopPanelProps, TabMenu } from '../types/map-types';
 
 import { DAY_LABEL, DAY_ORDER, TAB_MENUS } from '../constants/map-constants';
+import { OneDayClassTab } from './one-day-class-tab';
 
-export const MapAside = ({ shopDetail }: ShopPanelProps) => {
+export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabMenu>('스토리');
 
   const handleLikeToggle = () => {
@@ -26,6 +27,11 @@ export const MapAside = ({ shopDetail }: ShopPanelProps) => {
     console.log('입점신청하기');
   };
 
+  // 다른 소품샵 선택 시 탭 초기화
+  useEffect(() => {
+    setActiveTab('스토리');
+  }, [shopDetail?.shopName]);
+
   if (!shopDetail) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-theme-300">
@@ -35,7 +41,7 @@ export const MapAside = ({ shopDetail }: ShopPanelProps) => {
   }
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto">
+    <div className="flex h-full flex-col overflow-y-auto [scrollbar-gutter:stable]">
       {/* 포스트 사진 그리드 */}
       <div className="grid grid-cols-[repeat(3,136px)] grid-rows-[repeat(3,136px)] gap-[1.5px]">
         {Array.from({ length: 9 }).map((_, i) => (
@@ -96,15 +102,15 @@ export const MapAside = ({ shopDetail }: ShopPanelProps) => {
       {/* 상세 정보 */}
       <div className="flex flex-col gap-5 px-4 py-7 text-sm text-theme-900">
         <p>
-          <span className="mr-2">전화번호 :</span>
+          <span className="mr-2 font-bold">전화번호 :</span>
           {shopDetail.phoneNumber}
         </p>
         <p>
-          <span className="mr-2">주소 :</span>
+          <span className="mr-2 font-bold">주소 :</span>
           {shopDetail.businessAddress}
         </p>
         <div className="flex">
-          <span className="mr-2 shrink-0">영업시간</span>
+          <span className="mr-2 shrink-0 font-bold">영업시간</span>
           <div className="flex flex-col gap-0.5">
             {shopDetail.businessHours ? (
               DAY_ORDER.map((day) => {
@@ -149,8 +155,12 @@ export const MapAside = ({ shopDetail }: ShopPanelProps) => {
         ))}
       </div>
 
-      {/* 탭 컨텐츠 (추후 작업) */}
-      <div className="flex-1" />
+      {/* 탭 컨텐츠 */}
+      <div className="flex-1">
+        {activeTab === '원데이클래스' && shopId && (
+          <OneDayClassTab shopId={shopId} shopName={shopDetail.shopName} />
+        )}
+      </div>
     </div>
   );
 };

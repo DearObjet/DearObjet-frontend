@@ -29,6 +29,7 @@ export interface Coordinates {
 
 export interface ShopPanelProps {
   shopDetail: ShopDetail | null;
+  shopId: number | null;
 }
 
 export interface DayHours {

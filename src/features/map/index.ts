@@ -5,3 +5,5 @@ export {
   useGetShopMarkersQuery,
   useGetShopDetailQuery,
 } from './api/map-api';
+
+export { oneDayClassApi } from './api/one-day-class-api';

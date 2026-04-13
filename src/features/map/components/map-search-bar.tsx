@@ -14,8 +14,8 @@ export const MapSearchBar = ({ onSearch }: MapSearchBarProps) => {
 
   return (
     <div className="mx-2 my-2.5">
-      <div className="flex items-center gap-2 rounded-lg border border-theme-200 bg-white px-3 py-2">
-        <Search className="h-4 w-4 shrink-0 text-gray-400" />
+      <div className="flex items-center gap-2 rounded-lg border border-theme-300 px-3 py-2">
+        <Search className="h-4 w-4 shrink-0 text-theme-300" />
         <input
           type="text"
           value={value}

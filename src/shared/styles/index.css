@@ -108,4 +108,28 @@
     font-size: 3.2em;
     line-height: 1.1;
   }
+
+  /* react-calendar (map) */
+  .react-calendar {
+    width: 100%;
+    border: solid 1px;
+    font-size: 12px;
+  }
+
+  /* 스크롤바 전체 */
+  ::-webkit-scrollbar {
+    width: 6px; /* 세로 스크롤 */
+    height: 6px; /* 가로 스크롤 */
+  }
+
+  /* 스크롤바 바(thumb) */
+  ::-webkit-scrollbar-thumb {
+    background-color: #b3b3b3;
+    border-radius: 10px;
+  }
+
+  /* 트랙 */
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }

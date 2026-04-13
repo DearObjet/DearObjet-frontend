@@ -36,13 +36,3 @@ export interface KakaoCustomOverlayOptions {
 export interface KakaoCustomOverlay {
   setMap: (map: KakaoMap | null) => void;
 }
-
-export interface KakaoInfoWindowOptions {
-  content: string | HTMLElement;
-  removable?: boolean;
-}
-
-export interface KakaoInfoWindow {
-  open: (map: KakaoMap, marker: KakaoMarker) => void;
-  close: () => void;
-}
