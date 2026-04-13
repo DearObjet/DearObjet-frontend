@@ -28,7 +28,7 @@ export const MyPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>('bookmarks');
 
   return (
-    <div className="flex h-screen gap-3">
+    <div className="flex gap-3">
       <aside className="flex flex-col gap-4">
         <div className="flex h-[11.25rem] w-[22.375rem] items-center gap-5 rounded-[10px] border px-8">
           <img
@@ -43,7 +43,7 @@ export const MyPage = () => {
         </div>
 
         <nav className="h-[26.5625rem] w-[22.375rem] border px-[2.9375rem] py-[4.1875rem] text-black">
-          <ul>
+          <ul className="flex flex-col gap-[2.125rem]">
             {NAV_ITEMS.map(({ label, tab }) => (
               <li key={tab}>
                 <button onClick={() => setActiveTab(tab)}>{label}</button>
