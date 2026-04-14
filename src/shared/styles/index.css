@@ -121,15 +121,8 @@
     border-radius: 10px;
   }
 
-  /* 트랙 */
+  /* 스크롤바 트랙 */
   ::-webkit-scrollbar-track {
     background: transparent;
-  }
-
-  /* react-calendar (map) */
-  .react-calendar {
-    width: 100%;
-    border: solid 1px;
-    font-size: 12px;
   }
 }

@@ -1,9 +1,8 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
 
 import { useAppSelector } from '../../../app/hooks';
 import { Button } from '../../../shared/components/ui';
+import { DearObjetCalendar } from '../../../shared/components/common';
 import { USER_ROLE } from '../../../shared/constants';
 
 import {
@@ -193,12 +192,9 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
 
           {/* 달력 */}
           <div className="flex justify-center px-4 py-4">
-            <Calendar
-              onChange={(date) => handleDateChange(date as Date)}
+            <DearObjetCalendar
               value={selectedDate}
-              locale="ko-KR"
-              minDate={new Date()}
-              className="w-full rounded-lg border-0"
+              onChange={handleDateChange}
             />
           </div>
 
