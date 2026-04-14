@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Star, MessageCircle, Share2 } from 'lucide-react';
 
+import { useAppSelector } from '../../../app/hooks';
 import { Button } from '../../../shared/components/ui';
+import { USER_ROLE } from '../../../shared/constants';
 
 import type { ShopPanelProps, TabMenu } from '../types/map-types';
 
@@ -10,6 +12,7 @@ import { OneDayClassTab } from './one-day-class-tab';
 
 export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabMenu>('스토리');
+  const user = useAppSelector((state) => state.auth.user);
 
   const handleLikeToggle = () => {
     console.log('좋아요');
@@ -89,12 +92,14 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
         </div>
 
         {/* 입점 신청하기 버튼 */}
-        <Button
-          size="medium"
-          variant="secondaryDark"
-          label="입점 신청하기"
-          onClick={handleApplyForPartnership}
-        />
+        {user?.role === USER_ROLE.SHOP && (
+          <Button
+            size="medium"
+            variant="secondaryDark"
+            label="입점 신청하기"
+            onClick={handleApplyForPartnership}
+          />
+        )}
       </div>
 
       <hr className="mx-4 mt-4 border-theme-300" />
