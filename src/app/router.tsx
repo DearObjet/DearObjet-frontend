@@ -16,6 +16,7 @@ import { OAuthCallback } from '../features/auth';
 import { Signup } from '../features/signup';
 import { CustomerNotice, PartnerNotice } from '../features/notice';
 import { ThemeCustomizer } from '../features/admin/theme';
+import { ShopManagement } from '../features/shop/shop-management/pages/shop-management';
 import { HomePage } from '../pages/home/home-page';
 import { Map } from '../features/map';
 
@@ -93,7 +94,7 @@ export const router = createBrowserRouter([
                 path: ROUTES.SHOP_DASHBOARD,
                 element: <div>소품샵 대시보드</div>,
               },
-              { path: ROUTES.SHOP_MANAGE, element: <div>소품샵 관리</div> },
+              { path: ROUTES.SHOP_MANAGE, element: <ShopManagement /> },
               {
                 path: ROUTES.SHOP_MANAGE_RESERVATIONS,
                 element: <div>예약 관리</div>,
