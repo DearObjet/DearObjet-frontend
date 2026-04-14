@@ -9,6 +9,7 @@ import {
   MainLayout,
   PartnerLayout,
   AdminLayout,
+  MapLayout,
 } from '../shared/components/layout';
 
 import { OAuthCallback } from '../features/auth';
@@ -17,6 +18,7 @@ import { CustomerNotice, PartnerNotice } from '../features/notice';
 import { ThemeCustomizer } from '../features/admin/theme';
 import { ShopManagement } from '../features/shop/shop-management/pages/shop-management';
 import { HomePage } from '../pages/home/home-page';
+import { Map } from '../features/map';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -37,7 +39,6 @@ export const router = createBrowserRouter([
     children: [
       { path: ROUTES.HOME, element: <HomePage /> },
       { path: ROUTES.NOTICES, element: <CustomerNotice /> },
-      { path: ROUTES.MAP, element: <div>지도</div> },
       { path: ROUTES.POSTS, element: <div>포스트</div> },
       { path: ROUTES.ARTISTS, element: <div>작가</div> },
 
@@ -68,6 +69,12 @@ export const router = createBrowserRouter([
         ],
       },
     ],
+  },
+
+  // MapLayout (모든 사용자 접근 가능)
+  {
+    element: <MapLayout />,
+    children: [{ path: ROUTES.MAP, element: <Map /> }],
   },
 
   // PartnerLayout (shop, artist만 접근 가능)

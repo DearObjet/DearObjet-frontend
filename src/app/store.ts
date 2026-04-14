@@ -8,7 +8,7 @@ import { themeApi } from '../features/admin/theme';
 import { authApi } from '../features/auth';
 import { noticeApi } from '../features/notice';
 import { signupApi } from '../features/signup';
-import { classApi } from '../features/shop/shop-management/api/class-api';
+import { mapApi, oneDayClassApi } from '../features/map';
 
 export const store = configureStore({
   reducer: {
@@ -20,7 +20,8 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [noticeApi.reducerPath]: noticeApi.reducer,
     [signupApi.reducerPath]: signupApi.reducer,
-    [classApi.reducerPath]: classApi.reducer,
+    [mapApi.reducerPath]: mapApi.reducer,
+    [oneDayClassApi.reducerPath]: oneDayClassApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -28,7 +29,8 @@ export const store = configureStore({
       .concat(authApi.middleware)
       .concat(noticeApi.middleware)
       .concat(signupApi.middleware)
-      .concat(classApi.middleware),
+      .concat(mapApi.middleware)
+      .concat(oneDayClassApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
