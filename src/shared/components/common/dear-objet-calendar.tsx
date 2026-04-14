@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Calendar from 'react-calendar';
 
-import ArrowDown from '../../../assets/Arrow-Down.svg';
+import ArrowDown from '../../../assets/arrow-down.svg';
 import '../../styles/react-calendar.css';
 
 interface DropdownProps {
