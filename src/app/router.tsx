@@ -14,7 +14,7 @@ import {
 import { OAuthCallback } from '../features/auth';
 import { Signup } from '../features/signup';
 import { CustomerNotice, PartnerNotice } from '../features/notice';
-import { MyPage } from '../features/customer/my-page/pages/my-page';
+import { MyPage } from '../features/my-page/customer/pages/my-page';
 import { ThemeCustomizer } from '../features/admin/theme';
 import { ShopManagement } from '../features/shop/shop-management/pages/shop-management';
 import { HomePage } from '../pages/home/home-page';
