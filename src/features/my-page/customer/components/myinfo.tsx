@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import type { InputHTMLAttributes } from 'react';
 
 import UploadFile from '../../../../assets/upload-file.svg';
+
+import { Button } from '../../../../shared/components/ui';
 
 const ToggleSwitch = ({ id, label }: { id: string; label: string }) => {
   const [isOn, setIsOn] = useState(false);
@@ -26,9 +29,23 @@ const ToggleSwitch = ({ id, label }: { id: string; label: string }) => {
   );
 };
 
+interface LabeledInputProps extends InputHTMLAttributes<HTMLInputElement> {
+  id: string;
+  label: string;
+}
+
+const LabeledInput = ({ id, label, ...props }: LabeledInputProps) => {
+  return (
+    <>
+      <label htmlFor={id}>{label}</label>
+      <input id={id} className="h-[3rem] border-b border-black" {...props} />
+    </>
+  );
+};
+
 export const MyInfo = () => {
   return (
-    <div className="w-[47.375rem] px-2">
+    <div className="flex w-[41.625rem] flex-col gap-14">
       <form className="flex flex-col gap-[0.875rem]">
         <div className="relative inline-block">
           <img
@@ -45,29 +62,9 @@ export const MyInfo = () => {
           </button>
         </div>
 
-        <label htmlFor="name">이름</label>
-        <input
-          id="name"
-          type="text"
-          className="h-[3rem] border-b border-black"
-          placeholder="남현정"
-        />
-
-        <label htmlFor="phone">휴대폰번호</label>
-        <input
-          id="phone"
-          className="h-[3rem] border-b border-black"
-          type="text"
-          placeholder="010-1234-5678"
-        />
-
-        <label htmlFor="email">이메일</label>
-        <input
-          id="email"
-          type="email"
-          className="h-[3rem] border-b border-black"
-          placeholder="example@email.com"
-        />
+        <LabeledInput id="name" label="이름" type="text" />
+        <LabeledInput id="phone" label="휴대폰번호" type="text" />
+        <LabeledInput id="email" label="이메일" type="email" />
 
         <p>이벤트/혜택 소식 수신 여부</p>
         <div className="border-gray-3 flex flex-col gap-[0.875rem] rounded-xl border px-8 py-6">
@@ -75,6 +72,19 @@ export const MyInfo = () => {
           <ToggleSwitch id="sms" label="SMS 수신동의" />
         </div>
       </form>
+
+      <div className="flex justify-between">
+        <button className="text-gray-5 underline">회원탈퇴</button>
+
+        <div className="flex gap-3">
+          <Button
+            variant="secondaryLight"
+            label="로그아웃"
+            className="h-10 py-0"
+          />
+          <Button variant="secondaryDark" label="저장" className="h-10 py-0" />
+        </div>
+      </div>
     </div>
   );
 };
