@@ -1,10 +1,33 @@
-import UploadFile from '../../../../assets/upload-file.svg';
+import { useNavigate } from 'react-router';
+
+import { useAppDispatch } from '../../../../app/hooks';
+
+import { ROUTES } from '../../../../shared/constants';
+
+import { useLogoutMutation, clearAuth } from '../../../../features/auth';
 
 import { Button } from '../../../../shared/components/ui';
+import UploadFile from '../../../../assets/upload-file.svg';
+
 import { ToggleSwitch } from './ui/toggleswitch';
 import { Input } from './ui/input';
 
 export const MyInfo = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [logout] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      await logout().unwrap();
+    } catch {
+      // 서버 에러여도 클라이언트 상태는 초기화
+    } finally {
+      dispatch(clearAuth());
+      navigate(ROUTES.HOME);
+    }
+  };
+
   return (
     <div className="flex w-[41.625rem] flex-col gap-14">
       <form className="flex flex-col gap-[0.875rem]">
@@ -41,8 +64,15 @@ export const MyInfo = () => {
             variant="secondaryLight"
             label="로그아웃"
             className="h-10 py-0"
+            onClick={handleLogout}
+            type="button"
           />
-          <Button variant="secondaryDark" label="저장" className="h-10 py-0" />
+          <Button
+            variant="secondaryDark"
+            label="저장"
+            className="h-10 py-0"
+            type="submit"
+          />
         </div>
       </div>
     </div>
