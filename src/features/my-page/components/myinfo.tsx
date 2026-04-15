@@ -10,7 +10,7 @@ import { useLogoutMutation, clearAuth } from '../../../features/auth';
 import { Button } from '../../../shared/components/ui';
 import UploadFile from '../../../assets/upload-file.svg';
 
-import { ToggleSwitch } from './ui/toggleswitch';
+import { ToggleSwitch } from '../../../shared/components/ui/toggleswitch';
 import { Input } from './ui/input';
 
 export const MyInfo = () => {

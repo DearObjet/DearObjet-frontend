@@ -1,6 +1,6 @@
-import { Aside } from '../../../shared/components/layout';
+import { Aside } from '../../../../shared/components/layout';
 
-import { ToggleSwitch } from '../components/ui/toggleswitch';
+import { ToggleSwitch } from '../../../../shared/components/ui/toggleswitch';
 
 export const ShopSettingPage = () => {
   return (
