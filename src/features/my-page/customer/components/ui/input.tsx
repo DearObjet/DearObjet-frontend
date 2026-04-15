@@ -9,7 +9,11 @@ export const Input = ({ id, label, ...props }: InputProps) => {
   return (
     <>
       <label htmlFor={id}>{label}</label>
-      <input id={id} className="h-[3rem] border-b border-black" {...props} />
+      <input
+        id={id}
+        className="h-[3rem] border-b border-black outline-none"
+        {...props}
+      />
     </>
   );
 };
