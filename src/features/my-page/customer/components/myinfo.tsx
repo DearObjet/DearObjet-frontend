@@ -1,47 +1,8 @@
-import { useState } from 'react';
-import type { InputHTMLAttributes } from 'react';
-
 import UploadFile from '../../../../assets/upload-file.svg';
 
 import { Button } from '../../../../shared/components/ui';
-
-const ToggleSwitch = ({ id, label }: { id: string; label: string }) => {
-  const [isOn, setIsOn] = useState(false);
-
-  return (
-    <div className="flex items-center gap-2">
-      <button
-        type="button"
-        id={id}
-        onClick={() => setIsOn(!isOn)}
-        className={`relative h-[1.5rem] w-[3rem] rounded-full transition-colors duration-200 ${
-          isOn ? 'bg-black' : 'bg-gray-300'
-        }`}
-      >
-        <span
-          className={`absolute top-[50%] h-[1.1rem] w-[1.1rem] translate-y-[-50%] rounded-full bg-white shadow transition-all duration-200 ${
-            isOn ? 'left-[1.6rem]' : 'left-[0.2rem]'
-          }`}
-        />
-      </button>
-      <label htmlFor={id}>{label}</label>
-    </div>
-  );
-};
-
-interface LabeledInputProps extends InputHTMLAttributes<HTMLInputElement> {
-  id: string;
-  label: string;
-}
-
-const LabeledInput = ({ id, label, ...props }: LabeledInputProps) => {
-  return (
-    <>
-      <label htmlFor={id}>{label}</label>
-      <input id={id} className="h-[3rem] border-b border-black" {...props} />
-    </>
-  );
-};
+import { ToggleSwitch } from './ui/toggleswitch';
+import { Input } from './ui/input';
 
 export const MyInfo = () => {
   return (
@@ -62,9 +23,9 @@ export const MyInfo = () => {
           </button>
         </div>
 
-        <LabeledInput id="name" label="이름" type="text" />
-        <LabeledInput id="phone" label="휴대폰번호" type="text" />
-        <LabeledInput id="email" label="이메일" type="email" />
+        <Input id="name" label="이름" type="text" />
+        <Input id="phone" label="휴대폰번호" type="text" />
+        <Input id="email" label="이메일" type="email" />
 
         <p>이벤트/혜택 소식 수신 여부</p>
         <div className="border-gray-3 flex flex-col gap-[0.875rem] rounded-xl border px-8 py-6">
@@ -75,7 +36,6 @@ export const MyInfo = () => {
 
       <div className="flex justify-between">
         <button className="text-gray-5 underline">회원탈퇴</button>
-
         <div className="flex gap-3">
           <Button
             variant="secondaryLight"
