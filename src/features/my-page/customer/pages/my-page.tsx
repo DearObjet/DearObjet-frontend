@@ -28,13 +28,13 @@ export const MyPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>('bookmarks');
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-9">
       <aside className="flex flex-col gap-4">
         <div className="flex h-[11.25rem] w-[22.375rem] items-center gap-5 rounded-[10px] border px-8">
           <img
             src=""
             alt="내 프로필 이미지"
-            className="h-[5.625rem] w-[5.625rem] rounded-full border"
+            className="borde r h-[5.625rem] w-[5.625rem] rounded-full"
           />
           <div>
             <p>남현정</p>
