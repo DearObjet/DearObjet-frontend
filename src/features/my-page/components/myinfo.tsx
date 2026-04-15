@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { useAppDispatch } from '../../../../app/hooks';
+import { useAppDispatch } from '../../../app/hooks';
 
-import { ROUTES } from '../../../../shared/constants';
+import { ROUTES } from '../../../shared/constants';
 
-import { useLogoutMutation, clearAuth } from '../../../../features/auth';
+import { useLogoutMutation, clearAuth } from '../../../features/auth';
 
-import { Button } from '../../../../shared/components/ui';
-import UploadFile from '../../../../assets/upload-file.svg';
+import { Button } from '../../../shared/components/ui';
+import UploadFile from '../../../assets/upload-file.svg';
 
 import { ToggleSwitch } from './ui/toggleswitch';
 import { Input } from './ui/input';

@@ -1,6 +1,6 @@
 import type { InputHTMLAttributes } from 'react';
 
-import { Button } from '../../../../../shared/components/ui';
+import { Button } from '../../../../shared/components/ui';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   id: string;
