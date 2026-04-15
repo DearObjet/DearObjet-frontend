@@ -15,6 +15,8 @@ import { OAuthCallback } from '../features/auth';
 import { Signup } from '../features/signup';
 import { CustomerNotice, PartnerNotice } from '../features/notice';
 import { MyPage } from '../features/my-page/customer/pages/my-page';
+import { ArtistSettingPage } from '../features/my-page/customer/pages/artist-setting-page';
+import { ShopSettingPage } from '../features/my-page/customer/pages/shop-setting-page';
 import { ThemeCustomizer } from '../features/admin/theme';
 import { ShopManagement } from '../features/shop/shop-management/pages/shop-management';
 import { HomePage } from '../pages/home/home-page';
@@ -44,6 +46,8 @@ export const router = createBrowserRouter([
 
       // customer, shop, artist, admin 접근 가능 (temp 제외)
       { path: ROUTES.MY, element: <MyPage /> },
+      { path: ROUTES.SHOP_SETTINGS, element: <ShopSettingPage /> },
+      { path: ROUTES.ARTIST_SETTINGS, element: <ArtistSettingPage /> },
 
       {
         element: <ProtectedRoute />,
@@ -106,7 +110,7 @@ export const router = createBrowserRouter([
                 path: ROUTES.SHOP_NOTICE_DETAIL,
                 element: <div>소품샵 공지 상세</div>,
               },
-              { path: ROUTES.SHOP_SETTINGS, element: <div>소품샵 설정</div> },
+              // { path: ROUTES.SHOP_SETTINGS, element: <div>소품샵 설정</div> },
 
               // artist
               {
@@ -131,7 +135,7 @@ export const router = createBrowserRouter([
                 path: ROUTES.ARTIST_NOTICE_DETAIL,
                 element: <PartnerNotice />,
               },
-              { path: ROUTES.ARTIST_SETTINGS, element: <div>작가 설정</div> },
+              // { path: ROUTES.ARTIST_SETTINGS, element: <div>작가 설정</div> },
             ],
           },
         ],
