@@ -1,6 +1,6 @@
 export const FavoriteShops = () => {
   return (
-    <div className="h-[69.5625rem] overflow-y-auto [&::-webkit-scrollbar-thumb]:bg-black [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-[5px]">
+    <div className="max-h-[69.5625rem] overflow-y-auto [&::-webkit-scrollbar-thumb]:bg-black [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-[5px]">
       <div className="grid grid-cols-3">
         <img
           src=""
