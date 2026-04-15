@@ -1,4 +1,4 @@
-import { Aside } from '../../../shared/components/layout';
+import { Aside } from '../../../../shared/components/layout';
 
 import { ToggleSwitch } from '../components/ui/toggleswitch';
 
