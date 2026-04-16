@@ -15,6 +15,15 @@ import {
 import { OAuthCallback } from '../features/auth';
 import { Signup } from '../features/signup';
 import { CustomerNotice, PartnerNotice } from '../features/notice';
+import { MyPage } from '../features/my-page/pages/my-page';
+import { MyProfile } from '../features/my-page/components/myprofile';
+import { MyBookMarks } from '../features/my-page/components/mybookmarks';
+import { MyReservations } from '../features/my-page/components/myreservations';
+import { MyPosts } from '../features/my-page/components/myposts';
+import { MyMessages } from '../features/my-page/components/mymessages';
+import { PartnerProfile } from '../features/my-page/pages/partner-profile';
+import { ArtistSettingPage } from '../features/artist/setting/pages/artist-setting-page';
+import { ShopSettingPage } from '../features/shop/setting/pages/shop-setting-page';
 import { ThemeCustomizer } from '../features/admin/theme';
 import { ShopManagement } from '../features/shop/shop-management/pages/shop-management';
 import { HomePage } from '../pages/home/home-page';
@@ -43,6 +52,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.ARTISTS, element: <div>작가</div> },
 
       // customer, shop, artist, admin 접근 가능 (temp 제외)
+
       {
         element: <ProtectedRoute />,
         children: [
@@ -58,12 +68,12 @@ export const router = createBrowserRouter([
               />
             ),
             children: [
-              { path: ROUTES.MY, element: <div>마이페이지</div> },
-              { path: ROUTES.MY_PROFILE, element: <div>내 프로필</div> },
-              { path: ROUTES.MY_BOOKMARKS, element: <div>북마크</div> },
-              { path: ROUTES.MY_RESERVATIONS, element: <div>예약 내역</div> },
-              { path: ROUTES.MY_POSTS, element: <div>내 포스트</div> },
-              { path: ROUTES.MY_MESSAGES, element: <div>메시지</div> },
+              { path: ROUTES.MY, element: <MyPage /> },
+              { path: ROUTES.MY_PROFILE, element: <MyProfile /> },
+              { path: ROUTES.MY_BOOKMARKS, element: <MyBookMarks /> },
+              { path: ROUTES.MY_RESERVATIONS, element: <MyReservations /> },
+              { path: ROUTES.MY_POSTS, element: <MyPosts /> },
+              { path: ROUTES.MY_MESSAGES, element: <MyMessages /> },
             ],
           },
         ],
@@ -104,13 +114,13 @@ export const router = createBrowserRouter([
               { path: ROUTES.SHOP_CONTRACTS, element: <div>계약 관리</div> },
               { path: ROUTES.SHOP_SETTLEMENTS, element: <div>정산</div> },
               { path: ROUTES.SHOP_MESSAGES, element: <div>메시지</div> },
-              { path: ROUTES.SHOP_PROFILE, element: <div>소품샵 프로필</div> },
+              { path: ROUTES.SHOP_PROFILE, element: <PartnerProfile /> },
               { path: ROUTES.SHOP_NOTICES, element: <PartnerNotice /> },
               {
                 path: ROUTES.SHOP_NOTICE_DETAIL,
                 element: <div>소품샵 공지 상세</div>,
               },
-              { path: ROUTES.SHOP_SETTINGS, element: <div>소품샵 설정</div> },
+              { path: ROUTES.SHOP_SETTINGS, element: <ShopSettingPage /> },
 
               // artist
               {
@@ -129,13 +139,13 @@ export const router = createBrowserRouter([
                 element: <div>정산 내역</div>,
               },
               { path: ROUTES.ARTIST_MESSAGES, element: <div>메시지</div> },
-              { path: ROUTES.ARTIST_PROFILE, element: <div>작가 프로필</div> },
+              { path: ROUTES.ARTIST_PROFILE, element: <PartnerProfile /> },
               { path: ROUTES.ARTIST_NOTICES, element: <div>작가 공지</div> },
               {
                 path: ROUTES.ARTIST_NOTICE_DETAIL,
                 element: <PartnerNotice />,
               },
-              { path: ROUTES.ARTIST_SETTINGS, element: <div>작가 설정</div> },
+              { path: ROUTES.ARTIST_SETTINGS, element: <ArtistSettingPage /> },
             ],
           },
         ],
