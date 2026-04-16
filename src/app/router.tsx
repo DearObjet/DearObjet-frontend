@@ -20,6 +20,8 @@ import { FavoriteShops } from '../features/my-page/components/favoriteshops';
 import { Reservations } from '../features/my-page/components/reservations';
 import { MyPosts } from '../features/my-page/components/myposts';
 import { Messages } from '../features/my-page/components/messages';
+import { ArtistProfile } from '../features/my-page/pages/artist-profile';
+import { ShopProfile } from '../features/my-page/pages/shop-profile';
 import { ArtistSettingPage } from '../features/artist/setting/pages/artist-setting-page';
 import { ShopSettingPage } from '../features/shop/setting/pages/shop-setting-page';
 import { ThemeCustomizer } from '../features/admin/theme';
@@ -50,12 +52,8 @@ export const router = createBrowserRouter([
       { path: ROUTES.ARTISTS, element: <div>작가</div> },
 
       // customer, shop, artist, admin 접근 가능 (temp 제외)
-      { path: ROUTES.MY, element: <MyPage /> },
-      { path: ROUTES.MY_PROFILE, element: <MyInfo /> },
-      { path: ROUTES.MY_BOOKMARKS, element: <FavoriteShops /> },
-      { path: ROUTES.MY_RESERVATIONS, element: <Reservations /> },
-      { path: ROUTES.MY_POSTS, element: <MyPosts /> },
-      { path: ROUTES.MY_MESSAGES, element: <Messages /> },
+      { path: ROUTES.ARTIST_PROFILE, element: <ArtistProfile /> },
+      { path: ROUTES.SHOP_PROFILE, element: <ShopProfile /> },
 
       {
         element: <ProtectedRoute />,
@@ -112,7 +110,7 @@ export const router = createBrowserRouter([
               { path: ROUTES.SHOP_CONTRACTS, element: <div>계약 관리</div> },
               { path: ROUTES.SHOP_SETTLEMENTS, element: <div>정산</div> },
               { path: ROUTES.SHOP_MESSAGES, element: <div>메시지</div> },
-              { path: ROUTES.SHOP_PROFILE, element: <div>소품샵 프로필</div> },
+              { path: ROUTES.SHOP_PROFILE, element: <ShopProfile /> },
               { path: ROUTES.SHOP_NOTICES, element: <PartnerNotice /> },
               {
                 path: ROUTES.SHOP_NOTICE_DETAIL,
@@ -137,7 +135,7 @@ export const router = createBrowserRouter([
                 element: <div>정산 내역</div>,
               },
               { path: ROUTES.ARTIST_MESSAGES, element: <div>메시지</div> },
-              { path: ROUTES.ARTIST_PROFILE, element: <div>작가 프로필</div> },
+              { path: ROUTES.ARTIST_PROFILE, element: <ArtistProfile /> },
               { path: ROUTES.ARTIST_NOTICES, element: <div>작가 공지</div> },
               {
                 path: ROUTES.ARTIST_NOTICE_DETAIL,
