@@ -15,6 +15,11 @@ import { OAuthCallback } from '../features/auth';
 import { Signup } from '../features/signup';
 import { CustomerNotice, PartnerNotice } from '../features/notice';
 import { MyPage } from '../features/my-page/pages/my-page';
+import { MyInfo } from '../features/my-page/components/myinfo';
+import { FavoriteShops } from '../features/my-page/components/favoriteshops';
+import { Reservations } from '../features/my-page/components/reservations';
+import { MyPosts } from '../features/my-page/components/myposts';
+import { Messages } from '../features/my-page/components/messages';
 import { ArtistSettingPage } from '../features/artist/setting/pages/artist-setting-page';
 import { ShopSettingPage } from '../features/shop/setting/pages/shop-setting-page';
 import { ThemeCustomizer } from '../features/admin/theme';
@@ -46,6 +51,11 @@ export const router = createBrowserRouter([
 
       // customer, shop, artist, admin 접근 가능 (temp 제외)
       { path: ROUTES.MY, element: <MyPage /> },
+      { path: ROUTES.MY_PROFILE, element: <MyInfo /> },
+      { path: ROUTES.MY_BOOKMARKS, element: <FavoriteShops /> },
+      { path: ROUTES.MY_RESERVATIONS, element: <Reservations /> },
+      { path: ROUTES.MY_POSTS, element: <MyPosts /> },
+      { path: ROUTES.MY_MESSAGES, element: <Messages /> },
 
       {
         element: <ProtectedRoute />,
@@ -62,12 +72,12 @@ export const router = createBrowserRouter([
               />
             ),
             children: [
-              // { path: ROUTES.MY, element: <div>마이페이지</div> },
-              { path: ROUTES.MY_PROFILE, element: <div>내 프로필</div> },
-              { path: ROUTES.MY_BOOKMARKS, element: <div>북마크</div> },
-              { path: ROUTES.MY_RESERVATIONS, element: <div>예약 내역</div> },
-              { path: ROUTES.MY_POSTS, element: <div>내 포스트</div> },
-              { path: ROUTES.MY_MESSAGES, element: <div>메시지</div> },
+              { path: ROUTES.MY, element: <MyPage /> },
+              { path: ROUTES.MY_PROFILE, element: <MyInfo /> },
+              { path: ROUTES.MY_BOOKMARKS, element: <FavoriteShops /> },
+              { path: ROUTES.MY_RESERVATIONS, element: <Reservations /> },
+              { path: ROUTES.MY_POSTS, element: <MyPosts /> },
+              { path: ROUTES.MY_MESSAGES, element: <Messages /> },
             ],
           },
         ],

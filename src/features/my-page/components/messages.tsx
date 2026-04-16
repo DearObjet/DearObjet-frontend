@@ -1,3 +1,9 @@
+import { MyPageLayout } from './my-page-layout';
+
 export const Messages = () => {
-  return <div>메시지</div>;
+  return (
+    <MyPageLayout>
+      <div>메시지</div>
+    </MyPageLayout>
+  );
 };
