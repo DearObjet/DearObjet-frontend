@@ -2,7 +2,7 @@ import { Button } from '../../../shared/components/ui';
 
 import { MyPageLayout } from './my-page-layout';
 
-export const Reservations = () => {
+export const MyReservations = () => {
   return (
     <MyPageLayout>
       <div className="flex w-[43.562rem] flex-col gap-12 text-[26px]">

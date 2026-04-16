@@ -15,9 +15,13 @@ import UploadFile from '../../../assets/upload-file.svg';
 
 interface ProfileFormProps {
   children?: ReactNode;
+  showSave?: boolean;
 }
 
-export const ProfileForm = ({ children }: ProfileFormProps) => {
+export const ProfileForm = ({
+  children,
+  showSave = false,
+}: ProfileFormProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [logout] = useLogoutMutation();
@@ -90,12 +94,14 @@ export const ProfileForm = ({ children }: ProfileFormProps) => {
             onClick={handleLogout}
             type="button"
           />
-          <Button
-            variant="secondaryDark"
-            label="저장"
-            style={{ height: '2.5rem', paddingTop: 0, paddingBottom: 0 }}
-            type="submit"
-          />
+          {showSave && (
+            <Button
+              variant="secondaryDark"
+              label="저장"
+              style={{ height: '2.5rem', paddingTop: 0, paddingBottom: 0 }}
+              type="submit"
+            />
+          )}
         </div>
       </div>
     </div>

@@ -15,11 +15,11 @@ import { OAuthCallback } from '../features/auth';
 import { Signup } from '../features/signup';
 import { CustomerNotice, PartnerNotice } from '../features/notice';
 import { MyPage } from '../features/my-page/pages/my-page';
-import { MyInfo } from '../features/my-page/components/myprofile';
-import { FavoriteShops } from '../features/my-page/components/favoriteshops';
-import { Reservations } from '../features/my-page/components/reservations';
+import { MyProfile } from '../features/my-page/components/myprofile';
+import { MyBookMarks } from '../features/my-page/components/mybookmarks';
+import { MyReservations } from '../features/my-page/components/myreservations';
 import { MyPosts } from '../features/my-page/components/myposts';
-import { Messages } from '../features/my-page/components/messages';
+import { MyMessages } from '../features/my-page/components/mymessages';
 import { ArtistProfile } from '../features/my-page/pages/artist-profile';
 import { ShopProfile } from '../features/my-page/pages/shop-profile';
 import { ArtistSettingPage } from '../features/artist/setting/pages/artist-setting-page';
@@ -53,7 +53,7 @@ export const router = createBrowserRouter([
 
       // customer, shop, artist, admin 접근 가능 (temp 제외)
       { path: ROUTES.MY, element: <MyPage /> },
-      { path: ROUTES.MY_PROFILE, element: <MyInfo /> },
+      { path: ROUTES.MY_PROFILE, element: <MyProfile /> },
       { path: ROUTES.ARTIST_PROFILE, element: <ArtistProfile /> },
       { path: ROUTES.SHOP_PROFILE, element: <ShopProfile /> },
 
@@ -73,11 +73,11 @@ export const router = createBrowserRouter([
             ),
             children: [
               { path: ROUTES.MY, element: <MyPage /> },
-              { path: ROUTES.MY_PROFILE, element: <MyInfo /> },
-              { path: ROUTES.MY_BOOKMARKS, element: <FavoriteShops /> },
-              { path: ROUTES.MY_RESERVATIONS, element: <Reservations /> },
+              { path: ROUTES.MY_PROFILE, element: <MyProfile /> },
+              { path: ROUTES.MY_BOOKMARKS, element: <MyBookMarks /> },
+              { path: ROUTES.MY_RESERVATIONS, element: <MyReservations /> },
               { path: ROUTES.MY_POSTS, element: <MyPosts /> },
-              { path: ROUTES.MY_MESSAGES, element: <Messages /> },
+              { path: ROUTES.MY_MESSAGES, element: <MyMessages /> },
             ],
           },
         ],
