@@ -93,7 +93,7 @@ export const Header = () => {
                 ) : (
                   <Link
                     to={ROUTES.SIGNUP}
-                    aria-label="회원가입 페이지 이동"
+                    aria-label="회원가입 페이지"
                     className="flex h-12 w-12 items-center justify-center rounded-full text-xs transition-colors duration-150 hover:bg-theme-200"
                   >
                     <UserPlus className="flex h-6 w-6 text-theme-900" />
