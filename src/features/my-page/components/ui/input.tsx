@@ -8,6 +8,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   prefix?: string;
   buttonLabel?: string;
   onButtonClick?: () => void;
+  variant?: 'default' | 'horizontal';
 }
 
 export const Input = ({
@@ -16,14 +17,22 @@ export const Input = ({
   prefix,
   buttonLabel,
   onButtonClick,
+  variant = 'default',
   ...props
 }: InputProps) => {
+  const isHorizontal = variant === 'horizontal';
+
   return (
-    <>
-      <label htmlFor={id}>{label}</label>
-      <div className="flex items-center border-b border-black">
+    <div className={`${isHorizontal ? 'flex items-center gap-4' : ''} flex-1`}>
+      <label htmlFor={id} className={isHorizontal ? 'min-w-28' : ''}>
+        {label}
+      </label>
+
+      <div className="flex flex-1 items-center border-b border-black">
         {prefix && <span className="mr-2">{prefix}</span>}
+
         <input id={id} className="h-[3rem] flex-1 outline-none" {...props} />
+
         {buttonLabel && (
           <Button
             type="button"
@@ -34,6 +43,6 @@ export const Input = ({
           />
         )}
       </div>
-    </>
+    </div>
   );
 };
