@@ -1,3 +1,21 @@
+import { useState } from 'react';
+
+import { ProfileForm } from '../components/profile-form';
+import { Input } from '../components/ui/input';
+
 export const ShopProfile = () => {
-  return <div>소품샵 개인정보</div>;
+  const [instagram, setInstagram] = useState('');
+
+  return (
+    <ProfileForm>
+      <Input
+        id="instagram"
+        label="Instagram Business Account ID"
+        type="text"
+        prefix="@"
+        value={instagram}
+        onChange={(e) => setInstagram(e.target.value)}
+      />
+    </ProfileForm>
+  );
 };

@@ -5,6 +5,7 @@ import { Button } from '../../../../shared/components/ui';
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   id: string;
   label: string;
+  prefix?: string;
   buttonLabel?: string;
   onButtonClick?: () => void;
 }
@@ -12,6 +13,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 export const Input = ({
   id,
   label,
+  prefix,
   buttonLabel,
   onButtonClick,
   ...props
@@ -20,6 +22,7 @@ export const Input = ({
     <>
       <label htmlFor={id}>{label}</label>
       <div className="flex items-center border-b border-black">
+        {prefix && <span className="mr-2">{prefix}</span>}
         <input id={id} className="h-[3rem] flex-1 outline-none" {...props} />
         {buttonLabel && (
           <Button

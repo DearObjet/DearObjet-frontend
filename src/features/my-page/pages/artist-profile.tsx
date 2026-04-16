@@ -12,6 +12,7 @@ export const ArtistProfile = () => {
         id="instagram"
         label="Instagram Business Account ID"
         type="text"
+        prefix="@"
         value={instagram}
         onChange={(e) => setInstagram(e.target.value)}
       />
