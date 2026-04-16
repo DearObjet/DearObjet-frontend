@@ -24,7 +24,7 @@ export const Input = ({
         {buttonLabel && (
           <Button
             type="button"
-            className="h-10 py-0"
+            style={{ height: '2.5rem', paddingTop: 0, paddingBottom: 0 }}
             label={buttonLabel}
             variant="secondaryLight"
             onClick={onButtonClick}

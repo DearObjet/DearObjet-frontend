@@ -15,7 +15,7 @@ import { OAuthCallback } from '../features/auth';
 import { Signup } from '../features/signup';
 import { CustomerNotice, PartnerNotice } from '../features/notice';
 import { MyPage } from '../features/my-page/pages/my-page';
-import { MyInfo } from '../features/my-page/components/myinfo';
+import { MyInfo } from '../features/my-page/components/myprofile';
 import { FavoriteShops } from '../features/my-page/components/favoriteshops';
 import { Reservations } from '../features/my-page/components/reservations';
 import { MyPosts } from '../features/my-page/components/myposts';
@@ -52,6 +52,8 @@ export const router = createBrowserRouter([
       { path: ROUTES.ARTISTS, element: <div>작가</div> },
 
       // customer, shop, artist, admin 접근 가능 (temp 제외)
+      { path: ROUTES.MY, element: <MyPage /> },
+      { path: ROUTES.MY_PROFILE, element: <MyInfo /> },
       { path: ROUTES.ARTIST_PROFILE, element: <ArtistProfile /> },
       { path: ROUTES.SHOP_PROFILE, element: <ShopProfile /> },
 
