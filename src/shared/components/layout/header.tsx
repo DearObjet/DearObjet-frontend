@@ -17,12 +17,11 @@ export const Header = () => {
   const user = useSelector((state: RootState) => state.auth.user);
 
   const handleLogout = async () => {
+    dispatch(clearAuth());
     try {
       await logout().unwrap();
     } catch {
       // 서버 에러여도 클라이언트 상태는 초기화
-    } finally {
-      dispatch(clearAuth());
     }
   };
 
