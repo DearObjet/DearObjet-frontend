@@ -51,10 +51,6 @@ export const router = createBrowserRouter([
       { path: ROUTES.ARTISTS, element: <div>작가</div> },
 
       // customer, shop, artist, admin 접근 가능 (temp 제외)
-      { path: ROUTES.MY, element: <MyPage /> },
-      { path: ROUTES.MY_PROFILE, element: <MyProfile /> },
-      { path: ROUTES.ARTIST_PROFILE, element: <PartnerProfile /> },
-      { path: ROUTES.SHOP_PROFILE, element: <PartnerProfile /> },
 
       {
         element: <ProtectedRoute />,
