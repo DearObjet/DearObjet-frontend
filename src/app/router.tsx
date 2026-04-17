@@ -23,6 +23,8 @@ import { ShopManagement } from '../features/shop/shop-management/pages/shop-mana
 import { HomePage } from '../pages/home/home-page';
 import { Map } from '../features/map';
 import { MyPage } from '../features/my-page/pages/my-page';
+import { ShopSettingPage } from '../features/shop/setting/pages/shop-setting-page';
+import { ArtistSettingPage } from '../features/artist/setting/pages/artist-setting-page';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -97,7 +99,7 @@ export const router = createBrowserRouter([
                 path: ROUTES.SHOP_NOTICE_DETAIL,
                 element: <div>소품샵 공지 상세</div>,
               },
-              { path: ROUTES.SHOP_SETTINGS, element: <div>소품샵 설정</div> },
+              { path: ROUTES.SHOP_SETTINGS, element: <ShopSettingPage /> },
             ],
           },
 
@@ -124,7 +126,7 @@ export const router = createBrowserRouter([
               { path: ROUTES.ARTIST_PROFILE, element: <PartnerProfile /> },
               { path: ROUTES.ARTIST_NOTICES, element: <div>작가 공지</div> },
               { path: ROUTES.ARTIST_NOTICE_DETAIL, element: <PartnerNotice /> },
-              { path: ROUTES.ARTIST_SETTINGS, element: <div>작가 설정</div> },
+              { path: ROUTES.ARTIST_SETTINGS, element: <ArtistSettingPage /> },
             ],
           },
         ],
