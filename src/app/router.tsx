@@ -22,6 +22,7 @@ import { ThemeCustomizer } from '../features/admin/theme';
 import { ShopManagement } from '../features/shop/shop-management/pages/shop-management';
 import { HomePage } from '../pages/home/home-page';
 import { Map } from '../features/map';
+import { MyPage } from '../features/my-page/pages/my-page';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -52,7 +53,7 @@ export const router = createBrowserRouter([
         children: [
           {
             element: <RoleGuard allowedRoles={[USER_ROLE.CUSTOMER]} />,
-            children: [{ path: ROUTES.MY, element: <div>마이페이지</div> }],
+            children: [{ path: ROUTES.MY, element: <MyPage /> }],
           },
         ],
       },
