@@ -66,6 +66,7 @@ export const createBaseQuery =
         } else {
           api.dispatch(clearAuth());
           alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+          window.location.reload();
         }
       } finally {
         isRefreshing = false;
