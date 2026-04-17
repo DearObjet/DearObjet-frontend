@@ -4,8 +4,6 @@ import { RouterProvider } from 'react-router';
 import { useAppDispatch, useAppSelector } from './hooks';
 
 import {
-  setAccessToken,
-  setUser,
   useGetCurrentUserQuery,
   useRefreshTokenOnInitQuery,
 } from '../features/auth';
@@ -26,30 +24,19 @@ export const App = () => {
   const accessToken = useAppSelector((state) => state.auth.accessToken);
   const themeMode = useAppSelector((state) => state.theme.mode);
 
-  const { data: refreshData } = useRefreshTokenOnInitQuery();
+  // 세션 복구
+  const { isLoading: isSessionLoading } = useRefreshTokenOnInitQuery();
+
+  // 유저 정보 조회
+  const { isLoading: isUserLoading } = useGetCurrentUserQuery(undefined, {
+    skip: !accessToken,
+  });
+
   const { data: systemTheme, isSuccess } = useGetSystemThemeQuery();
 
   const { data: userTheme } = useGetUserThemeQuery(undefined, {
     skip: !isAuthenticated,
   });
-
-  const { data: currentUser } = useGetCurrentUserQuery(undefined, {
-    skip: !accessToken,
-  });
-
-  // init
-  useEffect(() => {
-    if (refreshData?.accessToken) {
-      dispatch(setAccessToken(refreshData.accessToken));
-    }
-  }, [refreshData, dispatch]);
-
-  // 유저정보 조회
-  useEffect(() => {
-    if (currentUser) {
-      dispatch(setUser(currentUser));
-    }
-  }, [currentUser, dispatch]);
 
   // 초기 다크모드 적용
   useEffect(() => {
@@ -69,6 +56,17 @@ export const App = () => {
       dispatch(setSystemTheme(systemTheme));
     }
   }, [systemTheme, isSuccess, dispatch]);
+
+  // 세션 복구 또는 유저 정보 로딩 중
+  const isInitializing = isSessionLoading || (!!accessToken && isUserLoading);
+
+  if (isInitializing) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-theme-300 border-t-theme-900" />
+      </div>
+    );
+  }
 
   return <RouterProvider router={router} />;
 };
