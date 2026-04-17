@@ -1,10 +1,12 @@
 import { createBrowserRouter } from 'react-router';
 
 import { ROUTES, USER_ROLE } from '../shared/constants';
-import { PublicOnlyRoute } from '../shared/components/route';
-import { ProtectedRoute } from '../shared/components/route';
-import { RoleGuard } from '../shared/components/route';
-import { TempOrGuestRoute } from '../shared/components/route';
+import {
+  PublicOnlyRoute,
+  ProtectedRoute,
+  RoleGuard,
+  TempOrGuestRoute,
+} from '../shared/components/route';
 import {
   MainLayout,
   PartnerLayout,
@@ -15,19 +17,14 @@ import {
 import { OAuthCallback } from '../features/auth';
 import { Signup } from '../features/signup';
 import { CustomerNotice, PartnerNotice } from '../features/notice';
-import { MyPage } from '../features/my-page/pages/my-page';
-import { MyProfile } from '../features/my-page/components/myprofile';
-import { MyBookMarks } from '../features/my-page/components/mybookmarks';
-import { MyReservations } from '../features/my-page/components/myreservations';
-import { MyPosts } from '../features/my-page/components/myposts';
-import { MyMessages } from '../features/my-page/components/mymessages';
 import { PartnerProfile } from '../features/my-page/pages/partner-profile';
-import { ArtistSettingPage } from '../features/artist/setting/pages/artist-setting-page';
-import { ShopSettingPage } from '../features/shop/setting/pages/shop-setting-page';
 import { ThemeCustomizer } from '../features/admin/theme';
 import { ShopManagement } from '../features/shop/shop-management/pages/shop-management';
 import { HomePage } from '../pages/home/home-page';
 import { Map } from '../features/map';
+import { MyPage } from '../features/my-page/pages/my-page';
+import { ShopSettingPage } from '../features/shop/setting/pages/shop-setting-page';
+import { ArtistSettingPage } from '../features/artist/setting/pages/artist-setting-page';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -42,39 +39,23 @@ export const router = createBrowserRouter([
     children: [{ path: ROUTES.SIGNUP, element: <Signup /> }],
   },
 
-  // MainLayout (모든 사용자 접근 가능)
+  // MainLayout
   {
     element: <MainLayout />,
+    // 모든 사용자 접근 가능
     children: [
       { path: ROUTES.HOME, element: <HomePage /> },
       { path: ROUTES.NOTICES, element: <CustomerNotice /> },
       { path: ROUTES.POSTS, element: <div>포스트</div> },
       { path: ROUTES.ARTISTS, element: <div>작가</div> },
 
-      // customer, shop, artist, admin 접근 가능 (temp 제외)
-
+      // customer만 접근 가능
       {
         element: <ProtectedRoute />,
         children: [
           {
-            element: (
-              <RoleGuard
-                allowedRoles={[
-                  USER_ROLE.CUSTOMER,
-                  USER_ROLE.SHOP,
-                  USER_ROLE.ARTIST,
-                  USER_ROLE.ADMIN,
-                ]}
-              />
-            ),
-            children: [
-              { path: ROUTES.MY, element: <MyPage /> },
-              { path: ROUTES.MY_PROFILE, element: <MyProfile /> },
-              { path: ROUTES.MY_BOOKMARKS, element: <MyBookMarks /> },
-              { path: ROUTES.MY_RESERVATIONS, element: <MyReservations /> },
-              { path: ROUTES.MY_POSTS, element: <MyPosts /> },
-              { path: ROUTES.MY_MESSAGES, element: <MyMessages /> },
-            ],
+            element: <RoleGuard allowedRoles={[USER_ROLE.CUSTOMER]} />,
+            children: [{ path: ROUTES.MY, element: <MyPage /> }],
           },
         ],
       },
@@ -87,19 +68,17 @@ export const router = createBrowserRouter([
     children: [{ path: ROUTES.MAP, element: <Map /> }],
   },
 
-  // PartnerLayout (shop, artist만 접근 가능)
+  // PartnerLayout
   {
     element: <ProtectedRoute />,
     children: [
       {
-        element: (
-          <RoleGuard allowedRoles={[USER_ROLE.SHOP, USER_ROLE.ARTIST]} />
-        ),
+        element: <PartnerLayout />,
         children: [
+          // shop만 접근 가능
           {
-            element: <PartnerLayout />,
+            element: <RoleGuard allowedRoles={[USER_ROLE.SHOP]} />,
             children: [
-              // shop
               {
                 path: ROUTES.SHOP_DASHBOARD,
                 element: <div>소품샵 대시보드</div>,
@@ -121,8 +100,13 @@ export const router = createBrowserRouter([
                 element: <div>소품샵 공지 상세</div>,
               },
               { path: ROUTES.SHOP_SETTINGS, element: <ShopSettingPage /> },
+            ],
+          },
 
-              // artist
+          // artist만 접근 가능
+          {
+            element: <RoleGuard allowedRoles={[USER_ROLE.ARTIST]} />,
+            children: [
               {
                 path: ROUTES.ARTIST_DASHBOARD,
                 element: <div>작가 대시보드</div>,
@@ -141,10 +125,7 @@ export const router = createBrowserRouter([
               { path: ROUTES.ARTIST_MESSAGES, element: <div>메시지</div> },
               { path: ROUTES.ARTIST_PROFILE, element: <PartnerProfile /> },
               { path: ROUTES.ARTIST_NOTICES, element: <div>작가 공지</div> },
-              {
-                path: ROUTES.ARTIST_NOTICE_DETAIL,
-                element: <PartnerNotice />,
-              },
+              { path: ROUTES.ARTIST_NOTICE_DETAIL, element: <PartnerNotice /> },
               { path: ROUTES.ARTIST_SETTINGS, element: <ArtistSettingPage /> },
             ],
           },

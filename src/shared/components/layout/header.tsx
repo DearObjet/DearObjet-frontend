@@ -2,7 +2,7 @@ import { Link, NavLink } from 'react-router';
 import { useSelector } from 'react-redux';
 
 import type { RootState } from '../../../app/store';
-import { ROUTES, NAV_ITEMS } from '../../constants';
+import { ROUTES, NAV_ITEMS, USER_ROLE } from '../../constants';
 
 import { Button } from '../ui';
 
@@ -10,6 +10,7 @@ import DearObjetBlackLogo from '../../../assets/dear-objet-black-logo.svg';
 import UserRoundIcon from '../../../assets/user-round.svg';
 import { useAppDispatch } from '../../../app/hooks';
 import { useLogoutMutation, clearAuth } from '../../../features/auth';
+import { UserPlus } from 'lucide-react';
 
 export const Header = () => {
   const dispatch = useAppDispatch();
@@ -75,19 +76,28 @@ export const Header = () => {
           <div className="flex w-[9rem] shrink-0 items-center justify-center gap-2">
             {user && (
               <>
-                <Link
-                  to={ROUTES.MY}
-                  aria-label="마이페이지"
-                  className="flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-150 hover:bg-theme-200"
-                >
-                  <img
-                    src={UserRoundIcon}
-                    alt=""
-                    width={24}
-                    height={24}
-                    className="h-6 w-auto"
-                  />
-                </Link>
+                {user.role !== USER_ROLE.TEMP ? (
+                  <Link
+                    to={ROUTES.MY}
+                    aria-label="마이페이지"
+                    className="flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-150 hover:bg-theme-200"
+                  >
+                    <img
+                      src={UserRoundIcon}
+                      alt=""
+                      width={24}
+                      className="h-6"
+                    />
+                  </Link>
+                ) : (
+                  <Link
+                    to={ROUTES.SIGNUP}
+                    aria-label="회원가입 페이지"
+                    className="flex h-12 w-12 items-center justify-center rounded-full text-xs transition-colors duration-150 hover:bg-theme-200"
+                  >
+                    <UserPlus className="flex h-6 w-6 text-theme-900" />
+                  </Link>
+                )}
                 <Button
                   label="로그아웃"
                   variant="secondaryLight"
