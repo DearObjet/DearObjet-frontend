@@ -17,6 +17,7 @@ import {
 import { OAuthCallback } from '../features/auth';
 import { Signup } from '../features/signup';
 import { CustomerNotice, PartnerNotice } from '../features/notice';
+import { PartnerProfile } from '../features/my-page/pages/partner-profile';
 import { ThemeCustomizer } from '../features/admin/theme';
 import { ShopManagement } from '../features/shop/shop-management/pages/shop-management';
 import { HomePage } from '../pages/home/home-page';
@@ -89,7 +90,7 @@ export const router = createBrowserRouter([
               { path: ROUTES.SHOP_CONTRACTS, element: <div>계약 관리</div> },
               { path: ROUTES.SHOP_SETTLEMENTS, element: <div>정산</div> },
               { path: ROUTES.SHOP_MESSAGES, element: <div>메시지</div> },
-              { path: ROUTES.SHOP_PROFILE, element: <div>소품샵 프로필</div> },
+              { path: ROUTES.SHOP_PROFILE, element: <PartnerProfile /> },
               { path: ROUTES.SHOP_NOTICES, element: <PartnerNotice /> },
               {
                 path: ROUTES.SHOP_NOTICE_DETAIL,
@@ -119,7 +120,7 @@ export const router = createBrowserRouter([
                 element: <div>정산 내역</div>,
               },
               { path: ROUTES.ARTIST_MESSAGES, element: <div>메시지</div> },
-              { path: ROUTES.ARTIST_PROFILE, element: <div>작가 프로필</div> },
+              { path: ROUTES.ARTIST_PROFILE, element: <PartnerProfile /> },
               { path: ROUTES.ARTIST_NOTICES, element: <div>작가 공지</div> },
               { path: ROUTES.ARTIST_NOTICE_DETAIL, element: <PartnerNotice /> },
               { path: ROUTES.ARTIST_SETTINGS, element: <div>작가 설정</div> },

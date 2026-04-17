@@ -36,6 +36,7 @@ const authSlice = createSlice({
     clearAuth: (state) => {
       state.accessToken = null;
       state.user = null;
+      state.isAuthenticated = false;
       state.signupRequired = false;
     },
   },
