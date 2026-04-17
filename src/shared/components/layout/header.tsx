@@ -26,6 +26,20 @@ export const Header = () => {
     }
   };
 
+  const ROLE_ROUTE_MAP = {
+    [USER_ROLE.CUSTOMER]: ROUTES.MY,
+    [USER_ROLE.SHOP]: ROUTES.SHOP_DASHBOARD,
+    [USER_ROLE.ARTIST]: ROUTES.ARTIST_DASHBOARD,
+    [USER_ROLE.ADMIN]: ROUTES.ADMIN,
+  } as const;
+
+  const isGuest = user?.role === USER_ROLE.TEMP;
+
+  const myPageRoute =
+    user && !isGuest
+      ? (ROLE_ROUTE_MAP[user.role as keyof typeof ROLE_ROUTE_MAP] ?? ROUTES.MY)
+      : ROUTES.SIGNUP;
+
   return (
     <header className="w-full">
       <div
@@ -46,7 +60,7 @@ export const Header = () => {
             />
           </Link>
 
-          {/* 헤더 네비게이션 */}
+          {/* 네비게이션 */}
           <nav
             className="flex flex-1 justify-center"
             aria-label="네비게이션 메뉴"
@@ -72,32 +86,27 @@ export const Header = () => {
             </ul>
           </nav>
 
-          {/* 유저 액션 영역 */}
+          {/* 유저 영역 */}
           <div className="flex w-[9rem] shrink-0 items-center justify-center gap-2">
             {user && (
               <>
-                {user.role !== USER_ROLE.TEMP ? (
-                  <Link
-                    to={ROUTES.MY}
-                    aria-label="마이페이지"
-                    className="flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-150 hover:bg-theme-200"
-                  >
+                <Link
+                  to={myPageRoute}
+                  aria-label={isGuest ? '회원가입 페이지' : '마이페이지'}
+                  className="flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-150 hover:bg-theme-200"
+                >
+                  {isGuest ? (
+                    <UserPlus className="h-6 w-6 text-theme-900" />
+                  ) : (
                     <img
                       src={UserRoundIcon}
                       alt=""
                       width={24}
                       className="h-6"
                     />
-                  </Link>
-                ) : (
-                  <Link
-                    to={ROUTES.SIGNUP}
-                    aria-label="회원가입 페이지"
-                    className="flex h-12 w-12 items-center justify-center rounded-full text-xs transition-colors duration-150 hover:bg-theme-200"
-                  >
-                    <UserPlus className="flex h-6 w-6 text-theme-900" />
-                  </Link>
-                )}
+                  )}
+                </Link>
+
                 <Button
                   label="로그아웃"
                   variant="secondaryLight"
