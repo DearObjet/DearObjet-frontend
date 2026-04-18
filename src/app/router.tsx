@@ -25,6 +25,7 @@ import { Map } from '../features/map';
 import { MyPage } from '../features/my-page/pages/my-page';
 import { ShopSettingPage } from '../features/shop/setting/pages/shop-setting-page';
 import { ArtistSettingPage } from '../features/artist/setting/pages/artist-setting-page';
+import { Chat } from '../features/chat/pages/chat';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -92,7 +93,7 @@ export const router = createBrowserRouter([
               { path: ROUTES.SHOP_INVENTORY, element: <div>재고 관리</div> },
               { path: ROUTES.SHOP_CONTRACTS, element: <div>계약 관리</div> },
               { path: ROUTES.SHOP_SETTLEMENTS, element: <div>정산</div> },
-              { path: ROUTES.SHOP_MESSAGES, element: <div>메시지</div> },
+              { path: ROUTES.SHOP_MESSAGES, element: <Chat /> },
               { path: ROUTES.SHOP_PROFILE, element: <PartnerProfile /> },
               { path: ROUTES.SHOP_NOTICES, element: <PartnerNotice /> },
               {
@@ -122,7 +123,7 @@ export const router = createBrowserRouter([
                 path: ROUTES.ARTIST_SETTLEMENTS_HISTORY,
                 element: <div>정산 내역</div>,
               },
-              { path: ROUTES.ARTIST_MESSAGES, element: <div>메시지</div> },
+              { path: ROUTES.ARTIST_MESSAGES, element: <Chat /> },
               { path: ROUTES.ARTIST_PROFILE, element: <PartnerProfile /> },
               { path: ROUTES.ARTIST_NOTICES, element: <div>작가 공지</div> },
               { path: ROUTES.ARTIST_NOTICE_DETAIL, element: <PartnerNotice /> },

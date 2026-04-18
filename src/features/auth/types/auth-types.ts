@@ -1,7 +1,7 @@
 import type { UserRole } from '../../../shared/constants';
 
 export interface AuthUser {
-  id: number;
+  userId: number;
   email: string;
   name: string;
   role: UserRole;

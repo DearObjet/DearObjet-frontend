@@ -1,0 +1,60 @@
+import { useAppSelector } from '../../../app/hooks';
+import { Aside } from '../../../shared/components/layout';
+
+import { ChatWebSocketProvider } from '../hooks/chat-websocket-provider';
+import { useChatWebSocketContext } from '../hooks/use-chat-websocket-context';
+
+import { ChatList } from '../components/chat-list';
+import { ChatRoom } from '../components/chat-room';
+import { EmptyChat } from '../components/empty-chat';
+
+const ChatPageInner = () => {
+  const { selectedChatRoomId } = useAppSelector((state) => state.chat);
+  const { isConnected } = useChatWebSocketContext();
+
+  return (
+    <div className="flex h-screen">
+      <Aside />
+
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <header className="px-[3.375rem] py-6">
+          <nav aria-label="breadcrumb">
+            <ol className="flex items-center text-lg">
+              <li>
+                <a className="font-medium text-neutral-900" href="/dashboard">
+                  마이페이지
+                </a>
+              </li>
+              <li
+                className="font-bold text-neutral-900 before:mx-2 before:content-['/']"
+                aria-current="page"
+              >
+                메세지
+              </li>
+            </ol>
+          </nav>
+          <h1 className="sr-only">메세지</h1>
+        </header>
+
+        <div className="flex flex-1 overflow-hidden">
+          <div className="flex w-96 flex-col border-r border-gray-200">
+            {isConnected ? (
+              <ChatList />
+            ) : (
+              <p>서버가 불안정합니다. 다시 시도해주세요.</p>
+            )}
+          </div>
+          <div className="flex-1">
+            {selectedChatRoomId ? <ChatRoom /> : <EmptyChat />}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const Chat = () => (
+  <ChatWebSocketProvider>
+    <ChatPageInner />
+  </ChatWebSocketProvider>
+);
