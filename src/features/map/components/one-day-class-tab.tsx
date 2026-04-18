@@ -200,7 +200,7 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
 
           <hr className="border-theme-200" />
 
-          <div className="grid min-h-[23rem] gap-4 p-4">
+          <div className="grid gap-4 p-4">
             {/* 시간 선택 */}
             {selectedDate ? (
               slotsData?.slots.length ? (
@@ -217,7 +217,7 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
                           )
                         }
                         disabled={!slot.available}
-                        className={`rounded border py-2 text-base transition-colors ${
+                        className={`flex h-10 items-center justify-center rounded border text-base transition-colors ${
                           selectedSessionId === slot.sessionId
                             ? 'border-theme-900 bg-theme-900 text-white'
                             : slot.available
