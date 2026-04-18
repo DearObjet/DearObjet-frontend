@@ -60,7 +60,7 @@ const MessageItemComponent = ({
       {/* 날짜 구분선 */}
       {showDateSeparator && date && (
         <div className="my-4 flex items-center justify-center">
-          <div className="rounded-full bg-gray-100 px-4 py-1 text-sm text-gray-600">
+          <div className="rounded-full bg-theme-200 px-4 py-1 text-sm text-theme-700">
             {date}
           </div>
         </div>
@@ -80,7 +80,7 @@ const MessageItemComponent = ({
             <div
               className={`max-w-md rounded-2xl px-4 py-3 ${
                 isMine
-                  ? 'rounded-tr-none border border-gray-200 bg-white'
+                  ? 'rounded-tr-none border bg-theme-200'
                   : 'rounded-tl-none bg-black text-white'
               }`}
             >
@@ -91,7 +91,7 @@ const MessageItemComponent = ({
           </div>
 
           <div className="mt-1 flex items-center gap-1 px-1">
-            <span className="text-xs text-gray-500">{formattedTime}</span>
+            <span className="text-xs text-theme-900">{formattedTime}</span>
           </div>
         </div>
       </div>
