@@ -68,7 +68,7 @@ export const chatApi = createApi({
       query: (roomId) => CHAT_ENDPOINTS.ROOM_DETAIL(roomId),
       transformResponse: (response: ApiResponse<ChatRoomResponse>) =>
         response.data,
-      providesTags: (result, error, roomId) => [
+      providesTags: (_result, _error, roomId) => [
         { type: 'ChatRooms', id: roomId },
       ],
     }),
@@ -84,7 +84,7 @@ export const chatApi = createApi({
         `${CHAT_ENDPOINTS.LATEST_MESSAGES(roomId)}?limit=${limit}`,
       transformResponse: (response: ApiResponse<MessageSyncResponse>) =>
         response.data,
-      providesTags: (result, error, { roomId }) => [
+      providesTags: (_result, _error, { roomId }) => [
         { type: 'Messages', id: roomId },
       ],
     }),
