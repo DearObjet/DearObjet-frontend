@@ -4,13 +4,63 @@ import { useAppDispatch } from '../../../app/hooks';
 
 import {
   useGetUserListQuery,
-  useCreateChatRoomMutation,
+  useGetOrCreateDirectChatMutation,
 } from '../api/chat-api';
 import { selectChatRoom } from '../slices/chat-slice';
+import type { UserListItem } from '../types/chat-types';
 
 interface UserSelectModalProps {
   onClose: () => void;
 }
+
+interface UserListProps {
+  isLoading: boolean;
+  userList: UserListItem[];
+  selectedUserId: number | null;
+  onSelect: (userId: number) => void;
+}
+
+// 유저 목록 상태별 렌더링
+const UserList = ({
+  isLoading,
+  userList,
+  selectedUserId,
+  onSelect,
+}: UserListProps) => {
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-8">
+        <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-theme-900" />
+      </div>
+    );
+  }
+
+  if (userList.length === 0) {
+    return (
+      <p className="py-8 text-center text-sm text-theme-500">
+        검색 결과가 없습니다.
+      </p>
+    );
+  }
+
+  return (
+    <>
+      {userList.map((user) => (
+        <div
+          key={user.userId}
+          onClick={() => onSelect(user.userId)}
+          className={`grid cursor-pointer grid-cols-3 border-b border-gray-100 py-3 transition-colors hover:bg-gray-50 ${
+            selectedUserId === user.userId ? 'bg-gray-100' : ''
+          }`}
+        >
+          <span className="text-sm text-gray-900">{user.name}</span>
+          <span className="text-sm text-gray-600">{user.category}</span>
+          <span className="text-sm text-gray-600">{user.status}</span>
+        </div>
+      ))}
+    </>
+  );
+};
 
 export const UserSelectModal = ({ onClose }: UserSelectModalProps) => {
   const dispatch = useAppDispatch();
@@ -18,24 +68,19 @@ export const UserSelectModal = ({ onClose }: UserSelectModalProps) => {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
   const { data: userList = [], isLoading } = useGetUserListQuery(search);
-  const [createChatRoom, { isLoading: isCreating }] =
-    useCreateChatRoomMutation();
+  const [getOrCreateDirectChat, { isLoading: isCreating }] =
+    useGetOrCreateDirectChatMutation();
 
   const handleSend = useCallback(async () => {
     if (!selectedUserId) return;
-
     try {
-      const chatRoom = await createChatRoom({
-        type: 'ONE_TO_ONE',
-        participantIds: [selectedUserId],
-      }).unwrap();
-
+      const chatRoom = await getOrCreateDirectChat(selectedUserId).unwrap();
       dispatch(selectChatRoom(chatRoom.roomId));
       onClose();
     } catch (e) {
       console.error('채팅방 생성 실패:', e);
     }
-  }, [selectedUserId, createChatRoom, dispatch, onClose]);
+  }, [selectedUserId, getOrCreateDirectChat, dispatch, onClose]);
 
   return (
     <div
@@ -83,29 +128,12 @@ export const UserSelectModal = ({ onClose }: UserSelectModalProps) => {
 
         {/* 유저 목록 */}
         <div className="mb-6 max-h-80 overflow-y-auto">
-          {isLoading ? (
-            <div className="flex justify-center py-8">
-              <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-gray-900" />
-            </div>
-          ) : userList.length === 0 ? (
-            <p className="py-8 text-center text-sm text-gray-500">
-              검색 결과가 없습니다.
-            </p>
-          ) : (
-            userList.map((user) => (
-              <div
-                key={user.userId}
-                onClick={() => setSelectedUserId(user.userId)}
-                className={`grid cursor-pointer grid-cols-3 border-b border-gray-100 py-3 transition-colors hover:bg-gray-50 ${
-                  selectedUserId === user.userId ? 'bg-gray-100' : ''
-                }`}
-              >
-                <span className="text-sm text-gray-900">{user.name}</span>
-                <span className="text-sm text-gray-600">{user.category}</span>
-                <span className="text-sm text-gray-600">{user.status}</span>
-              </div>
-            ))
-          )}
+          <UserList
+            isLoading={isLoading}
+            userList={userList}
+            selectedUserId={selectedUserId}
+            onSelect={setSelectedUserId}
+          />
         </div>
 
         {/* 보내기 버튼 */}

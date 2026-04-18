@@ -39,7 +39,7 @@ export const chatApi = createApi({
       providesTags: ['ChatRooms'],
     }),
 
-    // 채팅방 생성 (그룹 채팅방 생성이지만 현재는 이것만 사용)
+    // 채팅방 생성 (그룹 채팅방 생성 but 사용안함)
     createChatRoom: builder.mutation<ChatRoomResponse, CreateChatRoomRequest>({
       query: (body) => ({
         url: CHAT_ENDPOINTS.ROOMS,
@@ -51,7 +51,7 @@ export const chatApi = createApi({
       invalidatesTags: ['ChatRooms'],
     }),
 
-    // 1:1 채팅방 생성 또는 기존 방 반환
+    // 1:1 채팅방 생성 또는 기존 방 반환(현재는 getOrCreateDirectChat만 사용)
     // 동일한 상대와 채팅방이 이미 있으면 새로 만들지 않고 기존 방을 반환
     getOrCreateDirectChat: builder.mutation<ChatRoomResponse, number>({
       query: (partnerId) => ({
