@@ -34,7 +34,7 @@ const ChatListItemComponent = ({
   return (
     <div
       onClick={onClick}
-      className={`flex cursor-pointer items-center gap-3 border-b border-theme-100 p-4 transition-colors hover:bg-gray-50 ${isSelected ? 'bg-red-300' : 'bg-white'}`}
+      className={`flex cursor-pointer items-center gap-3 border-b border-theme-100 p-4 transition-colors hover:bg-theme-100 ${isSelected ? 'bg-theme-200' : 'bg-white'}`}
     >
       {/* 프로필 이미지 */}
       <div className="relative flex-shrink-0">
