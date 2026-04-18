@@ -1,0 +1,124 @@
+import { Link, NavLink } from 'react-router';
+import { useSelector } from 'react-redux';
+
+import type { RootState } from '../../../app/store';
+import { ROUTES, NAV_ITEMS, USER_ROLE } from '../../constants';
+
+import { Button } from '../ui';
+
+import DearObjetBlackLogo from '../../../assets/dear-objet-black-logo.svg';
+import UserRoundIcon from '../../../assets/user-round.svg';
+import { useAppDispatch } from '../../../app/hooks';
+import { useLogoutMutation, clearAuth } from '../../../features/auth';
+import { UserPlus } from 'lucide-react';
+
+export const Header = () => {
+  const dispatch = useAppDispatch();
+  const [logout] = useLogoutMutation();
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const handleLogout = async () => {
+    dispatch(clearAuth());
+    try {
+      await logout().unwrap();
+    } catch {
+      // 서버 에러여도 클라이언트 상태는 초기화
+    }
+  };
+
+  const ROLE_ROUTE_MAP = {
+    [USER_ROLE.CUSTOMER]: ROUTES.MY,
+    [USER_ROLE.SHOP]: ROUTES.SHOP_DASHBOARD,
+    [USER_ROLE.ARTIST]: ROUTES.ARTIST_DASHBOARD,
+    [USER_ROLE.ADMIN]: ROUTES.ADMIN,
+  } as const;
+
+  const isGuest = user?.role === USER_ROLE.TEMP;
+
+  const myPageRoute =
+    user && !isGuest
+      ? (ROLE_ROUTE_MAP[user.role as keyof typeof ROLE_ROUTE_MAP] ?? ROUTES.MY)
+      : ROUTES.SIGNUP;
+
+  return (
+    <header className="w-full">
+      <div
+        className="h-[2.625rem] w-full bg-theme-900"
+        role="presentation"
+        aria-hidden="true"
+      />
+
+      {/* 메인 헤더 */}
+      <div className="border-b border-theme-200">
+        <div className="mx-auto mb-[0.5625rem] mt-[0.4375rem] flex max-w-[120rem] items-center px-[19.469rem]">
+          {/* 로고 */}
+          <Link to="/" aria-label="Dear Objet" className="shrink-0">
+            <img
+              src={DearObjetBlackLogo}
+              alt="Dear Objet"
+              className="h-13 w-auto"
+            />
+          </Link>
+
+          {/* 네비게이션 */}
+          <nav
+            className="flex flex-1 justify-center"
+            aria-label="네비게이션 메뉴"
+          >
+            <ul className="flex items-center gap-9" role="list">
+              {NAV_ITEMS.map(({ label, to }) => (
+                <li key={to}>
+                  <NavLink
+                    to={to}
+                    className={({ isActive }) =>
+                      [
+                        'text-base font-semibold transition-colors duration-150',
+                        isActive
+                          ? 'text-theme-500'
+                          : 'text-theme-900 hover:text-theme-500',
+                      ].join(' ')
+                    }
+                  >
+                    {label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* 유저 영역 */}
+          <div className="flex w-[9rem] shrink-0 items-center justify-center gap-2">
+            {user && (
+              <>
+                <Link
+                  to={myPageRoute}
+                  aria-label={isGuest ? '회원가입 페이지' : '마이페이지'}
+                  className="flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-150 hover:bg-theme-200"
+                >
+                  {isGuest ? (
+                    <UserPlus className="h-6 w-6 text-theme-900" />
+                  ) : (
+                    <img
+                      src={UserRoundIcon}
+                      alt=""
+                      width={24}
+                      className="h-6"
+                    />
+                  )}
+                </Link>
+
+                <Button
+                  label="로그아웃"
+                  variant="secondaryLight"
+                  onClick={handleLogout}
+                  size="small"
+                  type="button"
+                />
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
