@@ -1,22 +1,77 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
-import type { RootState } from '../../../app/store';
-
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { useGetChatRoomsQuery } from '../api/chat-api';
 import {
   setChatRooms,
   selectChatRoom,
   updatePartnerReadAt,
 } from '../slices/chat-slice';
+import type { ChatRoomResponse } from '../types/chat-types';
 import { ChatListItem } from './chat-list-item';
 import { UserSelectModal } from './user-select-modal';
 
+interface ChatRoomListProps {
+  isLoading: boolean;
+  error: unknown;
+  chatRooms: ChatRoomResponse[];
+  selectedChatRoomId: string | null;
+  onSelectRoom: (roomId: string) => void;
+}
+
+// isLoading / error / chatRooms 빈 상태를 early return으로 처리
+const ChatRoomList = ({
+  isLoading,
+  error,
+  chatRooms,
+  selectedChatRoomId,
+  onSelectRoom,
+}: ChatRoomListProps) => {
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-center text-red-500">
+          채팅방 목록을 불러오는데 실패했습니다.
+        </p>
+      </div>
+    );
+  }
+
+  if (chatRooms.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-center text-gray-500">대화중인 상대방이 없습니다.</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {chatRooms.map((chatRoom) => (
+        <ChatListItem
+          key={chatRoom.roomId}
+          chatRoom={chatRoom}
+          isSelected={selectedChatRoomId === chatRoom.roomId}
+          onClick={() => onSelectRoom(chatRoom.roomId)}
+        />
+      ))}
+    </>
+  );
+};
+
 export const ChatList = () => {
-  const dispatch = useDispatch();
-  const currentUser = useSelector((state: RootState) => state.auth.user);
-  const { selectedChatRoomId, chatRooms } = useSelector(
-    (state: RootState) => state.chat
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector((state) => state.auth.user);
+  const { selectedChatRoomId, chatRooms } = useAppSelector(
+    (state) => state.chat
   );
   const { data, isLoading, error } = useGetChatRoomsQuery();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,7 +79,6 @@ export const ChatList = () => {
   // 채팅방 목록 로드 완료 시 Redux에 저장 + 파트너 읽음 시각 초기화
   useEffect(() => {
     if (!data) return;
-
     dispatch(setChatRooms(data));
 
     // 내 메시지의 읽음 표시(1)
@@ -102,33 +156,16 @@ export const ChatList = () => {
 
       {/* 채팅방 목록 */}
       <div className="flex-1 overflow-y-auto">
-        {isLoading ? (
-          <div className="flex h-full items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900" />
-          </div>
-        ) : error ? (
-          <div className="flex h-full items-center justify-center p-4">
-            <p className="text-center text-red-500">
-              채팅방 목록을 불러오는데 실패했습니다.
-            </p>
-          </div>
-        ) : chatRooms.length === 0 ? (
-          <div className="flex h-full items-center justify-center p-4">
-            <p className="text-center text-gray-500">채팅방이 없습니다.</p>
-          </div>
-        ) : (
-          chatRooms.map((chatRoom) => (
-            <ChatListItem
-              key={chatRoom.roomId}
-              chatRoom={chatRoom}
-              isSelected={selectedChatRoomId === chatRoom.roomId}
-              onClick={() => handleSelectRoom(chatRoom.roomId)}
-            />
-          ))
-        )}
+        <ChatRoomList
+          isLoading={isLoading}
+          error={error}
+          chatRooms={chatRooms}
+          selectedChatRoomId={selectedChatRoomId}
+          onSelectRoom={handleSelectRoom}
+        />
       </div>
 
-      {/* 모달 */}
+      {/* 새 메시지 유저 검색 모달 */}
       {isModalOpen && <UserSelectModal onClose={() => setIsModalOpen(false)} />}
     </div>
   );

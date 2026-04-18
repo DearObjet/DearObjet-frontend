@@ -141,6 +141,7 @@ export const MessageInput = () => {
         sendStompMessage(selectedChatRoomId, url);
         if (fileInputRef.current) fileInputRef.current.value = '';
       } catch {
+        console.error('이미지 업로드 실패:', e);
         alert('파일 업로드에 실패했습니다.');
       }
     },
