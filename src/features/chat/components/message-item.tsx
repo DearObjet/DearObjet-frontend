@@ -2,13 +2,7 @@ import { memo, useMemo } from 'react';
 
 import { useAppSelector } from '../../../app/hooks';
 
-import type { MessageResponse } from '../types/chat-types';
-
-interface MessageItemProps {
-  message: MessageResponse;
-  showDateSeparator?: boolean;
-  date?: string;
-}
+import type { MessageItemProps } from '../types/chat-types';
 
 const formatTime = (dateString: string) => {
   const date = new Date(dateString);

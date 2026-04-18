@@ -1,12 +1,6 @@
 import { memo } from 'react';
 
-import type { ChatRoomResponse } from '../types/chat-types';
-
-interface ChatListItemProps {
-  chatRoom: ChatRoomResponse;
-  isSelected: boolean;
-  onClick: () => void;
-}
+import type { ChatListItemProps } from '../types/chat-types';
 
 const formatTime = (dateString: string): string => {
   const date = new Date(dateString);

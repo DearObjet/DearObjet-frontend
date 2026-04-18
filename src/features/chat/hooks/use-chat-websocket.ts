@@ -16,16 +16,8 @@ import type {
   TypingIndicatorDto,
   ReadReceiptDto,
   WebSocketError,
+  ChatWebSocketHook,
 } from '../types/chat-types';
-
-interface ChatWebSocketHook {
-  isConnected: boolean;
-  sendMessage: (roomId: string, content: string) => void;
-  sendTyping: (roomId: string, isTyping: boolean) => void;
-  markAsRead: (roomId: string) => void;
-  joinRoom: (roomId: string) => void;
-  leaveRoom: (roomId: string) => void;
-}
 
 export const useChatWebSocket = (): ChatWebSocketHook => {
   const dispatch = useAppDispatch();

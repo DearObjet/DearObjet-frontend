@@ -1,5 +1,49 @@
+import type { useChatWebSocket } from '../hooks/use-chat-websocket';
+
 export type MessageType = 'TEXT' | 'IMAGE' | 'FILE' | 'SYSTEM';
 export type ChatRoomType = 'ONE_TO_ONE' | 'GROUP';
+
+export type ChatWebSocketContextType = ReturnType<typeof useChatWebSocket>;
+
+export interface ChatWebSocketHook {
+  isConnected: boolean;
+  sendMessage: (roomId: string, content: string) => void;
+  sendTyping: (roomId: string, isTyping: boolean) => void;
+  markAsRead: (roomId: string) => void;
+  joinRoom: (roomId: string) => void;
+  leaveRoom: (roomId: string) => void;
+}
+
+export interface UserSelectModalProps {
+  onClose: () => void;
+}
+
+export interface UserListProps {
+  isLoading: boolean;
+  userList: UserListItem[];
+  selectedUserId: number | null;
+  onSelect: (userId: number) => void;
+}
+
+export interface MessageItemProps {
+  message: MessageResponse;
+  showDateSeparator?: boolean;
+  date?: string;
+}
+
+export interface ChatRoomListProps {
+  isLoading: boolean;
+  error: unknown;
+  chatRooms: ChatRoomResponse[];
+  selectedChatRoomId: string | null;
+  onSelectRoom: (roomId: string) => void;
+}
+
+export interface ChatListItemProps {
+  chatRoom: ChatRoomResponse;
+  isSelected: boolean;
+  onClick: () => void;
+}
 
 export interface GetLatestMessagesParams {
   roomId: string;

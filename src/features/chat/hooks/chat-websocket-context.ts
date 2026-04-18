@@ -1,8 +1,6 @@
 import { createContext } from 'react';
 
-import { useChatWebSocket } from './use-chat-websocket';
-
-type ChatWebSocketContextType = ReturnType<typeof useChatWebSocket>;
+import type { ChatWebSocketContextType } from '../types/chat-types';
 
 export const ChatWebSocketContext =
   createContext<ChatWebSocketContextType | null>(null);

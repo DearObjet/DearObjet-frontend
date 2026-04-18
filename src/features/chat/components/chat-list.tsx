@@ -7,17 +7,9 @@ import {
   selectChatRoom,
   updatePartnerReadAt,
 } from '../slices/chat-slice';
-import type { ChatRoomResponse } from '../types/chat-types';
+import type { ChatRoomListProps } from '../types/chat-types';
 import { ChatListItem } from './chat-list-item';
 import { UserSelectModal } from './user-select-modal';
-
-interface ChatRoomListProps {
-  isLoading: boolean;
-  error: unknown;
-  chatRooms: ChatRoomResponse[];
-  selectedChatRoomId: string | null;
-  onSelectRoom: (roomId: string) => void;
-}
 
 // isLoading / error / chatRooms 빈 상태를 early return으로 처리
 const ChatRoomList = ({

@@ -7,18 +7,7 @@ import {
   useGetOrCreateDirectChatMutation,
 } from '../api/chat-api';
 import { selectChatRoom } from '../slices/chat-slice';
-import type { UserListItem } from '../types/chat-types';
-
-interface UserSelectModalProps {
-  onClose: () => void;
-}
-
-interface UserListProps {
-  isLoading: boolean;
-  userList: UserListItem[];
-  selectedUserId: number | null;
-  onSelect: (userId: number) => void;
-}
+import type { UserListProps, UserSelectModalProps } from '../types/chat-types';
 
 // 유저 목록 상태별 렌더링
 const UserList = ({

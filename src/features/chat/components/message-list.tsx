@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Fragment } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+
 import { useGetMessagesBeforeQuery } from '../api/chat-api';
 import { prependMessages } from '../slices/chat-slice';
+
 import { MessageItem } from './message-item';
 import { TypingIndicator } from './typing-indicator';
 
