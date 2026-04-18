@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Star, MessageCircle, Share2 } from 'lucide-react';
 
 import { useAppSelector } from '../../../app/hooks';
@@ -11,29 +11,48 @@ import { DAY_LABEL, DAY_ORDER, TAB_MENUS } from '../constants/map-constants';
 import { OneDayClassTab } from './one-day-class-tab';
 
 export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
-  const [activeTab, setActiveTab] = useState<TabMenu>('스토리');
   const user = useAppSelector((state) => state.auth.user);
+  const [activeTab, setActiveTab] = useState<TabMenu>('스토리');
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isTabClickedRef = useRef(false);
+  const tabMenuRef = useRef<HTMLDivElement>(null);
 
-  const handleLikeToggle = () => {
-    console.log('좋아요');
+  const handleTabClick = (tab: TabMenu) => {
+    isTabClickedRef.current = true;
+    setActiveTab(tab);
   };
 
-  const handleWriteReview = () => {
-    console.log('리뷰작성하기');
-  };
+  const handleLikeToggle = () => console.log('좋아요');
+  const handleWriteReview = () => console.log('리뷰작성하기');
+  const handleShareContent = () => console.log('공유하기');
+  const handleApplyForPartnership = () => console.log('입점신청하기');
 
-  const handleShareContent = () => {
-    console.log('공유하기');
-  };
-
-  const handleApplyForPartnership = () => {
-    console.log('입점신청하기');
-  };
-
-  // 다른 소품샵 선택 시 탭 초기화
   useEffect(() => {
     setActiveTab('스토리');
+    isTabClickedRef.current = false;
   }, [shopDetail?.shopName]);
+
+  useEffect(() => {
+    if (!isTabClickedRef.current) return;
+    isTabClickedRef.current = false;
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        if (tabMenuRef.current && scrollContainerRef.current) {
+          const containerRect =
+            scrollContainerRef.current.getBoundingClientRect();
+          const tabRect = tabMenuRef.current.getBoundingClientRect();
+          const scrollTop =
+            scrollContainerRef.current.scrollTop +
+            (tabRect.top - containerRect.top);
+          scrollContainerRef.current.scrollTo({
+            top: scrollTop,
+            behavior: 'smooth',
+          });
+        }
+      }, 100);
+    });
+  }, [activeTab]);
 
   if (!shopDetail) {
     return (
@@ -44,7 +63,10 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
   }
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto [scrollbar-gutter:stable]">
+    <div
+      ref={scrollContainerRef}
+      className="flex h-full flex-col overflow-y-auto [scrollbar-gutter:stable]"
+    >
       {/* 포스트 사진 그리드 */}
       <div className="grid grid-cols-[repeat(3,136px)] grid-rows-[repeat(3,136px)] gap-[1.5px]">
         {Array.from({ length: 9 }).map((_, i) => (
@@ -56,12 +78,10 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
       </div>
 
       <div className="flex flex-col items-center gap-7 py-7">
-        {/* 샵 이름 */}
         <h2 className="text-2xl font-semibold text-gray-900">
           {shopDetail.shopName}
         </h2>
 
-        {/* 찜, 리뷰작성, 공유하기 버튼 */}
         <div className="flex gap-2">
           {[
             {
@@ -91,7 +111,6 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
           ))}
         </div>
 
-        {/* 입점 신청하기 버튼 */}
         {user?.role === USER_ROLE.SHOP && (
           <Button
             size="medium"
@@ -141,11 +160,14 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
       <hr className="border-theme-300" />
 
       {/* 탭 메뉴 */}
-      <div className="flex shrink-0 justify-center border-b border-theme-200">
+      <div
+        ref={tabMenuRef}
+        className="flex shrink-0 justify-center border-b border-theme-200"
+      >
         {TAB_MENUS.map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabClick(tab)}
             className={`relative px-3 py-3 text-sm font-medium transition-colors ${
               activeTab === tab
                 ? 'text-theme-900'
