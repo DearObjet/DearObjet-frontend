@@ -151,12 +151,12 @@ export const MessageInput = () => {
   if (!selectedChatRoomId) return null;
 
   return (
-    <div className="border-t border-gray-200 bg-white px-6 py-4">
-      <div className="flex items-end gap-3">
+    <div className="border-t border-theme-200 bg-white px-6 py-4">
+      <div className="flex items-center gap-3">
         <button
           onClick={handleFileAttach}
           disabled={isUploading}
-          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-black text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-theme-900 text-white transition-colors hover:bg-theme-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isUploading ? (
             <svg
@@ -213,15 +213,14 @@ export const MessageInput = () => {
             placeholder="메시지를 입력하세요"
             disabled={isUploading}
             rows={1}
-            className="w-full resize-none rounded-lg border border-gray-200 px-4 py-3 pr-12 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
-            style={{ minHeight: '48px', maxHeight: '120px' }}
+            className="block max-h-[7.5rem] min-h-[3rem] w-full resize-none rounded-lg border border-theme-300 px-4 py-3 pr-12 placeholder-theme-300 focus:outline-none focus:ring-1 focus:ring-theme-300 disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
 
         <button
           onClick={handleSendMessage}
           disabled={!message.trim() || isUploading}
-          className="flex-shrink-0 rounded-lg bg-black px-6 py-3 font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-shrink-0 rounded-lg bg-theme-900 px-6 py-3 font-medium text-white transition-colors hover:bg-theme-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           보내기
         </button>
