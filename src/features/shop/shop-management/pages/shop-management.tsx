@@ -14,6 +14,9 @@ import {
   useDeleteClassMutation,
 } from '../api/class-api';
 
+import { StoryManage } from '../components/story-management';
+import { RegisterBusinessHour } from '../components/register-business-hour';
+
 type Mode = 'default' | 'registering' | 'selected' | 'editing';
 
 export const ShopManagement = () => {
@@ -185,6 +188,12 @@ export const ShopManagement = () => {
           <h2>관리 홈 / 나의 소품샵 관리</h2>
         </header>
         <main className="grid w-full flex-1 grid-cols-2 gap-3 overflow-y-auto bg-gray-100 p-5 px-[3.625rem]">
+          {/* 클래스 등록 및 매장 운영 정보 등록 */}
+          <div className="flex flex-col gap-3">
+            <StoryManage />
+            <RegisterBusinessHour />
+          </div>
+
           {/* 클래스 등록하기 */}
           <div className="flex h-full flex-col gap-3">
             <section className="flex flex-col rounded-xl bg-white px-[3.125rem] pb-[1.6875rem] pt-4">
