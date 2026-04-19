@@ -1,8 +1,7 @@
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 
 import { useAppSelector } from '../../../app/hooks';
 import { Button } from '../../../shared/components/ui';
-import { DearObjetCalendar } from '../../../shared/components/common';
 import { USER_ROLE } from '../../../shared/constants';
 
 import {
@@ -11,6 +10,7 @@ import {
   useCreateReservationMutation,
 } from '../api/one-day-class-api';
 import type { ClassListItem } from '../types/one-day-class-types';
+import { DearObjetCalendar } from '../../../shared/components/common';
 
 interface OneDayClassTabProps {
   shopId: number;
@@ -27,6 +27,7 @@ const formatDate = (date: Date): string => {
 export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
   const user = useAppSelector((state) => state.auth.user);
   const userName = user?.name ?? '';
+
   const [selectedClass, setSelectedClass] = useState<ClassListItem | null>(
     null
   );
@@ -37,6 +38,8 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
   const [remainingCapacity, setRemainingCapacity] = useState<number>(0);
   const [guestCount, setGuestCount] = useState(1);
   const [memo, setMemo] = useState('');
+
+  const classDetailRef = useRef<HTMLDivElement>(null);
 
   const { data: classList } = useGetClassListQuery(shopId);
 
@@ -58,11 +61,18 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
     setSelectedSessionId(null);
     setGuestCount(1);
     setMemo('');
+
+    // 클래스 상세 영역으로 스크롤
+    setTimeout(() => {
+      classDetailRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }, 50);
   };
 
   const handleDateChange = (date: Date) => {
     if (selectedDate?.toDateString() === date.toDateString()) return;
-
     setSelectedDate(date);
     setSelectedSessionId(null);
   };
@@ -82,13 +92,9 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
       ? (remainingCapacity ?? selectedClass!.maxCapacity ?? Infinity)
       : (selectedClass!.maxCapacity ?? Infinity);
 
-    if (value < 1) {
-      setGuestCount(1);
-    } else if (value > max) {
-      setGuestCount(max);
-    } else {
-      setGuestCount(value);
-    }
+    if (value < 1) setGuestCount(1);
+    else if (value > max) setGuestCount(max);
+    else setGuestCount(value);
   };
 
   const handleReserve = async () => {
@@ -110,6 +116,7 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
         reservationName: userName,
         memo,
       }).unwrap();
+
       alert(`예약이 완료되었습니다. (예약번호: ${result.reservationId})`);
 
       setSelectedDate(null);
@@ -129,10 +136,11 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
         alert(message);
         return;
       }
+
+      alert('예약에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
-  // shopId가 바뀔 때 모든 상태 초기화
   useEffect(() => {
     setSelectedClass(null);
     setSelectedDate(null);
@@ -145,7 +153,7 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
   return (
     <div className="flex flex-col">
       {/* 클래스 목록 */}
-      <div className="flex max-h-[24rem] flex-col divide-y divide-theme-100 overflow-y-auto border-b-2 border-theme-300 [&::-webkit-scrollbar]:hidden">
+      <div className="flex max-h-[24rem] flex-col divide-y divide-theme-200 overflow-y-auto [&::-webkit-scrollbar]:hidden">
         {classList?.items.map((item) => (
           <ClassListItemCard
             key={item.classId}
@@ -158,13 +166,17 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
 
       {/* 클래스 상세 + 예약 */}
       {selectedClass && (
-        <div className="flex flex-col border-t border-theme-200">
+        <div
+          ref={classDetailRef}
+          className="flex flex-col border-t-2 border-theme-300"
+        >
           {/* 상호명 */}
           <div className="border-b border-theme-200 px-4 py-3">
             <span className="text-lg font-bold tracking-widest text-theme-900">
               {shopName}
             </span>
           </div>
+
           {/* 이미지 */}
           <div className="w-full overflow-hidden bg-theme-200">
             {selectedClass.firstImageUrl && (
@@ -176,7 +188,7 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
             )}
           </div>
 
-          {/* 제목 */}
+          {/* 제목 + 설명 */}
           <div className="flex flex-col gap-3 px-4 py-4">
             <span className="font-bold text-theme-900">
               {selectedClass.className}
@@ -200,8 +212,8 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
 
           <hr className="border-theme-200" />
 
-          <div className="grid min-h-[23rem] gap-4 p-4">
-            {/* 시간 선택 */}
+          {/* 시간 선택 + 예약 인원 + 메모 */}
+          <div className="flex min-h-[23rem] flex-col gap-4 p-4">
             {selectedDate ? (
               slotsData?.slots.length ? (
                 <>
@@ -217,7 +229,7 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
                           )
                         }
                         disabled={!slot.available}
-                        className={`rounded border py-2 text-base transition-colors ${
+                        className={`flex h-10 items-center justify-center rounded border text-base transition-colors ${
                           selectedSessionId === slot.sessionId
                             ? 'border-theme-900 bg-theme-900 text-white'
                             : slot.available
@@ -265,7 +277,6 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
                   <hr className="border-theme-200" />
 
                   {/* 메모 */}
-
                   <textarea
                     value={memo}
                     onChange={(e) => setMemo(e.target.value)}
@@ -315,7 +326,8 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
   );
 };
 
-// 클래스 목록 아이템
+// ─── 클래스 목록 아이템 ───────────────────────────────
+
 interface ClassListItemCardProps {
   item: ClassListItem;
   isSelected: boolean;

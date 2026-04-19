@@ -32,9 +32,11 @@ export const Map = () => {
 
   return (
     <div className="flex h-full w-full">
-      <aside className="flex h-full w-[25.625rem] shrink-0 flex-col overflow-hidden border-r border-theme-200">
+      <aside className="flex h-full w-[25.625rem] shrink-0 flex-col border-r border-theme-200">
         <MapSearchBar shops={shops} onSelectShop={handleMarkerClick} />
-        <MapAside shopDetail={shopDetail ?? null} shopId={selectedShopId} />
+        <div className="flex-1 overflow-hidden">
+          <MapAside shopDetail={shopDetail ?? null} shopId={selectedShopId} />
+        </div>
       </aside>
 
       <div className="flex-1">

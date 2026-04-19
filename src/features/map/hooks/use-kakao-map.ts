@@ -26,8 +26,8 @@ export const useKakaoMap = () => {
           setIsLocating(false);
         },
         {
-          timeout: 5000, // 5초 안에 값을 못받으면 기본값으로
-          maximumAge: 300000, // 5분 이내에 가져온 위치 정보가 있다면 캐시 사용
+          timeout: 1000, // 1초 안에 값을 못받으면 기본값으로
+          maximumAge: 600000, // 10분 이내에 가져온 위치 정보가 있다면 캐시 사용
         }
       );
     }
