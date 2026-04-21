@@ -5,23 +5,7 @@ import {
   useGetBusinessHoursQuery,
   useUpdateBusinessHoursMutation,
 } from '../api/story-api';
-
-type DayKey =
-  | 'monday'
-  | 'tuesday'
-  | 'wednesday'
-  | 'thursday'
-  | 'friday'
-  | 'saturday'
-  | 'sunday';
-
-type DayHours = {
-  openTime: string;
-  closeTime: string;
-  isDayOff: boolean;
-};
-
-type BusinessHours = Record<DayKey, DayHours>;
+import type { BusinessHours, DayHours, DayKey } from '../types/business-hour';
 
 const DAY_LABELS: { key: DayKey; label: string; full: string }[] = [
   { key: 'monday', label: '월', full: '월요일' },

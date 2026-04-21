@@ -2,18 +2,10 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 
 import { createBaseQuery } from '../../../../shared/constants';
 import { STORY_ENDPOINTS } from '../constants/story-constants';
-
-type DayKey =
-  | 'monday'
-  | 'tuesday'
-  | 'wednesday'
-  | 'thursday'
-  | 'friday'
-  | 'saturday'
-  | 'sunday';
-type DayBusinessHours = { openTime: string | null; closeTime: string | null };
-export type UpdateBusinessHoursRequest = Record<DayKey, DayBusinessHours>;
-type ShopBusinessHoursResponse = Record<DayKey, DayBusinessHours>;
+import type {
+  ShopBusinessHoursResponse,
+  UpdateBusinessHoursRequest,
+} from '../types/business-hour';
 
 export const storyApi = createApi({
   reducerPath: 'storyApi',
