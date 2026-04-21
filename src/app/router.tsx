@@ -19,7 +19,7 @@ import { Signup } from '../features/signup';
 import { CustomerNotice, PartnerNotice } from '../features/notice';
 import { PartnerProfile } from '../features/my-page/pages/partner-profile';
 import { ThemeCustomizer } from '../features/admin/theme';
-import { ShopManagement } from '../features/shop/shop-management/pages/shop-management';
+import { ShopManagement } from '../features/shop/shop-management';
 import { HomePage } from '../pages/home/home-page';
 import { Map } from '../features/map';
 import { MyPage } from '../features/my-page/pages/my-page';
