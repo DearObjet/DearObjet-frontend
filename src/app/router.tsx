@@ -26,6 +26,7 @@ import { MyPage } from '../features/my-page/pages/my-page';
 import { ShopSettingPage } from '../features/shop/setting/pages/shop-setting-page';
 import { ArtistSettingPage } from '../features/artist/setting/pages/artist-setting-page';
 import { Chat } from '../features/chat/pages/chat';
+import { InventoryManagement } from '../features/artist/inventory-management/pages/inventory-mangement';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -114,7 +115,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: ROUTES.ARTIST_INVENTORY,
-                element: <div>작가 재고 관리</div>,
+                element: <InventoryManagement />,
               },
               { path: ROUTES.ARTIST_SHOPS, element: <div>소품샵 목록</div> },
               { path: ROUTES.ARTIST_SHIPMENTS, element: <div>배송 관리</div> },
