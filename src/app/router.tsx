@@ -118,7 +118,7 @@ export const router = createBrowserRouter([
                 element: <InventoryManagement />,
               },
               { path: ROUTES.ARTIST_SHOPS, element: <div>소품샵 목록</div> },
-              { path: ROUTES.ARTIST_SHIPMENTS, element: <div>배송 관리</div> },
+              { path: ROUTES.ARTIST_SHIPMENTS, element: <div>출고 관리</div> },
               { path: ROUTES.ARTIST_SETTLEMENTS, element: <div>정산</div> },
               {
                 path: ROUTES.ARTIST_SETTLEMENTS_HISTORY,

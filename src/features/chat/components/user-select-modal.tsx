@@ -107,7 +107,7 @@ export const UserSelectModal = ({ onClose }: UserSelectModalProps) => {
         </div>
 
         {/* 테이블 헤더 */}
-        <div className="mb-2 grid grid-cols-3 border-b border-gray-200 pb-2">
+        <div className="grid grid-cols-3 border-b border-gray-200 pb-4 text-center">
           <span className="text-sm font-semibold text-gray-900">계정명</span>
           <span className="text-sm font-semibold text-gray-900">
             주요 카테고리

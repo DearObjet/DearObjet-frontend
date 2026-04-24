@@ -1,5 +1,4 @@
 import { useAppSelector } from '../../../app/hooks';
-import { Aside } from '../../../shared/components/layout';
 
 import { ChatWebSocketProvider } from '../hooks/chat-websocket-provider';
 import { useChatWebSocketContext } from '../hooks/use-chat-websocket-context';
@@ -13,42 +12,17 @@ const ChatPageInner = () => {
   const { isConnected } = useChatWebSocketContext();
 
   return (
-    <div className="flex h-screen">
-      <Aside />
-
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="px-[3.375rem] py-6">
-          <nav aria-label="breadcrumb">
-            <ol className="flex items-center text-lg">
-              <li>
-                <a className="font-medium text-neutral-900" href="/dashboard">
-                  마이페이지
-                </a>
-              </li>
-              <li
-                className="font-bold text-neutral-900 before:mx-2 before:content-['/']"
-                aria-current="page"
-              >
-                메세지
-              </li>
-            </ol>
-          </nav>
-          <h1 className="sr-only">메세지</h1>
-        </header>
-
-        <div className="flex flex-1 overflow-hidden">
-          <div className="flex w-96 flex-col border-r border-gray-200">
-            {isConnected ? (
-              <ChatList />
-            ) : (
-              <p>서버가 불안정합니다. 다시 시도해주세요.</p>
-            )}
-          </div>
-          <div className="flex-1">
-            {selectedChatRoomId ? <ChatRoom /> : <EmptyChat />}
-          </div>
-        </div>
-      </div>
+    <div className="flex h-[52.2rem] flex-1 gap-3 overflow-hidden bg-gray-100">
+      <section className="flex w-96 flex-col rounded-xl border-r border-gray-200">
+        {isConnected ? (
+          <ChatList />
+        ) : (
+          <p>서버가 불안정합니다. 다시 시도해주세요.</p>
+        )}
+      </section>
+      <section className="flex-1">
+        {selectedChatRoomId ? <ChatRoom /> : <EmptyChat />}
+      </section>
     </div>
   );
 };
