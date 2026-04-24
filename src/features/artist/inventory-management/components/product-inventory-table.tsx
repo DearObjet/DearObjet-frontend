@@ -216,7 +216,7 @@ export const ProductInventoryTable = ({
 
         <tbody
           className="block overflow-y-auto"
-          style={{ maxHeight: 'calc(100vh - 15rem)' }}
+          style={{ maxHeight: 'calc(100vh - 9rem)' }}
         >
           {sortedProducts.length === 0 && (
             <tr className="table w-full">
