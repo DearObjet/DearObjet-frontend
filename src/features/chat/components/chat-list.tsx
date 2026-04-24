@@ -95,7 +95,7 @@ export const ChatList = () => {
   );
 
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col rounded-xl bg-white">
       <div className="border-b border-theme-200 p-4">
         {/* 새 메세지 버튼 */}
         <button

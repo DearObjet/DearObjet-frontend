@@ -151,7 +151,7 @@ export const MessageInput = () => {
   if (!selectedChatRoomId) return null;
 
   return (
-    <div className="border-t border-theme-200 bg-white px-6 py-4">
+    <div className="rounded-b-xl border-t border-theme-200 bg-white px-6 py-4">
       <div className="flex items-center gap-3">
         <button
           onClick={handleFileAttach}
