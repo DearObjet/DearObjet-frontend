@@ -12,7 +12,7 @@ export const PartnerLayout = () => {
         <PartnerHeader />
 
         <main className="flex-1 bg-gray-100">
-          <div className="mx-auto w-full max-w-[120rem] p-5 px-[3.625rem]">
+          <div className="mx-auto h-full w-full max-w-[120rem] p-5 px-[3.625rem]">
             <Outlet />
           </div>
         </main>
