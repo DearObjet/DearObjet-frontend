@@ -111,7 +111,7 @@ export const ChatRoom = () => {
   ]);
 
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col rounded-xl bg-white">
       <ChatHeader />
       <MessageList />
       <MessageInput />
