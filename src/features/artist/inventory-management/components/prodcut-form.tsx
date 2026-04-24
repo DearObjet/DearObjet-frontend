@@ -184,7 +184,7 @@ export const ProductForm = ({ selectedProduct, onSave }: Props) => {
         </div>
 
         {/* 이미지 업로드 */}
-        <div className="mb-6 flex flex-col gap-1.5">
+        <div className="mb-[1.34rem] flex flex-col gap-1.5">
           <p className="text-sm font-medium">상품 이미지</p>
           <div className="flex flex-1 items-center justify-center rounded-lg border border-theme-300">
             {imageUrl ? (
