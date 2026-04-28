@@ -28,6 +28,7 @@ import { ArtistSettingPage } from '../features/artist/setting/pages/artist-setti
 import { Chat } from '../features/chat/pages/chat';
 import { InventoryManagement } from '../features/artist/inventory-management/pages/inventory-mangement';
 import { OutboundManagement } from '../features/artist/outbound-management';
+import { InboundManagement } from '../features/shop/inbound-management';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -92,7 +93,7 @@ export const router = createBrowserRouter([
                 element: <div>예약 관리</div>,
               },
               { path: ROUTES.SHOP_ARTISTS, element: <div>작가 관리</div> },
-              { path: ROUTES.SHOP_INVENTORY, element: <div>재고 관리</div> },
+              { path: ROUTES.SHOP_INVENTORY, element: <InboundManagement /> },
               { path: ROUTES.SHOP_CONTRACTS, element: <div>계약 관리</div> },
               { path: ROUTES.SHOP_SETTLEMENTS, element: <div>정산</div> },
               { path: ROUTES.SHOP_MESSAGES, element: <Chat /> },
