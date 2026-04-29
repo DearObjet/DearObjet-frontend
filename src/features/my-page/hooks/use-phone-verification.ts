@@ -1,10 +1,10 @@
 import {
   useSendPhoneVerificationMutation,
   useVerifyPhoneMutation,
-} from '../api/signup-api';
+} from '../api/my-page-api';
 import { usePhoneVerification as usePhoneVerificationBase } from '../../../shared/hooks/use-phone-verification';
 
-export const usePhoneVerification = () => {
+export const useMyPagePhoneVerification = () => {
   const [sendPhoneVerification] = useSendPhoneVerificationMutation();
   const [verifyPhone] = useVerifyPhoneMutation();
 

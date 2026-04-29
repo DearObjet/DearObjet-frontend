@@ -28,11 +28,6 @@ export const ROUTES = {
 
   // ─── Customer (/my) ───────────────────────────────────
   MY: '/my',
-  MY_PROFILE: '/my/profile',
-  MY_BOOKMARKS: '/my/bookmarks',
-  MY_RESERVATIONS: '/my/reservations',
-  MY_POSTS: '/my/posts',
-  MY_MESSAGES: '/my/messages',
 
   // ─── Shop (/shop) ─────────────────────────────────────
   // shop_dashboard

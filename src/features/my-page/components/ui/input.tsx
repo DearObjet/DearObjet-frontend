@@ -8,6 +8,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   prefix?: string;
   buttonLabel?: string;
   onButtonClick?: () => void;
+  buttonDisabled?: boolean;
   variant?: 'default' | 'horizontal';
 }
 
@@ -17,6 +18,7 @@ export const Input = ({
   prefix,
   buttonLabel,
   onButtonClick,
+  buttonDisabled,
   variant = 'default',
   ...props
 }: InputProps) => {
@@ -40,6 +42,7 @@ export const Input = ({
             label={buttonLabel}
             variant="secondaryLight"
             onClick={onButtonClick}
+            disabled={buttonDisabled}
           />
         )}
       </div>

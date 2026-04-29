@@ -1,34 +1,139 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import type { ReactNode } from 'react';
+import type { FormEvent, ChangeEvent, ReactNode } from 'react';
 
 import { useAppDispatch } from '../../../app/hooks';
 
 import { ROUTES } from '../../../shared/constants';
 import { Button } from '../../../shared/components/ui';
-
+import { ToggleSwitch } from '../../../shared/components/ui/toggleswitch';
 import { useLogoutMutation, clearAuth } from '../../../features/auth';
+import {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+} from '../api/my-page-api';
+import { useMyPagePhoneVerification } from '../hooks/use-phone-verification';
 
 import { Input } from './ui/input';
 
 import UploadFile from '../../../assets/upload-file.svg';
 
 interface ProfileFormProps {
-  children?: ReactNode;
   showSave?: boolean;
+  children?: ReactNode;
 }
 
 export const ProfileForm = ({
-  children,
   showSave = false,
+  children,
 }: ProfileFormProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [logout] = useLogoutMutation();
 
+  const { data: profile } = useGetProfileQuery();
+  const [updateProfile] = useUpdateProfileMutation();
+
+  const {
+    verificationCode,
+    setVerificationCode,
+    isCodeSent,
+    isPhoneVerified,
+    isCodeExpired,
+    timeLeft,
+    isSendDisabled,
+    formatTime,
+    resetVerification,
+    handleSendVerification,
+    handleVerifyCode,
+  } = useMyPagePhoneVerification();
+
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [originalPhone, setOriginalPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [smsAgreement, setSmsAgreement] = useState(false);
+  const [marketingAgreement, setMarketingAgreement] = useState(false);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [profileImagePreview, setProfileImagePreview] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (profile) {
+      setName(profile.name);
+      setPhone(profile.phoneNumber);
+      setOriginalPhone(profile.phoneNumber);
+      setEmail(profile.email);
+      setSmsAgreement(profile.smsAgreement);
+      setMarketingAgreement(profile.marketingAgreement);
+      setProfileImagePreview(profile.profileUrl);
+    }
+  }, [profile]);
+
+  const isPhoneChanged = phone !== originalPhone;
+
+  const clearError = (key: string) =>
+    setErrors((prev) => ({ ...prev, [key]: '' }));
+
+  const formatPhoneNumber = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+  };
+
+  const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    if (raw.length <= 11) {
+      setPhone(formatPhoneNumber(raw));
+      resetVerification();
+      clearError('phone');
+      clearError('phoneVerified');
+    }
+  };
+
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setProfileImage(file);
+    setProfileImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    const newErrors: Record<string, string> = {};
+
+    if (!name) newErrors.name = '필수 입력 항목입니다.';
+
+    if (isPhoneChanged) {
+      if (!phone) {
+        newErrors.phone = '필수 입력 항목입니다.';
+      } else if (isCodeSent && !isPhoneVerified) {
+        newErrors.phoneVerified = '휴대폰 인증을 완료해주세요.';
+      } else if (!isPhoneVerified) {
+        newErrors.phoneVerified = '휴대폰 인증을 해주세요.';
+      }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    try {
+      await updateProfile({
+        name,
+        phoneNumber: phone.replace(/-/g, ''),
+        smsAgreement,
+        marketingAgreement,
+        ...(profileImage && { profileImage }),
+      }).unwrap();
+      alert('저장되었습니다.');
+    } catch {
+      alert('저장에 실패했습니다.');
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -41,47 +146,173 @@ export const ProfileForm = ({
 
   return (
     <div className="flex w-[34rem] flex-col gap-14">
-      <form className="flex flex-col gap-[0.875rem]">
+      <form
+        id="profile-form"
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-[0.875rem]"
+      >
         <div className="relative mb-[5.125rem] inline-block">
           <img
-            src=""
+            src={profileImagePreview}
             alt=""
             className="h-[12rem] w-[12rem] justify-self-center rounded-full bg-[#d9d9d9] object-cover"
           />
-          <button className="absolute bottom-0 right-[30%] flex h-[3.90875rem] w-[3.90875rem] items-center justify-center rounded-full bg-black">
+          <label className="absolute bottom-0 right-[30%] flex h-[3.90875rem] w-[3.90875rem] cursor-pointer items-center justify-center rounded-full bg-black">
             <img
               src={UploadFile}
               alt="업로드 파일"
               className="h-[2.18875rem] w-[2.18875rem]"
             />
-          </button>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageChange}
+            />
+          </label>
         </div>
 
-        <Input
-          id="name"
-          label="이름"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <Input
-          id="phone"
-          label="휴대폰번호"
-          type="text"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          buttonLabel="휴대폰 인증"
-          onButtonClick={() => {}}
-        />
-        <Input
-          id="email"
-          label="이메일"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <div className="flex flex-col gap-1">
+          <Input
+            id="name"
+            label="이름"
+            type="text"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              clearError('name');
+            }}
+          />
+          {errors.name && <p className="text-sm text-red-400">{errors.name}</p>}
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <Input
+            id="phone"
+            label="휴대폰번호"
+            type="text"
+            value={phone}
+            onChange={handlePhoneChange}
+            buttonLabel="휴대폰 인증"
+            onButtonClick={() =>
+              handleSendVerification(phone, (msg) =>
+                setErrors((prev) => ({ ...prev, phone: msg }))
+              )
+            }
+            buttonDisabled={isSendDisabled}
+          />
+          {errors.phone && (
+            <p className="text-sm text-red-400">{errors.phone}</p>
+          )}
+
+          {isPhoneChanged && isCodeSent && !isPhoneVerified && (
+            <>
+              <div
+                className={`flex w-full items-center rounded-md border px-3 py-2 ${
+                  isCodeExpired || errors.verificationCode
+                    ? 'border-red-400'
+                    : 'border-gray-900'
+                }`}
+              >
+                <input
+                  placeholder="인증코드 6자리"
+                  className="flex-1 text-sm outline-none placeholder:text-gray-400"
+                  value={verificationCode}
+                  onChange={(e) => {
+                    setVerificationCode(e.target.value);
+                    clearError('verificationCode');
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleVerifyCode(
+                        phone,
+                        () =>
+                          setErrors((prev) => ({
+                            ...prev,
+                            phoneVerified: '',
+                            verificationCode: '',
+                          })),
+                        (msg) =>
+                          setErrors((prev) => ({
+                            ...prev,
+                            verificationCode: msg,
+                          }))
+                      );
+                    }
+                  }}
+                  maxLength={6}
+                  disabled={isCodeExpired}
+                />
+                <span className="mr-3 text-sm text-red-500">
+                  {formatTime(timeLeft)}
+                </span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleVerifyCode(
+                      phone,
+                      () =>
+                        setErrors((prev) => ({
+                          ...prev,
+                          phoneVerified: '',
+                          verificationCode: '',
+                        })),
+                      (msg) =>
+                        setErrors((prev) => ({
+                          ...prev,
+                          verificationCode: msg,
+                        }))
+                    )
+                  }
+                  disabled={!verificationCode || isCodeExpired}
+                  className="text-sm text-black disabled:cursor-not-allowed disabled:text-gray-300"
+                >
+                  확인
+                </button>
+              </div>
+
+              {isCodeExpired && (
+                <p className="text-sm text-red-400">
+                  유효시간이 지났어요. &apos;휴대폰 인증&apos;을 다시 해주세요.
+                </p>
+              )}
+              {errors.verificationCode && !isCodeExpired && (
+                <p className="text-sm text-red-400">
+                  {errors.verificationCode}
+                </p>
+              )}
+            </>
+          )}
+
+          {errors.phoneVerified && (
+            <p className="text-sm text-red-400">{errors.phoneVerified}</p>
+          )}
+
+          {isPhoneChanged && isPhoneVerified && (
+            <p className="text-sm text-blue-200">✓ 휴대폰 인증 완료</p>
+          )}
+        </div>
+
+        <Input id="email" label="이메일" type="email" value={email} readOnly />
 
         {children}
+
+        <p className="mt-10">이벤트/혜택 소식 수신 여부</p>
+        <div className="border-gray-3 flex flex-col gap-[0.875rem] rounded-xl border px-8 py-6">
+          <ToggleSwitch
+            id="kakao-talk"
+            label="카카오톡 알림톡 수신동의"
+            checked={smsAgreement}
+            onChange={setSmsAgreement}
+          />
+          <ToggleSwitch
+            id="sms"
+            label="SMS 수신동의"
+            checked={marketingAgreement}
+            onChange={setMarketingAgreement}
+          />
+        </div>
       </form>
 
       <div className="flex justify-between">
@@ -96,6 +327,7 @@ export const ProfileForm = ({
           />
           {showSave && (
             <Button
+              form="profile-form"
               variant="secondaryDark"
               label="저장"
               style={{ height: '2.5rem', paddingTop: 0, paddingBottom: 0 }}
