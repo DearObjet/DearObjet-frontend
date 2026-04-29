@@ -5,6 +5,7 @@ import { MessageCircleMore } from 'lucide-react';
 
 import type { RootState } from '../../../../app/store';
 
+import { useGetMeQuery } from './api/user-me-api';
 import { ROUTES } from '../../../constants';
 import { UserProfile } from './user-profile';
 import { Asidetab } from './aside-tab-menu';
@@ -16,6 +17,7 @@ export const Aside = () => {
   const location = useLocation();
   const [activeMenu, setActiveMenu] = useState(location.pathname);
   const role = useSelector((state: RootState) => state.auth.user?.role);
+  const { data: userMe } = useGetMeQuery();
 
   const handleClick = (path: string) => {
     setActiveMenu(path);
@@ -389,8 +391,9 @@ export const Aside = () => {
       <UserProfile
         className="mt-auto"
         variant="aside"
-        userName="김자까"
-        userId="jakka@gmail.com"
+        userName={userMe?.name ?? ''}
+        userId={userMe?.email}
+        userImage={userMe?.profileUrl ?? undefined}
       />
     </aside>
   );
