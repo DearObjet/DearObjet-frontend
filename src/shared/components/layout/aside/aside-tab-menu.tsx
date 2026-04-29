@@ -1,11 +1,11 @@
-import type { ComponentType, SVGProps } from 'react';
+import type { ComponentType, SVGProps, MouseEvent } from 'react';
 
 export interface ButtonProps {
   icon?: ComponentType<SVGProps<SVGSVGElement>>;
   label: string;
   className?: string;
   disabled?: boolean;
-  onClick?: () => void;
+  onClick?: (e?: MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const Asidetab = ({
