@@ -62,7 +62,7 @@ export const ProfileForm = ({ showSave = false }: ProfileFormProps) => {
       setEmail(profile.email);
       setSmsAgreement(profile.smsAgreement);
       setMarketingAgreement(profile.marketingAgreement);
-      setProfileImagePreview(profile.profileImageUrl);
+      setProfileImagePreview(profile.profileUrl);
     }
   }, [profile]);
 

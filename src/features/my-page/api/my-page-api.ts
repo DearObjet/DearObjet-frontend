@@ -12,7 +12,7 @@ interface UserProfile {
   name: string;
   phoneNumber: string;
   email: string;
-  profileImageUrl: string;
+  profileUrl: string;
   smsAgreement: boolean;
   marketingAgreement: boolean;
 }
