@@ -4,6 +4,8 @@ import type { ApiResponse } from '../../../shared/types';
 
 const MY_PAGE_ENDPOINTS = {
   PROFILE: '/users/me/profile',
+  SEND_PHONE_VERIFICATION: '/auth/phone-verifications/send',
+  VERIFY_PHONE: '/auth/phone-verifications/verify',
 } as const;
 
 interface UserProfile {
@@ -21,6 +23,23 @@ interface UpdateProfileRequest {
   smsAgreement: boolean;
   marketingAgreement: boolean;
   profileImage?: File;
+}
+
+interface SendPhoneVerificationRequest {
+  phoneNumber: string;
+}
+
+interface SendPhoneVerificationResponse {
+  message?: string;
+}
+
+interface VerifyPhoneRequest {
+  phoneNumber: string;
+  code: string;
+}
+
+interface VerifyPhoneResponse {
+  verified: boolean;
 }
 
 export const myPageApi = createApi({
@@ -53,7 +72,36 @@ export const myPageApi = createApi({
       transformResponse: (response: ApiResponse<UserProfile>) => response.data,
       invalidatesTags: ['Profile'],
     }),
+
+    sendPhoneVerification: builder.mutation<
+      SendPhoneVerificationResponse,
+      SendPhoneVerificationRequest
+    >({
+      query: (data) => ({
+        url: MY_PAGE_ENDPOINTS.SEND_PHONE_VERIFICATION,
+        method: 'POST',
+        body: data,
+      }),
+      transformResponse: (
+        response: ApiResponse<SendPhoneVerificationResponse>
+      ) => response.data,
+    }),
+
+    verifyPhone: builder.mutation<VerifyPhoneResponse, VerifyPhoneRequest>({
+      query: (data) => ({
+        url: MY_PAGE_ENDPOINTS.VERIFY_PHONE,
+        method: 'POST',
+        body: data,
+      }),
+      transformResponse: (response: ApiResponse<VerifyPhoneResponse>) =>
+        response.data,
+    }),
   }),
 });
 
-export const { useGetProfileQuery, useUpdateProfileMutation } = myPageApi;
+export const {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+  useSendPhoneVerificationMutation,
+  useVerifyPhoneMutation,
+} = myPageApi;
