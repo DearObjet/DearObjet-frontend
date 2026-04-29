@@ -14,6 +14,7 @@ import { storyApi } from '../features/shop/shop-management/api/story-api';
 import { mapApi, oneDayClassApi } from '../features/map';
 import { chatApi } from '../features/chat/api/chat-api';
 import { myPageApi } from '../features/my-page/api/my-page-api';
+import { userMeApi } from '../shared/components/layout/aside/api/user-me-api';
 
 export const store = configureStore({
   reducer: {
@@ -32,6 +33,7 @@ export const store = configureStore({
     [oneDayClassApi.reducerPath]: oneDayClassApi.reducer,
     [chatApi.reducerPath]: chatApi.reducer,
     [myPageApi.reducerPath]: myPageApi.reducer,
+    [userMeApi.reducerPath]: userMeApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -44,7 +46,8 @@ export const store = configureStore({
       .concat(mapApi.middleware)
       .concat(oneDayClassApi.middleware)
       .concat(chatApi.middleware)
-      .concat(myPageApi.middleware),
+      .concat(myPageApi.middleware)
+      .concat(userMeApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
