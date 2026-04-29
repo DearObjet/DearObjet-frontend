@@ -1,14 +1,14 @@
 interface ToggleSwitchProps {
   id: string;
   label: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
 }
 
 export const ToggleSwitch = ({
   id,
   label,
-  checked,
+  checked = false,
   onChange,
 }: ToggleSwitchProps) => {
   return (
@@ -16,7 +16,7 @@ export const ToggleSwitch = ({
       <button
         type="button"
         id={id}
-        onClick={() => onChange(!checked)}
+        onClick={() => onChange?.(!checked)}
         className={`relative h-[1.5rem] w-[3rem] rounded-full transition-colors duration-200 ${
           checked ? 'bg-black' : 'bg-gray-300'
         }`}

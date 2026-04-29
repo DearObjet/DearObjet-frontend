@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import type { FormEvent, ChangeEvent } from 'react';
+import type { FormEvent, ChangeEvent, ReactNode } from 'react';
 
 import { useAppDispatch } from '../../../app/hooks';
 
@@ -20,9 +20,13 @@ import UploadFile from '../../../assets/upload-file.svg';
 
 interface ProfileFormProps {
   showSave?: boolean;
+  children?: ReactNode;
 }
 
-export const ProfileForm = ({ showSave = false }: ProfileFormProps) => {
+export const ProfileForm = ({
+  showSave = false,
+  children,
+}: ProfileFormProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [logout] = useLogoutMutation();
@@ -291,6 +295,8 @@ export const ProfileForm = ({ showSave = false }: ProfileFormProps) => {
         </div>
 
         <Input id="email" label="이메일" type="email" value={email} readOnly />
+
+        {children}
 
         <p className="mt-10">이벤트/혜택 소식 수신 여부</p>
         <div className="border-gray-3 flex flex-col gap-[0.875rem] rounded-xl border px-8 py-6">
