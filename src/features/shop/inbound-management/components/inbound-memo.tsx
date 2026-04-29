@@ -1,4 +1,5 @@
 import { Button } from '../../../../shared/components/ui';
+
 import type { InboundMemoProps } from '../types/inbound';
 
 export const InboundMemo = ({

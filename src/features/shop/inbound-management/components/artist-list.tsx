@@ -4,17 +4,12 @@ import { ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react';
 import { Button } from '../../../../shared/components/ui';
 import type {
   ArtistListProps,
+  ArtistSortIconProps,
   ArtistSortKey,
   SortOrder,
 } from '../types/inbound';
 
-type SortIconProps = {
-  column: ArtistSortKey;
-  sortKey: ArtistSortKey;
-  sortOrder: SortOrder;
-};
-
-const SortIcon = ({ column, sortKey, sortOrder }: SortIconProps) => {
+const SortIcon = ({ column, sortKey, sortOrder }: ArtistSortIconProps) => {
   if (sortKey !== column)
     return <ChevronsUpDown className="h-3 w-3 shrink-0" />;
   return sortOrder === 'asc' ? (

@@ -2,20 +2,16 @@ import { useState, useMemo, type ChangeEvent } from 'react';
 import { ArrowUp, ArrowDown, ChevronsUpDown, Search } from 'lucide-react';
 
 import { Button } from '../../../../shared/components/ui';
+
 import type {
   InboundRecord,
   InboundRecordListProps,
   RecordSortKey,
+  RecordSortIconProps,
   SortOrder,
 } from '../types/inbound';
 
-type SortIconProps = {
-  column: RecordSortKey;
-  sortKey: RecordSortKey;
-  sortOrder: SortOrder;
-};
-
-const SortIcon = ({ column, sortKey, sortOrder }: SortIconProps) => {
+const SortIcon = ({ column, sortKey, sortOrder }: RecordSortIconProps) => {
   if (sortKey !== column)
     return <ChevronsUpDown className="h-3 w-3 shrink-0" />;
   return sortOrder === 'asc' ? (

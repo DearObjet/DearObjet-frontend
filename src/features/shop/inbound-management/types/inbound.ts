@@ -1,4 +1,16 @@
+export type ArtistSortIconProps = {
+  column: ArtistSortKey;
+  sortKey: ArtistSortKey;
+  sortOrder: SortOrder;
+};
+
 export type ArtistSortKey = 'name';
+
+export type RecordSortIconProps = {
+  column: RecordSortKey;
+  sortKey: RecordSortKey;
+  sortOrder: SortOrder;
+};
 
 export type RecordSortKey =
   | 'productName'
