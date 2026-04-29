@@ -52,7 +52,6 @@ export const router = createBrowserRouter([
       { path: ROUTES.POSTS, element: <div>포스트</div> },
       { path: ROUTES.ARTISTS, element: <div>작가</div> },
 
-      { path: ROUTES.MY, element: <MyPage /> },
       // customer만 접근 가능
       {
         element: <ProtectedRoute />,
