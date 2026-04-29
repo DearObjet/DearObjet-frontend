@@ -116,17 +116,6 @@ export const Aside = () => {
               <>
                 <li>
                   <Asidetab
-                    label="작가 프로필 관리"
-                    className={
-                      activeMenu === ROUTES.ARTIST_PROFILE
-                        ? 'text-white'
-                        : 'text-[#C1C1C1]'
-                    }
-                    onClick={() => handleClick(ROUTES.ARTIST_PROFILE)}
-                  />
-                </li>
-                <li>
-                  <Asidetab
                     label="품목 및 재고 관리"
                     className={
                       activeMenu === ROUTES.ARTIST_INVENTORY
@@ -263,14 +252,14 @@ export const Aside = () => {
                 <li>
                   <Asidetab
                     label="세금계산서 발행"
-                    className="text-[#C1C1C1]"
+                    focusable={false}
                     onClick={handleComingSoon('세금계산서 발행')}
                   />
                 </li>
                 <li>
                   <Asidetab
                     label="정산내역"
-                    className="text-[#C1C1C1]"
+                    focusable={false}
                     onClick={handleComingSoon('정산내역')}
                   />
                 </li>
@@ -305,12 +294,8 @@ export const Aside = () => {
                 <li>
                   <Asidetab
                     label="세금계산서 발행"
-                    className={
-                      activeMenu === ROUTES.ARTIST_SETTLEMENTS
-                        ? 'text-white'
-                        : 'text-[#C1C1C1]'
-                    }
-                    onClick={() => handleClick(ROUTES.ARTIST_SETTLEMENTS)}
+                    focusable={false}
+                    onClick={handleComingSoon('세금계산서 발행')}
                   />
                 </li>
               </>
@@ -341,7 +326,7 @@ export const Aside = () => {
           <Asidetab
             icon={MessageCircleMore}
             label="결제관리"
-            className="text-[#C1C1C1]"
+            focusable={false}
             onClick={handleComingSoon('결제관리')}
           />
         )}
