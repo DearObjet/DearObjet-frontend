@@ -9,6 +9,7 @@ export default {
         foreground: 'rgb(var(--color-foreground) / <alpha-value>)',
         card: 'rgb(var(--color-card) / <alpha-value>)',
         border: 'rgb(var(--color-border) / <alpha-value>)',
+        orange: 'rgb(var(--color-orange) / <alpha-value>)',
 
         // Primary Button
         'primary-bg': 'rgb(var(--color-primary-bg) / <alpha-value>)',
