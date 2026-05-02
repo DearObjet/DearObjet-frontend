@@ -40,7 +40,12 @@ export const Aside = () => {
   return (
     <aside className="flex flex-col bg-black pb-[2.875rem] pl-[2.375rem] pr-[3.75rem] pt-[3.25rem] text-white">
       <section className="flex items-center gap-2 text-[1.1875rem]">
-        <img src={DearObjectWhiteLogo} alt="dear objet 로고" />
+        <img
+          src={DearObjectWhiteLogo}
+          alt="dear objet 로고"
+          onClick={() => navigate('/')}
+          className="cursor-pointer"
+        />
         <h2>my pape</h2>
       </section>
 
