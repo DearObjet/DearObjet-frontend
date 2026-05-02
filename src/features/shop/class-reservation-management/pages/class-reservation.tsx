@@ -1,92 +1,60 @@
 import { useState } from 'react';
 
 import { DearObjetCalendar } from '../../../../shared/components/common/dear-objet-calendar';
-
 import { Button } from '../../../../shared/components/ui';
-import { ReservationTable } from '../components/reservation-table';
 
-const MOCK_RESERVATIONS = [
-  {
-    id: '1',
-    status: '확정' as const,
-    name: '김가영',
-    phone: '010-7147-0779',
-    reservationNumber: '135484',
-    datetime: '2025.09.21 오후 1:00',
-    className: '나만의 키링 만들기',
-    headcount: 3,
-    memo: '아이들과 함께 방문 예정입니다',
-  },
-  {
-    id: '2',
-    status: '확정' as const,
-    name: '최재호',
-    phone: '010-7147-0779',
-    reservationNumber: '135485',
-    datetime: '2025.09.21 오후 1:00',
-    className: '나만의 키링 만들기',
-    headcount: 3,
-    memo: '기대됩니다!',
-  },
-  {
-    id: '3',
-    status: '확정' as const,
-    name: '배주완',
-    phone: '010-7147-0779',
-    reservationNumber: '135486',
-    datetime: '2025.09.21 오후 1:00',
-    className: '나만의 키링 만들기',
-    headcount: 3,
-    memo: '변동 시 연락드릴게요!',
-  },
-  {
-    id: '4',
-    status: '취소' as const,
-    name: '남현정',
-    phone: '010-7147-0779',
-    reservationNumber: '135486',
-    datetime: '2025.09.21 오후 1:00',
-    className: '나만의 키링 만들기',
-    headcount: 3,
-    memo: '변동 시 연락드릴게요!',
-  },
-  {
-    id: '5',
-    status: '대기' as const,
-    name: '박다솜',
-    phone: '010-7147-0779',
-    reservationNumber: '135486',
-    datetime: '2025.09.21 오후 1:00',
-    className: '나만의 키링 만들기',
-    headcount: 3,
-    memo: '변동 시 연락드릴게요!',
-  },
-  {
-    id: '6',
-    status: '대기' as const,
-    name: '박다솜',
-    phone: '010-7147-0779',
-    reservationNumber: '135486',
-    datetime: '2025.09.21 오후 1:00',
-    className: '나만의 키링 만들기',
-    headcount: 3,
-    memo: '변동 시 연락드릴게요!',
-  },
-  {
-    id: '9',
-    status: '대기' as const,
-    name: '박다솜',
-    phone: '010-7147-0779',
-    reservationNumber: '135486',
-    datetime: '2025.09.21 오후 1:00',
-    className: '나만의 키링 만들기',
-    headcount: 3,
-    memo: '변동 시 연락드릴게요!',
-  },
-];
+import {
+  useGetClassReservationsQuery,
+  useConfirmReservationMutation,
+  useCancelReservationMutation,
+} from '../api/class-reservation-api';
+import { ReservationTable } from '../components/reservation-table';
 
 export const ClassReservation = () => {
   const [date, setDate] = useState<Date | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+
+  const year = date ? date.getFullYear() : new Date().getFullYear();
+  const month = date ? date.getMonth() + 1 : new Date().getMonth() + 1;
+
+  const { data } = useGetClassReservationsQuery({ year, month });
+  const [confirmReservation] = useConfirmReservationMutation();
+  const [cancelReservation] = useCancelReservationMutation();
+
+  const filteredReservations = (data?.reservations ?? []).filter((r) => {
+    if (!date) return true;
+    const reservationDate = new Date(r.reservationTime);
+    return (
+      reservationDate.getFullYear() === date.getFullYear() &&
+      reservationDate.getMonth() === date.getMonth() &&
+      reservationDate.getDate() === date.getDate()
+    );
+  });
+
+  const handleConfirm = async () => {
+    if (selectedIds.size === 0) return;
+    await Promise.all([...selectedIds].map((id) => confirmReservation(id)));
+    setSelectedIds(new Set());
+  };
+
+  const handleCancel = async () => {
+    if (selectedIds.size === 0) return;
+
+    const selectedReservations = filteredReservations.filter((r) =>
+      selectedIds.has(r.reservationId)
+    );
+    const hasNonPending = selectedReservations.some(
+      (r) => r.status !== 'PENDING'
+    );
+
+    if (hasNonPending) {
+      alert('예약 확정 혹은 반려는 대기 상태인 예약만 가능합니다.');
+      return;
+    }
+
+    await Promise.all([...selectedIds].map((id) => cancelReservation(id)));
+    setSelectedIds(new Set());
+  };
 
   return (
     <div className="flex h-full w-full flex-col gap-3">
@@ -108,15 +76,23 @@ export const ClassReservation = () => {
       <section className="h-full w-full rounded-xl bg-white px-[3.125rem] pb-[1.6875rem] pt-4">
         <div className="flex justify-between">
           <h3 className="flex items-center justify-between pb-3">
-            예약현황 <span>3</span>
+            예약현황 <span>{filteredReservations.length}</span>
           </h3>
           <div className="flex gap-2">
-            <Button label="확정" />
-            <Button label="반려" variant="secondaryDark" />
+            <Button label="확정" onClick={handleConfirm} />
+            <Button
+              label="반려"
+              variant="secondaryDark"
+              onClick={handleCancel}
+            />
           </div>
         </div>
         <div>
-          <ReservationTable data={MOCK_RESERVATIONS} />
+          <ReservationTable
+            data={filteredReservations}
+            selectedIds={selectedIds}
+            onSelectedIdsChange={setSelectedIds}
+          />
         </div>
       </section>
     </div>

@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, type Dispatch, type SetStateAction } from 'react';
+
 import type { Reservation } from '../types/reservation-types';
 import { ReservationTableRow } from './reservation-table-row';
 import Sort from '../../../../assets/sort.svg';
 import { Button } from '../../../../shared/components/ui';
 
-type SortKey = keyof Omit<Reservation, 'id' | 'status'>;
+type SortKey = keyof Omit<Reservation, 'status'>;
 type SortOrder = 'asc' | 'desc';
 
 const COL_WIDTHS = [
@@ -19,10 +20,19 @@ const COL_WIDTHS = [
   'auto',
 ];
 
-export const ReservationTable = ({ data }: { data: Reservation[] }) => {
+interface ReservationTableProps {
+  data: Reservation[];
+  selectedIds: Set<number>;
+  onSelectedIdsChange: Dispatch<SetStateAction<Set<number>>>;
+}
+
+export const ReservationTable = ({
+  data,
+  selectedIds,
+  onSelectedIdsChange,
+}: ReservationTableProps) => {
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -37,14 +47,14 @@ export const ReservationTable = ({ data }: { data: Reservation[] }) => {
 
   const handleSelectAll = () => {
     if (isAllSelected) {
-      setSelectedIds(new Set());
+      onSelectedIdsChange(new Set());
     } else {
-      setSelectedIds(new Set(data.map((item) => item.id)));
+      onSelectedIdsChange(new Set(data.map((item) => item.reservationId)));
     }
   };
 
-  const handleSelectOne = (id: string) => {
-    setSelectedIds((prev) => {
+  const handleSelectOne = (id: number) => {
+    onSelectedIdsChange((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
@@ -57,27 +67,24 @@ export const ReservationTable = ({ data }: { data: Reservation[] }) => {
 
   const sortedData = [...data].sort((a, b) => {
     if (!sortKey) return 0;
-
     const aVal = a[sortKey];
     const bVal = b[sortKey];
 
-    if (sortKey === 'datetime') {
-      const toDate = (str: string) =>
-        new Date(
-          str.replace(/\./g, '-').replace(' 오후 ', 'T').replace(':', ':')
-        );
+    if (sortKey === 'reservationTime') {
       return sortOrder === 'asc'
-        ? toDate(aVal as string).getTime() - toDate(bVal as string).getTime()
-        : toDate(bVal as string).getTime() - toDate(aVal as string).getTime();
+        ? new Date(aVal as string).getTime() -
+            new Date(bVal as string).getTime()
+        : new Date(bVal as string).getTime() -
+            new Date(aVal as string).getTime();
     }
 
-    if (sortKey === 'headcount') {
+    if (sortKey === 'guestCount') {
       return sortOrder === 'asc'
         ? (aVal as number) - (bVal as number)
         : (bVal as number) - (aVal as number);
     }
 
-    if (sortKey === 'phone' || sortKey === 'reservationNumber') {
+    if (sortKey === 'phoneNumber') {
       const aNum = Number((aVal as string).replace(/[^0-9]/g, ''));
       const bNum = Number((bVal as string).replace(/[^0-9]/g, ''));
       return sortOrder === 'asc' ? aNum - bNum : bNum - aNum;
@@ -125,22 +132,22 @@ export const ReservationTable = ({ data }: { data: Reservation[] }) => {
             </th>
             <th className="py-3 text-left font-medium">상태</th>
             <th className="py-3 text-left font-medium">
-              예약자명 <SortButton sortTarget="name" />
+              예약자명 <SortButton sortTarget="reservationName" />
             </th>
             <th className="py-3 text-left font-medium">
-              전화번호 <SortButton sortTarget="phone" />
+              전화번호 <SortButton sortTarget="phoneNumber" />
             </th>
             <th className="py-3 text-left font-medium">
-              예약번호 <SortButton sortTarget="reservationNumber" />
+              예약번호 <SortButton sortTarget="reservationId" />
             </th>
             <th className="py-3 text-left font-medium">
-              이용일시 <SortButton sortTarget="datetime" />
+              이용일시 <SortButton sortTarget="reservationTime" />
             </th>
             <th className="py-3 text-left font-medium">
               클래스명 <SortButton sortTarget="className" />
             </th>
             <th className="py-3 text-left font-medium">
-              인원 <SortButton sortTarget="headcount" />
+              인원 <SortButton sortTarget="guestCount" />
             </th>
             <th className="py-3 text-left font-medium">
               메모 <SortButton sortTarget="memo" />
@@ -160,9 +167,9 @@ export const ReservationTable = ({ data }: { data: Reservation[] }) => {
           <tbody>
             {sortedData.map((item) => (
               <ReservationTableRow
-                key={item.id}
+                key={item.reservationId}
                 data={item}
-                checked={selectedIds.has(item.id)}
+                checked={selectedIds.has(item.reservationId)}
                 onCheck={handleSelectOne}
               />
             ))}

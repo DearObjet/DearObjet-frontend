@@ -1,11 +1,15 @@
 export interface Reservation {
-  id: string;
-  status: '확정' | '취소' | '대기';
-  name: string;
-  phone: string;
-  reservationNumber: string;
-  datetime: string;
+  reservationId: number;
+  status: 'CONFIRMED' | 'CANCELLED' | 'PENDING';
+  reservationName: string;
+  phoneNumber: string;
+  reservationTime: string;
   className: string;
-  headcount: number;
+  guestCount: number;
   memo: string;
+}
+
+export interface ReservationListResponse {
+  reservationCount: number;
+  reservations: Reservation[];
 }

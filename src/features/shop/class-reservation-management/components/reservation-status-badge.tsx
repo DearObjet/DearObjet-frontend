@@ -1,9 +1,15 @@
-type Status = '확정' | '취소' | '대기';
+type Status = 'CONFIRMED' | 'CANCELLED' | 'PENDING';
 
 const statusStyles: Record<Status, string> = {
-  확정: 'bg-primary-bg',
-  취소: 'bg-gray-900',
-  대기: 'bg-orange',
+  CONFIRMED: 'bg-primary-bg',
+  CANCELLED: 'bg-gray-900',
+  PENDING: 'bg-orange',
+};
+
+const statusLabels: Record<Status, string> = {
+  CONFIRMED: '확정',
+  CANCELLED: '취소',
+  PENDING: '대기',
 };
 
 export const ReservationStatusBadge = ({ status }: { status: Status }) => {
@@ -11,7 +17,7 @@ export const ReservationStatusBadge = ({ status }: { status: Status }) => {
     <span
       className={`${statusStyles[status]} flex h-8 w-8 items-center justify-center rounded-full text-sm text-white`}
     >
-      {status}
+      {statusLabels[status]}
     </span>
   );
 };
