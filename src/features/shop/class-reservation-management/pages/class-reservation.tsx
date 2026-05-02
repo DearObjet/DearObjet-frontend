@@ -33,6 +33,19 @@ export const ClassReservation = () => {
 
   const handleConfirm = async () => {
     if (selectedIds.size === 0) return;
+
+    const selectedReservations = filteredReservations.filter((r) =>
+      selectedIds.has(r.reservationId)
+    );
+    const hasNonPending = selectedReservations.some(
+      (r) => r.status !== 'PENDING'
+    );
+
+    if (hasNonPending) {
+      alert('예약 확정 혹은 반려는 대기 상태인 예약만 가능합니다.');
+      return;
+    }
+
     await Promise.all([...selectedIds].map((id) => confirmReservation(id)));
     setSelectedIds(new Set());
   };
