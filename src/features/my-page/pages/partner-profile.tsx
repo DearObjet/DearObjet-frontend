@@ -1,15 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, type ChangeEvent } from 'react';
 
 import { Button } from '../../../shared/components/ui';
 import { SelectBox } from '../../../shared/components/ui';
 
+import {
+  useGetBusinessProfileQuery,
+  useUpdateBusinessProfileMutation,
+} from '../api/my-page-api';
 import { ProfileForm } from '../components/profile-form';
+import type { ProfileFormRef } from '../components/profile-form';
 import { Input } from '../components/ui/input';
 
 export const PartnerProfile = () => {
+  const { data: businessProfile } = useGetBusinessProfileQuery();
+  const [updateBusinessProfile] = useUpdateBusinessProfileMutation();
+  const profileFormRef = useRef<ProfileFormRef>(null);
+
+  const [isEditing, setIsEditing] = useState(false);
   const [instagram, setInstagram] = useState('');
   const [businessPhone, setBusinessPhone] = useState('');
+  const [businessPhoneError, setBusinessPhoneError] = useState('');
   const [bank, setBank] = useState('');
+  const [bankAccountNumber, setBankAccountNumber] = useState('');
+  const [accountHolder, setAccountHolder] = useState('');
+  const [bankbookImage, setBankbookImage] = useState<File | null>(null);
+  const [bankbookImagePreview, setBankbookImagePreview] = useState('');
   const [bzeemail, setBzeemail] = useState('');
   const [hometaxApiKey, setHometaxApiKey] = useState('');
 
@@ -22,25 +37,112 @@ export const PartnerProfile = () => {
     { value: 'toss', label: '토스뱅크' },
   ];
 
+  useEffect(() => {
+    if (businessProfile) {
+      setInstagram(businessProfile.instagramId ?? '');
+      setBusinessPhone(
+        businessProfile.businessPhoneNumber ?? businessProfile.phoneNumber ?? ''
+      );
+      setBank(businessProfile.bankName ?? '');
+      setBankAccountNumber(businessProfile.bankAccountNumber ?? '');
+      setAccountHolder(businessProfile.accountHolder ?? '');
+      setBankbookImagePreview(businessProfile.bankbookImageUrl ?? '');
+      setBzeemail(
+        businessProfile.taxInvoiceEmail ?? businessProfile.email ?? ''
+      );
+      setHometaxApiKey(businessProfile.hometaxApiKey ?? '');
+    }
+  }, [businessProfile]);
+
+  const handleCancel = () => {
+    if (businessProfile) {
+      setInstagram(businessProfile.instagramId ?? '');
+      setBusinessPhone(
+        businessProfile.businessPhoneNumber ?? businessProfile.phoneNumber ?? ''
+      );
+      setBank(businessProfile.bankName ?? '');
+      setBankAccountNumber(businessProfile.bankAccountNumber ?? '');
+      setAccountHolder(businessProfile.accountHolder ?? '');
+      setBankbookImagePreview(businessProfile.bankbookImageUrl ?? '');
+      setBankbookImage(null);
+      setBzeemail(
+        businessProfile.taxInvoiceEmail ?? businessProfile.email ?? ''
+      );
+      setHometaxApiKey(businessProfile.hometaxApiKey ?? '');
+    }
+    setBusinessPhoneError('');
+    setIsEditing(false);
+  };
+
+  const handleBankbookImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBankbookImage(file);
+    setBankbookImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleSave = async () => {
+    const isProfileValid = profileFormRef.current?.validate() ?? true;
+
+    let isBusinessPhoneValid = true;
+    if (!businessPhone) {
+      setBusinessPhoneError('필수 입력 항목입니다.');
+      isBusinessPhoneValid = false;
+    } else {
+      setBusinessPhoneError('');
+    }
+
+    if (!isProfileValid || !isBusinessPhoneValid) return;
+
+    const profileImage = profileFormRef.current?.getProfileImage() ?? null;
+
+    try {
+      await updateBusinessProfile({
+        businessPhoneNumber: businessPhone,
+        instagramId: instagram,
+        bankName: bank,
+        bankAccountNumber,
+        accountHolder,
+        taxInvoiceEmail: bzeemail,
+        ...(bankbookImage && { bankbookImage }),
+        ...(profileImage && { profileImage }),
+      }).unwrap();
+      alert('저장되었습니다.');
+      setIsEditing(false);
+    } catch {
+      alert('저장에 실패했습니다.');
+    }
+  };
+
   return (
     <div className="grid min-h-0 w-full flex-1 grid-cols-2 gap-3 bg-gray-100">
       <section className="flex h-full w-full justify-center rounded-xl bg-white p-8">
         <h3 className="hidden">개인 정보</h3>
         <div className="flex w-full justify-center">
-          <ProfileForm>
-            <Input
-              id="business-phone"
-              label="사업장 전화번호"
-              type="text"
-              value={businessPhone}
-              onChange={(e) => setBusinessPhone(e.target.value)}
-            />
+          <ProfileForm ref={profileFormRef} isEditing={isEditing}>
+            <div className="flex flex-col gap-1">
+              <Input
+                id="business-phone"
+                label="사업장 전화번호"
+                type="text"
+                value={businessPhone}
+                readOnly={!isEditing}
+                onChange={(e) => {
+                  setBusinessPhone(e.target.value);
+                  setBusinessPhoneError('');
+                }}
+              />
+              {businessPhoneError && (
+                <p className="text-sm text-red-400">{businessPhoneError}</p>
+              )}
+            </div>
             <Input
               id="instagram"
               label="Instagram Business Account ID"
               type="text"
               prefix="@"
               value={instagram}
+              readOnly={!isEditing}
               onChange={(e) => setInstagram(e.target.value)}
             />
           </ProfileForm>
@@ -51,18 +153,39 @@ export const PartnerProfile = () => {
         <div className="flex flex-col gap-3">
           <h3 className="mb-3">사업자 정보</h3>
           <div className="flex flex-col gap-2">
-            <Input variant="horizontal" label="상호명" id="" readOnly />
-            <Input variant="horizontal" label="사업자 번호" id="" readOnly />
-            <Input variant="horizontal" label="대표자명" id="" readOnly />
-            <Input variant="horizontal" label="사업자주소" id="" readOnly />
+            <Input
+              variant="horizontal"
+              label="상호명"
+              id="businessName"
+              value={businessProfile?.businessName ?? ''}
+              readOnly
+            />
+            <Input
+              variant="horizontal"
+              label="사업자 번호"
+              id="businessNumber"
+              value={businessProfile?.businessNumber ?? ''}
+              readOnly
+            />
+            <Input
+              variant="horizontal"
+              label="대표자명"
+              id="ownerName"
+              value={businessProfile?.ownerName ?? ''}
+              readOnly
+            />
+            <Input
+              variant="horizontal"
+              label="사업자주소"
+              id="businessAddress"
+              value={businessProfile?.businessAddress ?? ''}
+              readOnly
+            />
           </div>
         </div>
 
         <div className="flex flex-col gap-3">
-          <div className="flex">
-            <h3 className="mb-3">정산 계좌</h3>
-          </div>
-
+          <h3 className="mb-3">정산 계좌</h3>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-4">
               <span className="min-w-28">은행</span>
@@ -72,13 +195,58 @@ export const PartnerProfile = () => {
                 onChange={setBank}
                 placeholder="은행을 선택하세요"
                 className="w-full"
+                disabled={!isEditing}
               />
             </div>
-            <Input variant="horizontal" label="계좌번호" id="" />
-            <Input variant="horizontal" label="예금주" id="" />
+            <Input
+              variant="horizontal"
+              label="계좌번호"
+              id="bankAccountNumber"
+              value={bankAccountNumber}
+              readOnly={!isEditing}
+              onChange={(e) => setBankAccountNumber(e.target.value)}
+            />
+            <Input
+              variant="horizontal"
+              label="예금주"
+              id="accountHolder"
+              value={accountHolder}
+              readOnly={!isEditing}
+              onChange={(e) => setAccountHolder(e.target.value)}
+            />
             <div className="flex gap-4">
-              <Input variant="horizontal" label="통장사본 업로드" id="" />
-              <Button variant="secondaryDark" label="업로드" />
+              <Input
+                variant="horizontal"
+                label="통장사본 업로드"
+                id="bankbook-upload-display"
+                value={
+                  bankbookImage
+                    ? bankbookImage.name
+                    : bankbookImagePreview
+                      ? '파일 등록됨'
+                      : ''
+                }
+                readOnly
+              />
+              {isEditing && (
+                <>
+                  <Button
+                    variant="secondaryDark"
+                    label="업로드"
+                    type="button"
+                    onClick={() =>
+                      document.getElementById('bankbook-upload')?.click()
+                    }
+                  />
+                  <input
+                    id="bankbook-upload"
+                    type="file"
+                    accept="image/*,.pdf"
+                    className="hidden"
+                    onChange={handleBankbookImageChange}
+                  />
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -87,18 +255,19 @@ export const PartnerProfile = () => {
           <h3 className="mb-3">세금 정보</h3>
           <div className="flex flex-col gap-2">
             <Input
-              id="instagram"
+              id="bzeemail"
               label="세금계산서 발행용 이메일"
               type="email"
               value={bzeemail}
+              readOnly={!isEditing}
               onChange={(e) => setBzeemail(e.target.value)}
             />
-
             <Input
               id="hometax-api-key"
               label="홈택스 API 연동 인증키 등록"
               type="text"
               value={hometaxApiKey}
+              readOnly={!isEditing}
               onChange={(e) => setHometaxApiKey(e.target.value)}
             />
           </div>
@@ -106,8 +275,29 @@ export const PartnerProfile = () => {
       </section>
 
       <div className="col-span-2 flex shrink-0 justify-center gap-3 py-8">
-        <Button variant="secondaryLight" label="취소" className="w-[8.6rem]" />
-        <Button variant="secondaryDark" label="저장" className="w-[8.6rem]" />
+        {isEditing ? (
+          <>
+            <Button
+              variant="secondaryLight"
+              label="취소"
+              className="w-[8.6rem]"
+              onClick={handleCancel}
+            />
+            <Button
+              variant="secondaryDark"
+              label="저장"
+              className="w-[8.6rem]"
+              onClick={handleSave}
+            />
+          </>
+        ) : (
+          <Button
+            variant="secondaryLight"
+            label="수정"
+            className="w-[8.6rem]"
+            onClick={() => setIsEditing(true)}
+          />
+        )}
       </div>
     </div>
   );
