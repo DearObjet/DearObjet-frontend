@@ -17,6 +17,7 @@ import { useMyPagePhoneVerification } from '../hooks/use-phone-verification';
 import { Input } from './ui/input';
 
 import UploadFile from '../../../assets/upload-file.svg';
+import DearObjectWhiteLogo from '../../../assets/dear-objet-white-logo.svg';
 
 export interface ProfileFormRef {
   validate: () => boolean;
@@ -181,11 +182,21 @@ export const ProfileForm = forwardRef<ProfileFormRef, ProfileFormProps>(
           className="flex flex-col gap-[0.875rem]"
         >
           <div className="relative mb-[5.125rem] inline-block">
-            <img
-              src={profileImagePreview}
-              alt=""
-              className="h-[12rem] w-[12rem] justify-self-center rounded-full bg-[#d9d9d9] object-cover"
-            />
+            {profileImagePreview ? (
+              <img
+                src={profileImagePreview}
+                alt=""
+                className="h-[12rem] w-[12rem] justify-self-center rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex h-[12rem] w-[12rem] items-center justify-center justify-self-center rounded-full bg-black">
+                <img
+                  src={DearObjectWhiteLogo}
+                  alt="기본 프로필"
+                  className="w-[70%] object-cover"
+                />
+              </div>
+            )}
             {isEditing && (
               <label className="absolute bottom-0 right-[30%] flex h-[3.90875rem] w-[3.90875rem] cursor-pointer items-center justify-center rounded-full bg-black">
                 <img
