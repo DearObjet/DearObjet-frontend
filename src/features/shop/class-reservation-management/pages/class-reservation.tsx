@@ -88,7 +88,7 @@ export const ClassReservation = () => {
 
       <section className="h-full w-full rounded-xl bg-white px-[3.125rem] pb-[1.6875rem] pt-4">
         <div className="flex justify-between">
-          <h3 className="flex items-center justify-between pb-3">
+          <h3 className="flex items-center justify-between gap-1 pb-3">
             예약현황 <span>{filteredReservations.length}</span>
           </h3>
           <div className="flex gap-2">
