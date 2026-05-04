@@ -14,7 +14,7 @@ import {
 } from '../api/my-page-api';
 import { useMyPagePhoneVerification } from '../hooks/use-phone-verification';
 
-import { Input } from './ui/input';
+import { Input } from './ui/underline-input';
 
 import UploadFile from '../../../assets/upload-file.svg';
 import DearObjectWhiteLogo from '../../../assets/dear-objet-white-logo.svg';

@@ -9,7 +9,7 @@ import {
 } from '../api/my-page-api';
 import { ProfileForm } from '../components/profile-form';
 import type { ProfileFormRef } from '../components/profile-form';
-import { Input } from '../components/ui/input';
+import { Input } from '../components/ui/underline-input';
 
 export const PartnerProfile = () => {
   const { data: businessProfile } = useGetBusinessProfileQuery();
