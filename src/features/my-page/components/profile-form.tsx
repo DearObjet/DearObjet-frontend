@@ -110,7 +110,7 @@ export const ProfileForm = forwardRef<ProfileFormRef, ProfileFormProps>(
 
     const validateName = (value: string) => {
       if (!value) return '필수 입력 항목입니다.';
-      if (!/^[가-힣]+$/.test(value)) return '한글만 가능합니다.';
+      if (!/^[가-힣]+$/.test(value)) return '이름은 한글로 입력해주세요.';
       if (value.length < 2 || value.length > 17)
         return '이름은 최소 2자, 최대 17자까지 입력이 가능합니다.';
       return '';

@@ -20,12 +20,16 @@ export const PartnerProfile = () => {
   const [instagram, setInstagram] = useState('');
   const [businessPhone, setBusinessPhone] = useState('');
   const [businessPhoneError, setBusinessPhoneError] = useState('');
+  const [instagramError, setInstagramError] = useState('');
   const [bank, setBank] = useState('');
   const [bankAccountNumber, setBankAccountNumber] = useState('');
+  const [bankAccountNumberError, setBankAccountNumberError] = useState('');
   const [accountHolder, setAccountHolder] = useState('');
+  const [accountHolderError, setAccountHolderError] = useState('');
   const [bankbookImage, setBankbookImage] = useState<File | null>(null);
   const [bankbookImagePreview, setBankbookImagePreview] = useState('');
   const [bzeemail, setBzeemail] = useState('');
+  const [bzeemailError, setBzeemailError] = useState('');
 
   const bankOptions = [
     { value: 'kb', label: 'KB국민은행' },
@@ -68,6 +72,10 @@ export const PartnerProfile = () => {
       );
     }
     setBusinessPhoneError('');
+    setInstagramError('');
+    setBankAccountNumberError('');
+    setAccountHolderError('');
+    setBzeemailError('');
     setIsEditing(false);
   };
 
@@ -78,18 +86,71 @@ export const PartnerProfile = () => {
     setBankbookImagePreview(URL.createObjectURL(file));
   };
 
-  const handleSave = async () => {
-    const isProfileValid = profileFormRef.current?.validate() ?? true;
+  const handleBusinessPhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    setBusinessPhone(raw);
+    setBusinessPhoneError('');
+  };
 
-    let isBusinessPhoneValid = true;
+  const handleInstagramChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const filtered = e.target.value.replace(/[^a-zA-Z0-9._]/g, '');
+    setInstagram(filtered);
+    setInstagramError('');
+  };
+
+  const handleBankAccountNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    setBankAccountNumber(raw);
+    setBankAccountNumberError('');
+  };
+
+  const handleAccountHolderChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const filtered = e.target.value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ]/g, '');
+    setAccountHolder(filtered);
+    setAccountHolderError('');
+  };
+
+  const handleBzeemailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setBzeemail(e.target.value);
+    setBzeemailError('');
+  };
+
+  const validatePartnerFields = () => {
+    let isValid = true;
+
     if (!businessPhone) {
       setBusinessPhoneError('필수 입력 항목입니다.');
-      isBusinessPhoneValid = false;
-    } else {
-      setBusinessPhoneError('');
+      isValid = false;
     }
 
-    if (!isProfileValid || !isBusinessPhoneValid) return;
+    if (instagram && !/^[a-zA-Z0-9._]+$/.test(instagram)) {
+      setInstagramError('영문, 숫자, 마침표(.), 밑줄(_)만 입력 가능합니다.');
+      isValid = false;
+    }
+
+    if (!bankAccountNumber) {
+      setBankAccountNumberError('필수 입력 항목입니다.');
+      isValid = false;
+    }
+
+    if (!accountHolder) {
+      setAccountHolderError('필수 입력 항목입니다.');
+      isValid = false;
+    }
+
+    if (bzeemail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bzeemail)) {
+      setBzeemailError('올바른 이메일 형식이 아닙니다.');
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
+  const handleSave = async () => {
+    const isProfileValid = profileFormRef.current?.validate() ?? true;
+    const isPartnerValid = validatePartnerFields();
+
+    if (!isProfileValid || !isPartnerValid) return;
 
     const profileImage = profileFormRef.current?.getProfileImage() ?? null;
 
@@ -125,24 +186,26 @@ export const PartnerProfile = () => {
                 type="text"
                 value={businessPhone}
                 readOnly={!isEditing}
-                onChange={(e) => {
-                  setBusinessPhone(e.target.value);
-                  setBusinessPhoneError('');
-                }}
+                onChange={handleBusinessPhoneChange}
               />
               {businessPhoneError && (
                 <p className="text-sm text-red-400">{businessPhoneError}</p>
               )}
             </div>
-            <Input
-              id="instagram"
-              label="Instagram Business Account ID"
-              type="text"
-              prefix="@"
-              value={instagram}
-              readOnly={!isEditing}
-              onChange={(e) => setInstagram(e.target.value)}
-            />
+            <div className="flex flex-col gap-1">
+              <Input
+                id="instagram"
+                label="Instagram Business Account ID"
+                type="text"
+                prefix="@"
+                value={instagram}
+                readOnly={!isEditing}
+                onChange={handleInstagramChange}
+              />
+              {instagramError && (
+                <p className="text-sm text-red-400">{instagramError}</p>
+              )}
+            </div>
           </ProfileForm>
         </div>
       </section>
@@ -196,22 +259,32 @@ export const PartnerProfile = () => {
                 disabled={!isEditing}
               />
             </div>
-            <Input
-              variant="horizontal"
-              label="계좌번호"
-              id="bankAccountNumber"
-              value={bankAccountNumber}
-              readOnly={!isEditing}
-              onChange={(e) => setBankAccountNumber(e.target.value)}
-            />
-            <Input
-              variant="horizontal"
-              label="예금주"
-              id="accountHolder"
-              value={accountHolder}
-              readOnly={!isEditing}
-              onChange={(e) => setAccountHolder(e.target.value)}
-            />
+            <div className="flex flex-col gap-1">
+              <Input
+                variant="horizontal"
+                label="계좌번호"
+                id="bankAccountNumber"
+                value={bankAccountNumber}
+                readOnly={!isEditing}
+                onChange={handleBankAccountNumberChange}
+              />
+              {bankAccountNumberError && (
+                <p className="text-sm text-red-400">{bankAccountNumberError}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <Input
+                variant="horizontal"
+                label="예금주"
+                id="accountHolder"
+                value={accountHolder}
+                readOnly={!isEditing}
+                onChange={handleAccountHolderChange}
+              />
+              {accountHolderError && (
+                <p className="text-sm text-red-400">{accountHolderError}</p>
+              )}
+            </div>
             <div className="flex gap-4">
               <Input
                 variant="horizontal"
@@ -252,14 +325,19 @@ export const PartnerProfile = () => {
         <div className="flex flex-col gap-3">
           <h3 className="mb-3">세금 정보</h3>
           <div className="flex flex-col gap-2">
-            <Input
-              id="bzeemail"
-              label="세금계산서 발행용 이메일"
-              type="email"
-              value={bzeemail}
-              readOnly={!isEditing}
-              onChange={(e) => setBzeemail(e.target.value)}
-            />
+            <div className="flex flex-col gap-1">
+              <Input
+                id="bzeemail"
+                label="세금계산서 발행용 이메일"
+                type="email"
+                value={bzeemail}
+                readOnly={!isEditing}
+                onChange={handleBzeemailChange}
+              />
+              {bzeemailError && (
+                <p className="text-sm text-red-400">{bzeemailError}</p>
+              )}
+            </div>
           </div>
         </div>
       </section>
