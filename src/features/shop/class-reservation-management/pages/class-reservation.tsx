@@ -72,7 +72,7 @@ export const ClassReservation = () => {
   return (
     <div className="flex h-full w-full flex-col gap-3">
       <div className="flex gap-3">
-        <section className="h-[31.25rem] w-[45.1875rem] shrink-0 rounded-xl bg-white">
+        <section className="h-[31.25rem] w-[45.1875rem] shrink-0 rounded-xl rounded-t-none bg-white">
           <h3 className="hidden">캘린더</h3>
           <DearObjetCalendar
             value={date}
