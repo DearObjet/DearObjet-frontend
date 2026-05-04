@@ -1,3 +1,5 @@
+import DearObjectWhiteLogo from '../../../../assets/dear-objet-white-logo.svg';
+
 interface UserProfileProps {
   variant?: 'author' | 'aside';
   userName: string;
@@ -18,19 +20,31 @@ export const UserProfile = ({
   isSelected = false,
   onAction,
 }: UserProfileProps) => {
-  const defaultImage = '';
-
   if (variant === 'author') {
     return (
       <div className={`flex flex-col items-center ${className}`}>
         <div className="relative cursor-pointer" onClick={onAction}>
-          <img
-            src={userImage || defaultImage}
-            alt={userName}
-            className={`h-28 w-28 rounded-full object-cover transition-all ${
-              isSelected ? 'ring-2 ring-blue-100' : ''
-            }`}
-          />
+          {userImage ? (
+            <img
+              src={userImage}
+              alt={userName}
+              className={`h-28 w-28 rounded-full object-cover transition-all ${
+                isSelected ? 'ring-2 ring-blue-100' : ''
+              }`}
+            />
+          ) : (
+            <div
+              className={`flex h-28 w-28 items-center justify-center rounded-full bg-black transition-all ${
+                isSelected ? 'ring-2 ring-blue-100' : ''
+              }`}
+            >
+              <img
+                src={DearObjectWhiteLogo}
+                alt="기본 프로필"
+                className="w-[60%]"
+              />
+            </div>
+          )}
         </div>
         <span
           className={`mt-4 text-sm transition-colors ${
@@ -46,11 +60,21 @@ export const UserProfile = ({
   if (variant === 'aside') {
     return (
       <div className={`flex items-center gap-[10px] ${className}`}>
-        <img
-          src={userImage || defaultImage}
-          alt={userName}
-          className="h-[42px] w-[42px] rounded-full object-cover"
-        />
+        {userImage ? (
+          <img
+            src={userImage}
+            alt={userName}
+            className="h-[42px] w-[42px] rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-black">
+            <img
+              src={DearObjectWhiteLogo}
+              alt="기본 프로필"
+              className="w-[60%]"
+            />
+          </div>
+        )}
         <div className="flex flex-col">
           <span className="text-base font-normal text-gray-200">
             {userName}

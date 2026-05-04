@@ -72,7 +72,7 @@ export const ClassReservation = () => {
   return (
     <div className="flex h-full w-full flex-col gap-3">
       <div className="flex gap-3">
-        <section className="h-[31.25rem] w-[45.1875rem] shrink-0 rounded-xl bg-white">
+        <section className="h-[31.25rem] w-[45.1875rem] shrink-0 rounded-xl rounded-t-none bg-white">
           <h3 className="hidden">캘린더</h3>
           <DearObjetCalendar
             value={date}
@@ -88,7 +88,7 @@ export const ClassReservation = () => {
 
       <section className="h-full w-full rounded-xl bg-white px-[3.125rem] pb-[1.6875rem] pt-4">
         <div className="flex justify-between">
-          <h3 className="flex items-center justify-between pb-3">
+          <h3 className="flex items-center justify-between gap-1 pb-3">
             예약현황 <span>{filteredReservations.length}</span>
           </h3>
           <div className="flex gap-2">
