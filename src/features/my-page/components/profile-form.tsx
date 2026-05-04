@@ -27,11 +27,15 @@ export interface ProfileFormRef {
 interface ProfileFormProps {
   showSave?: boolean;
   isEditing?: boolean;
+  isPartner?: boolean;
   children?: ReactNode;
 }
 
 export const ProfileForm = forwardRef<ProfileFormRef, ProfileFormProps>(
-  ({ showSave = false, isEditing = true, children }, ref) => {
+  (
+    { showSave = false, isEditing = true, isPartner = false, children },
+    ref
+  ) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [logout] = useLogoutMutation();
@@ -181,7 +185,9 @@ export const ProfileForm = forwardRef<ProfileFormRef, ProfileFormProps>(
           onSubmit={handleSubmit}
           className="flex flex-col gap-[0.875rem]"
         >
-          <div className="relative mb-[5.125rem] inline-block">
+          <div
+            className={`relative inline-block ${isPartner ? 'mb-4' : 'mb-[5.125rem]'}`}
+          >
             {profileImagePreview ? (
               <img
                 src={profileImagePreview}
@@ -218,6 +224,7 @@ export const ProfileForm = forwardRef<ProfileFormRef, ProfileFormProps>(
             <Input
               id="name"
               label="이름"
+              variant={isPartner ? 'horizontal' : 'default'}
               type="text"
               value={name}
               readOnly={!isEditing}
@@ -235,6 +242,7 @@ export const ProfileForm = forwardRef<ProfileFormRef, ProfileFormProps>(
             <Input
               id="phone"
               label="휴대폰번호"
+              variant={isPartner ? 'horizontal' : 'default'}
               type="text"
               value={phone}
               readOnly={!isEditing}
@@ -345,6 +353,7 @@ export const ProfileForm = forwardRef<ProfileFormRef, ProfileFormProps>(
             <Input
               id="email"
               label="이메일"
+              variant={isPartner ? 'horizontal' : 'default'}
               type="email"
               value={email}
               readOnly={!isEditing}
@@ -360,7 +369,9 @@ export const ProfileForm = forwardRef<ProfileFormRef, ProfileFormProps>(
 
           {children}
 
-          <p className="mt-10">이벤트/혜택 소식 수신 여부</p>
+          <p className={isPartner ? 'mt-4' : 'mt-10'}>
+            이벤트/혜택 소식 수신 여부
+          </p>
           <div className="border-gray-3 flex flex-col gap-[0.875rem] rounded-xl border px-8 py-6">
             <ToggleSwitch
               id="kakao-talk"

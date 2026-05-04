@@ -26,7 +26,6 @@ export const PartnerProfile = () => {
   const [bankbookImage, setBankbookImage] = useState<File | null>(null);
   const [bankbookImagePreview, setBankbookImagePreview] = useState('');
   const [bzeemail, setBzeemail] = useState('');
-  const [hometaxApiKey, setHometaxApiKey] = useState('');
 
   const bankOptions = [
     { value: 'kb', label: 'KB국민은행' },
@@ -50,7 +49,6 @@ export const PartnerProfile = () => {
       setBzeemail(
         businessProfile.taxInvoiceEmail ?? businessProfile.email ?? ''
       );
-      setHometaxApiKey(businessProfile.hometaxApiKey ?? '');
     }
   }, [businessProfile]);
 
@@ -68,7 +66,6 @@ export const PartnerProfile = () => {
       setBzeemail(
         businessProfile.taxInvoiceEmail ?? businessProfile.email ?? ''
       );
-      setHometaxApiKey(businessProfile.hometaxApiKey ?? '');
     }
     setBusinessPhoneError('');
     setIsEditing(false);
@@ -119,11 +116,12 @@ export const PartnerProfile = () => {
       <section className="flex h-full w-full justify-center rounded-xl bg-white p-8">
         <h3 className="hidden">개인 정보</h3>
         <div className="flex w-full justify-center">
-          <ProfileForm ref={profileFormRef} isEditing={isEditing}>
+          <ProfileForm ref={profileFormRef} isEditing={isEditing} isPartner>
             <div className="flex flex-col gap-1">
               <Input
                 id="business-phone"
                 label="사업장 전화번호"
+                variant="horizontal"
                 type="text"
                 value={businessPhone}
                 readOnly={!isEditing}
@@ -262,19 +260,11 @@ export const PartnerProfile = () => {
               readOnly={!isEditing}
               onChange={(e) => setBzeemail(e.target.value)}
             />
-            <Input
-              id="hometax-api-key"
-              label="홈택스 API 연동 인증키 등록"
-              type="text"
-              value={hometaxApiKey}
-              readOnly={!isEditing}
-              onChange={(e) => setHometaxApiKey(e.target.value)}
-            />
           </div>
         </div>
       </section>
 
-      <div className="col-span-2 flex shrink-0 justify-center gap-3 py-8">
+      <div className="col-span-2 flex shrink-0 justify-center gap-3 py-4">
         {isEditing ? (
           <>
             <Button
