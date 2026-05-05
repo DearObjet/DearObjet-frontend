@@ -45,7 +45,7 @@ export const TenantListTable = ({ items, onView }: TenantListTableProps) => {
         </thead>
       </table>
 
-      <div className="overflow-y-auto">
+      <div className="max-h-[32rem] overflow-y-auto">
         <table className="w-full table-fixed">
           <Colgroup />
           <tbody>
