@@ -1,7 +1,23 @@
+import { useState } from 'react';
 import { Button } from '../../../../shared/components/ui';
 import { UserProfile } from '../../../../shared/components/layout/aside/user-profile';
 
+const items = [
+  { userName: '소품샵 이름', userId: 'user1', userImage: '' },
+  { userName: '소품샵 이름', userId: 'user2', userImage: '' },
+  { userName: '소품샵 이름', userId: 'user3', userImage: '' },
+  { userName: '소품샵 이름', userId: 'user4', userImage: '' },
+  { userName: '소품샵 이름', userId: 'user5', userImage: '' },
+  { userName: '소품샵 이름', userId: 'user6', userImage: '' },
+  { userName: '소품샵 이름', userId: 'user7', userImage: '' },
+  { userName: '소품샵 이름', userId: 'user8', userImage: '' },
+  { userName: '소품샵 이름', userId: 'user9', userImage: '' },
+  { userName: '소품샵 이름', userId: 'user10', userImage: '' },
+];
+
 export const TenantManagement = () => {
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
   return (
     <div className="flex h-full gap-2">
       <div className="flex h-full flex-col gap-2">
@@ -19,13 +35,18 @@ export const TenantManagement = () => {
             />
           </div>
 
-          <div>
-            <UserProfile
-              variant="author"
-              userName="소품샵 이름"
-              userId="user123"
-              userImage=""
-            />
+          <div className="grid grid-cols-5 gap-y-2 p-2">
+            {items.map((item) => (
+              <UserProfile
+                key={item.userId}
+                variant="author"
+                userName={item.userName}
+                userId={item.userId}
+                userImage={item.userImage}
+                isSelected={selectedUserId === item.userId}
+                onAction={() => setSelectedUserId(item.userId)}
+              />
+            ))}
           </div>
         </section>
       </div>

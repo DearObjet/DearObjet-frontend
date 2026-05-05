@@ -28,14 +28,14 @@ export const UserProfile = ({
             <img
               src={userImage}
               alt={userName}
-              className={`h-28 w-28 rounded-full object-cover transition-all ${
+              className={`h-[6.9375rem] w-[7rem] rounded-full object-cover transition-all ${
                 isSelected ? 'ring-2 ring-blue-100' : ''
               }`}
             />
           ) : (
             <div
-              className={`flex h-28 w-28 items-center justify-center rounded-full bg-black transition-all ${
-                isSelected ? 'ring-2 ring-blue-100' : ''
+              className={`flex h-[6.9375rem] w-[7rem] items-center justify-center rounded-full bg-black transition-all ${
+                isSelected ? 'ring-blue ring-2' : ''
               }`}
             >
               <img
@@ -47,7 +47,7 @@ export const UserProfile = ({
           )}
         </div>
         <span
-          className={`mt-4 text-sm transition-colors ${
+          className={`mt-1 text-sm transition-colors ${
             isSelected ? 'text-gray-900' : 'text-gray-500'
           }`}
         >
