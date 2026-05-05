@@ -20,6 +20,7 @@ import { CustomerNotice, PartnerNotice } from '../features/notice';
 import { PartnerProfile } from '../features/my-page/pages/partner-profile';
 import { ThemeCustomizer } from '../features/admin/theme';
 import { ShopManagement } from '../features/shop/shop-management';
+import { ClassReservation } from '../features/shop/class-reservation-management/pages/class-reservation';
 import { HomePage } from '../pages/home/home-page';
 import { Map } from '../features/map';
 import { MyPage } from '../features/my-page/pages/my-page';
@@ -90,7 +91,7 @@ export const router = createBrowserRouter([
               { path: ROUTES.SHOP_MANAGE, element: <ShopManagement /> },
               {
                 path: ROUTES.SHOP_MANAGE_RESERVATIONS,
-                element: <div>예약 관리</div>,
+                element: <ClassReservation />,
               },
               { path: ROUTES.SHOP_ARTISTS, element: <div>작가 관리</div> },
               { path: ROUTES.SHOP_INVENTORY, element: <InboundManagement /> },

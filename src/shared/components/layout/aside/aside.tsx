@@ -1,7 +1,16 @@
 import { useState, type MouseEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
-import { MessageCircleMore } from 'lucide-react';
+import {
+  LayoutPanelTop,
+  ClipboardList,
+  Calculator,
+  MessageCircleMore,
+  Wallet,
+  ShieldCheck,
+  Bell,
+  Settings,
+} from 'lucide-react';
 
 import type { RootState } from '../../../../app/store';
 
@@ -40,17 +49,22 @@ export const Aside = () => {
   return (
     <aside className="flex flex-col bg-black pb-[2.875rem] pl-[2.375rem] pr-[3.75rem] pt-[3.25rem] text-white">
       <section className="flex items-center gap-2 text-[1.1875rem]">
-        <img src={DearObjectWhiteLogo} alt="dear objet 로고" />
-        <h2>my pape</h2>
+        <img
+          src={DearObjectWhiteLogo}
+          alt="dear objet 로고"
+          onClick={() => navigate('/')}
+          className="cursor-pointer"
+        />
+        <h2 className="font-abril">my page</h2>
       </section>
 
       <nav className="mt-[3.375rem] flex flex-col gap-[1.9375rem]">
-        <h2 className="text-sm">Manage</h2>
+        <h2 className="font-abril text-sm">Manage</h2>
 
         {/* 관리 홈 */}
         <div className="flex flex-col gap-5">
           <Asidetab
-            icon={MessageCircleMore}
+            icon={LayoutPanelTop}
             label="관리 홈"
             className={
               activeMenu.startsWith(
@@ -135,7 +149,7 @@ export const Aside = () => {
         {/* 입점관리 */}
         <div className="flex flex-col gap-5">
           <Asidetab
-            icon={MessageCircleMore}
+            icon={ClipboardList}
             label="입점관리"
             className={
               activeMenu.startsWith(
@@ -220,7 +234,7 @@ export const Aside = () => {
         {/* 정산관리 */}
         <div className="flex flex-col gap-5">
           <Asidetab
-            icon={MessageCircleMore}
+            icon={Calculator}
             label="정산관리"
             className={
               activeMenu.startsWith(
@@ -323,19 +337,17 @@ export const Aside = () => {
           }
         />
 
-        {/* 결제관리 — ARTIST only */}
-        {role === 'ARTIST' && (
-          <Asidetab
-            icon={MessageCircleMore}
-            label="결제관리"
-            focusable={false}
-            onClick={handleComingSoon('결제관리')}
-          />
-        )}
+        {/* 결제관리 */}
+        <Asidetab
+          icon={Wallet}
+          label="결제관리"
+          focusable={false}
+          onClick={handleComingSoon('결제관리')}
+        />
 
         {/* 개인정보 */}
         <Asidetab
-          icon={MessageCircleMore}
+          icon={ShieldCheck}
           label="개인정보"
           className={
             activeMenu.startsWith(
@@ -353,9 +365,9 @@ export const Aside = () => {
       </nav>
 
       <section className="mt-[3.375rem] flex flex-col gap-[1.9375rem]">
-        <h2 className="text-sm">Configuration</h2>
+        <h2 className="font-abril text-sm">Configuration</h2>
         <Asidetab
-          icon={MessageCircleMore}
+          icon={Bell}
           label="공지사항"
           className={
             activeMenu.startsWith(
@@ -371,7 +383,7 @@ export const Aside = () => {
           }
         />
         <Asidetab
-          icon={MessageCircleMore}
+          icon={Settings}
           label="환경설정"
           className={
             activeMenu.startsWith(

@@ -9,6 +9,7 @@ export interface SelectBoxProps {
   onChange?: (value: string) => void;
   className?: string;
   error?: string;
+  disabled?: boolean;
 }
 
 export const SelectBox = ({
@@ -20,6 +21,7 @@ export const SelectBox = ({
   onChange,
   className,
   error,
+  disabled,
 }: SelectBoxProps) => {
   const sizeClasses = {
     small: 'px-2 py-1 text-sm',
@@ -35,11 +37,12 @@ export const SelectBox = ({
     <select
       value={value}
       onChange={handleChange}
+      disabled={disabled}
       className={`rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 ${
         error
           ? 'border-red-400 focus:ring-red-400'
           : 'border-gray-300 focus:ring-blue-500'
-      } ${sizeClasses[size]} ${className ?? ''}`}
+      } ${sizeClasses[size]} ${disabled ? 'cursor-not-allowed opacity-50' : ''} ${className ?? ''}`}
       style={{
         ...(backgroundColor ? { backgroundColor } : undefined),
         color: value === '' ? '#B3B3B3' : 'inherit',
