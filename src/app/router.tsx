@@ -30,6 +30,7 @@ import { Chat } from '../features/chat/pages/chat';
 import { InventoryManagement } from '../features/artist/inventory-management/pages/inventory-mangement';
 import { OutboundManagement } from '../features/artist/outbound-management';
 import { InboundManagement } from '../features/shop/inbound-management';
+import { TenantManagement } from '../features/artist/tenant-management/pages/tenant-management';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -120,7 +121,7 @@ export const router = createBrowserRouter([
                 path: ROUTES.ARTIST_INVENTORY,
                 element: <InventoryManagement />,
               },
-              { path: ROUTES.ARTIST_SHOPS, element: <div>소품샵 목록</div> },
+              { path: ROUTES.ARTIST_SHOPS, element: <TenantManagement /> },
               {
                 path: ROUTES.ARTIST_SHIPMENTS,
                 element: <OutboundManagement />,
@@ -132,7 +133,7 @@ export const router = createBrowserRouter([
               },
               { path: ROUTES.ARTIST_MESSAGES, element: <Chat /> },
               { path: ROUTES.ARTIST_PROFILE, element: <PartnerProfile /> },
-              { path: ROUTES.ARTIST_NOTICES, element: <div>작가 공지</div> },
+              { path: ROUTES.ARTIST_NOTICES, element: <PartnerNotice /> },
               { path: ROUTES.ARTIST_NOTICE_DETAIL, element: <PartnerNotice /> },
               { path: ROUTES.ARTIST_SETTINGS, element: <ArtistSettingPage /> },
             ],
