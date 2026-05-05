@@ -22,6 +22,7 @@ const SortIcon = ({ column, sortKey, sortOrder }: ArtistSortIconProps) => {
 export const ArtistList = ({
   artists,
   selectedId,
+  isLoading,
   onRowClick,
   onInboundAllView,
   onInboundRecentView,
@@ -89,7 +90,13 @@ export const ArtistList = ({
             scrollbarGutter: 'stable',
           }}
         >
-          {sortedArtists.length === 0 ? (
+          {isLoading ? (
+            <tr className="table w-full">
+              <td colSpan={7} className="py-10 text-center text-gray-400">
+                불러오는 중...
+              </td>
+            </tr>
+          ) : sortedArtists.length === 0 ? (
             <tr className="table w-full">
               <td colSpan={7} className="py-10 text-center text-gray-400">
                 등록된 작가가 없습니다.
