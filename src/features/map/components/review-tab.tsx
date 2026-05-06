@@ -4,6 +4,7 @@ import { MoreVertical, ImagePlus } from 'lucide-react';
 import { Button } from '../../../shared/components/ui';
 
 import { ExpandableText } from './expandable-text';
+import { useInfiniteScroll } from '../hooks/use-infinite-scroll';
 
 interface Review {
   reviewId: number;
@@ -14,33 +15,21 @@ interface Review {
   createdAt: string;
 }
 
-const DUMMY_REVIEWS: Review[] = [
-  {
-    reviewId: 1,
+const fetchReviews = async (page: number) => {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  const items: Review[] = Array.from({ length: 3 }, (_, i) => ({
+    reviewId: (page - 1) * 3 + i + 1,
     profileImageUrl: null,
-    name: '김명화',
+    name: `리뷰어 ${(page - 1) * 3 + i + 1}`,
     content:
-      '소품샵에서 진행된 키링 만들기 원데이 클래스에 다녀왔어요 \n아기자기한 소품들로 직접 나만의 키링을 만들어보니 손으로 무언가를 완성하는 뿌듯함이 느껴지더라고요. 친구들과 함께 앉아 서로의 작품을 구경하고 이야기 나누다 보니 시간 가는 줄도 몰랐습니다.',
+      '소품샵에서 진행된 키링 만들기 원데이 클래스에 다녀왔어요 🥰\n정말 좋았습니다!',
     imageUrl: null,
     createdAt: '2025.09.16',
-  },
-  {
-    reviewId: 2,
-    profileImageUrl: null,
-    name: '둘리',
-    content: '흐흐흐흐',
-    imageUrl: null,
-    createdAt: '2025.09.16',
-  },
-  {
-    reviewId: 3,
-    profileImageUrl: null,
-    name: '또치',
-    content: '하하하하',
-    imageUrl: null,
-    createdAt: '2025.09.16',
-  },
-];
+  }));
+
+  return { items, hasMore: page < 3 };
+};
 
 export const ReviewTab = () => {
   const [isWriting, setIsWriting] = useState(false);
@@ -50,6 +39,11 @@ export const ReviewTab = () => {
   const [reviewContent, setReviewContent] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const { items, isLoading, hasMore, observerTargetRef } =
+    useInfiniteScroll<Review>({
+      fetchData: fetchReviews,
+    });
 
   const handleImageClick = () => fileInputRef.current?.click();
 
@@ -138,7 +132,7 @@ export const ReviewTab = () => {
         </div>
       ) : (
         <div className="flex flex-col divide-y divide-theme-200">
-          {DUMMY_REVIEWS.map((review) => (
+          {items.map((review) => (
             <div
               key={review.reviewId}
               className="relative flex flex-col gap-3 p-4"
@@ -208,6 +202,15 @@ export const ReviewTab = () => {
               </div>
             </div>
           ))}
+
+          <div ref={observerTargetRef} className="py-2 text-center">
+            {isLoading && (
+              <p className="text-sm text-theme-300">불러오는 중...</p>
+            )}
+            {!hasMore && (
+              <p className="text-sm text-theme-300">마지막 리뷰입니다.</p>
+            )}
+          </div>
         </div>
       )}
     </div>

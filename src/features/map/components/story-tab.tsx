@@ -1,3 +1,5 @@
+import { useInfiniteScroll } from '../hooks/use-infinite-scroll';
+
 interface Story {
   storyId: number;
   imageUrl: string | null;
@@ -6,28 +8,30 @@ interface Story {
   createdAt: string;
 }
 
-const DUMMY_STORIES: Story[] = [
-  {
-    storyId: 1,
+// 더미 데이터 생성 함수
+const fetchStories = async (page: number) => {
+  await new Promise((resolve) => setTimeout(resolve, 500)); // 로딩 시뮬레이션
+
+  const items: Story[] = Array.from({ length: 5 }, (_, i) => ({
+    storyId: (page - 1) * 5 + i + 1,
     imageUrl: null,
-    title: '수원은 비가 온대요, 대구는 쨍쨍합니다',
-    content:
-      "오늘은 '수니작가'님 신상 굿즈 들어오는 날~ 비 오기 전에 얼른 도착해주세요",
+    title: `스토리 제목 ${(page - 1) * 5 + i + 1}`,
+    content: '소품샵의 새로운 소식을 전해드립니다.',
     createdAt: '2025.09.16',
-  },
-  {
-    storyId: 2,
-    imageUrl: null,
-    title: '가을 맞이 새 소품 입고!',
-    content: '선선한 날씨에 어울리는 따뜻한 소품들이 도착했어요.',
-    createdAt: '2025.09.10',
-  },
-];
+  }));
+
+  return { items, hasMore: page < 5 };
+};
 
 export const StoryTab = () => {
+  const { items, isLoading, hasMore, observerTargetRef } =
+    useInfiniteScroll<Story>({
+      fetchData: fetchStories,
+    });
+
   return (
     <div className="flex flex-col divide-y divide-theme-200">
-      {DUMMY_STORIES.map((story) => (
+      {items.map((story) => (
         <div key={story.storyId} className="flex flex-col gap-3 p-4">
           {/* 이미지 */}
           <div className="aspect-video w-full overflow-hidden rounded bg-theme-200">
@@ -47,6 +51,13 @@ export const StoryTab = () => {
           <p className="text-right text-xs text-theme-500">{story.createdAt}</p>
         </div>
       ))}
+      {/* IntersectionObserver 타겟 */}
+      <div ref={observerTargetRef} className="py-2 text-center">
+        {isLoading && <p className="text-sm text-theme-300">불러오는 중...</p>}
+        {!hasMore && (
+          <p className="text-sm text-theme-300">마지막 스토리입니다.</p>
+        )}
+      </div>
     </div>
   );
 };

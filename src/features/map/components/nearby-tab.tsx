@@ -1,4 +1,5 @@
 import { ExpandableText } from './expandable-text';
+import { useInfiniteScroll } from '../hooks/use-infinite-scroll';
 
 interface NearbyEvent {
   eventId: number;
@@ -10,32 +11,32 @@ interface NearbyEvent {
   endDate: string;
 }
 
-const DUMMY_EVENTS: NearbyEvent[] = [
-  {
-    eventId: 1,
+const fetchEvents = async (page: number) => {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  const categories = ['지역축제', '문화공연', '전시'];
+  const items: NearbyEvent[] = Array.from({ length: 4 }, (_, i) => ({
+    eventId: (page - 1) * 4 + i + 1,
     imageUrl: null,
-    category: '지역축제',
-    title: '한마당 거리축제',
-    content:
-      '꺾인 더위, 선선한 바람을 맞으며 거리로 나와 가을을 맞이하는 축제꺾인 더위, 선선한 바람을 맞으며 거리로 나와 가을을 맞이하는 축제꺾인 더위, 선선한 바람을 맞으며 거리로 나와 가을을 맞이하는 축제꺾인 더위, 선선한 바람을 맞으며 거리로 나와 가을을 맞이하는 축제꺾인 더위, 선선한 바람을 맞으며 거리로 나와 가을을 맞이하는 축제꺾인 더위, 선선한 바람을 맞으며 거리로 나와 가을을 맞이하는 축제꺾인 더위, 선선한 바람을 맞으며 거리로 나와 가을을 맞이하는 축제꺾인 더위, 선선한 바람을 맞으며 거리로 나와 가을을 맞이하는 축제꺾인 더위, 선선한 바람을 맞으며 거리로 나와 가을을 맞이하는 축제',
+    category: categories[i % categories.length],
+    title: `행사 제목 ${(page - 1) * 4 + i + 1}`,
+    content: '꺾인 더위, 선선한 바람을 맞으며 거리로 나와 가을을 맞이하는 행사',
     startDate: '2025.09.30',
     endDate: '2025.10.02',
-  },
-  {
-    eventId: 2,
-    imageUrl: null,
-    category: '문화공연',
-    title: '가을 음악회',
-    content: '지역 예술인들이 함께하는 따뜻한 가을 음악회',
-    startDate: '2025.10.05',
-    endDate: '2025.10.05',
-  },
-];
+  }));
+
+  return { items, hasMore: page < 3 };
+};
 
 export const NearbyTab = () => {
+  const { items, isLoading, hasMore, observerTargetRef } =
+    useInfiniteScroll<NearbyEvent>({
+      fetchData: fetchEvents,
+    });
+
   return (
     <div className="flex flex-col divide-y divide-theme-200">
-      {DUMMY_EVENTS.map((event) => (
+      {items.map((event) => (
         <div key={event.eventId} className="flex flex-col gap-3 p-4">
           {/* 이미지 */}
           <div className="aspect-video w-full overflow-hidden rounded bg-theme-200">
@@ -60,6 +61,13 @@ export const NearbyTab = () => {
           </p>
         </div>
       ))}
+
+      <div ref={observerTargetRef} className="py-2 text-center">
+        {isLoading && <p className="text-sm text-theme-300">불러오는 중...</p>}
+        {!hasMore && (
+          <p className="text-sm text-theme-300">마지막 항목입니다.</p>
+        )}
+      </div>
     </div>
   );
 };

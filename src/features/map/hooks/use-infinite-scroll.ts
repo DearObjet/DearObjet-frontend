@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface UseInfiniteScrollProps<T> {
   fetchData: (page: number) => Promise<{ items: T[]; hasMore: boolean }>;
@@ -13,7 +13,7 @@ export const useInfiniteScroll = <T>({
   const [isLoading, setIsLoading] = useState(false);
   const observerTargetRef = useRef<HTMLDivElement>(null);
 
-  const loadMore = async () => {
+  const loadMore = useCallback(async () => {
     if (isLoading || !hasMore) return;
 
     setIsLoading(true);
@@ -25,9 +25,8 @@ export const useInfiniteScroll = <T>({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page, isLoading, hasMore, fetchData]);
 
-  // IntersectionObserver로 하단 감지
   useEffect(() => {
     const target = observerTargetRef.current;
     if (!target) return;
@@ -41,9 +40,8 @@ export const useInfiniteScroll = <T>({
 
     observer.observe(target);
     return () => observer.disconnect();
-  }, [page, isLoading, hasMore]);
+  }, [loadMore]);
 
-  // 초기 로드
   useEffect(() => {
     loadMore();
   }, []);
