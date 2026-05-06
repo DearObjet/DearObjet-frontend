@@ -326,8 +326,6 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
   );
 };
 
-// ─── 클래스 목록 아이템 ───────────────────────────────
-
 interface ClassListItemCardProps {
   item: ClassListItem;
   isSelected: boolean;

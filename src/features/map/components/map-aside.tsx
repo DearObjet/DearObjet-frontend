@@ -9,6 +9,10 @@ import type { ShopPanelProps, TabMenu } from '../types/map-types';
 
 import { DAY_LABEL, DAY_ORDER, TAB_MENUS } from '../constants/map-constants';
 import { OneDayClassTab } from './one-day-class-tab';
+import { StoryTab } from './story-tab';
+import { ArtistTab } from './artist-tab';
+import { ReviewTab } from './review-tab';
+import { NearbyTab } from './nearby-tab';
 
 export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
   const user = useAppSelector((state) => state.auth.user);
@@ -184,9 +188,13 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
 
       {/* 탭 컨텐츠 */}
       <div className="flex-1">
+        {activeTab === '스토리' && <StoryTab />}
         {activeTab === '원데이클래스' && shopId && (
           <OneDayClassTab shopId={shopId} shopName={shopDetail.shopName} />
         )}
+        {activeTab === '입점작가' && <ArtistTab />}
+        {activeTab === '리뷰' && <ReviewTab />}
+        {activeTab === '인근놀거리' && <NearbyTab />}
       </div>
     </div>
   );
