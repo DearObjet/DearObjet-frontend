@@ -5,16 +5,19 @@ import ArrowDown from '../../../assets/arrow-down.svg';
 import '../../styles/react-calendar.css';
 
 interface DropdownProps {
+  size: 'medium' | 'large';
   value: number;
   options: { value: number; label: string }[];
   onChange: (value: number) => void;
 }
 
-const Dropdown = ({ value, options, onChange }: DropdownProps) => {
+const Dropdown = ({ size, value, options, onChange }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleClickOutside = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setIsOpen(false);
@@ -22,7 +25,7 @@ const Dropdown = ({ value, options, onChange }: DropdownProps) => {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [isOpen]);
 
   const selectedLabel = options.find((o) => o.value === value)?.label;
 
@@ -30,14 +33,14 @@ const Dropdown = ({ value, options, onChange }: DropdownProps) => {
     <div ref={ref} className="relative">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`flex items-center px-2.5 ${options.length === 10 ? 'gap-2.5' : 'gap-4'} text-sm font-medium text-theme-900 outline-none`}
+        className={`flex items-center px-2.5 ${options.length === 10 ? 'gap-2.5' : 'gap-4'} ${size === 'medium' ? 'text-sm' : 'text-base'} font-medium text-theme-900 outline-none`}
       >
         {selectedLabel}
         <img src={ArrowDown} alt="" aria-hidden="true" />
       </button>
 
       {isOpen && (
-        <ul className="absolute left-0 top-full z-10 max-h-[12rem] overflow-y-auto rounded border border-theme-200 bg-white pr-6 shadow-md">
+        <ul className="absolute left-0 top-full z-10 max-h-[12rem] overflow-y-auto rounded border border-theme-200 bg-white pr-4 shadow-md">
           {options.map((option) => (
             <li key={option.value}>
               <button
@@ -45,7 +48,7 @@ const Dropdown = ({ value, options, onChange }: DropdownProps) => {
                   onChange(option.value);
                   setIsOpen(false);
                 }}
-                className={`w-full px-2 py-2 text-left text-sm hover:bg-theme-100 ${
+                className={`w-full px-2 py-2 text-left ${size === 'medium' ? 'text-sm' : 'text-base'} hover:bg-theme-100 ${
                   option.value === value
                     ? 'font-medium text-theme-900'
                     : 'text-theme-700'
@@ -61,19 +64,22 @@ const Dropdown = ({ value, options, onChange }: DropdownProps) => {
   );
 };
 
-interface ClassCalendarProps {
+interface DearObjetCalendarProps {
   value: Date | null;
   onChange: (date: Date) => void;
   minDate?: Date;
-  color: string;
+  color: 'white' | 'gray';
+  size: 'medium' | 'large';
 }
 
 interface CalendarNavigationProps {
   activeDate: Date;
   onChange: (date: Date) => void;
+  size: 'medium' | 'large';
 }
 
 const CalendarNavigation = ({
+  size,
   activeDate,
   onChange,
 }: CalendarNavigationProps) => {
@@ -90,8 +96,11 @@ const CalendarNavigation = ({
   }));
 
   return (
-    <div className="flex items-center gap-5 px-2 py-3">
+    <div
+      className={`flex items-center gap-5 px-2 ${size === 'medium' ? 'py-3' : 'py-5'}`}
+    >
       <Dropdown
+        size={size}
         value={activeDate.getFullYear()}
         options={yearOptions}
         onChange={(year) => {
@@ -101,6 +110,7 @@ const CalendarNavigation = ({
         }}
       />
       <Dropdown
+        size={size}
         value={activeDate.getMonth() + 1}
         options={monthOptions}
         onChange={(month) => {
@@ -118,14 +128,19 @@ export const DearObjetCalendar = ({
   onChange,
   minDate,
   color,
-}: ClassCalendarProps) => {
+  size,
+}: DearObjetCalendarProps) => {
   const [activeDate, setActiveDate] = useState(new Date());
 
   return (
     <div className="w-full">
-      <CalendarNavigation activeDate={activeDate} onChange={setActiveDate} />
+      <CalendarNavigation
+        size={size}
+        activeDate={activeDate}
+        onChange={setActiveDate}
+      />
       <Calendar
-        className={color}
+        className={`${color} ${size}`}
         onChange={(date) => onChange(date as Date)}
         value={value}
         activeStartDate={activeDate}

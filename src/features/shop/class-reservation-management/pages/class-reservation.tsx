@@ -77,6 +77,8 @@ export const ClassReservation = () => {
           <DearObjetCalendar
             value={date}
             onChange={(selectedDate) => setDate(selectedDate)}
+            color={'white'}
+            size={'large'}
           />
         </section>
 

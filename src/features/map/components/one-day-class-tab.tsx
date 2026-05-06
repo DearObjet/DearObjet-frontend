@@ -208,6 +208,7 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
               value={selectedDate}
               onChange={handleDateChange}
               color={'gray'}
+              size={'medium'}
             />
           </div>
 
