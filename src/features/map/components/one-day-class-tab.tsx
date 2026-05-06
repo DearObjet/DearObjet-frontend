@@ -207,6 +207,8 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
             <DearObjetCalendar
               value={selectedDate}
               onChange={handleDateChange}
+              color={'gray'}
+              size={'medium'}
             />
           </div>
 
@@ -325,8 +327,6 @@ export const OneDayClassTab = ({ shopId, shopName }: OneDayClassTabProps) => {
     </div>
   );
 };
-
-// ─── 클래스 목록 아이템 ───────────────────────────────
 
 interface ClassListItemCardProps {
   item: ClassListItem;
