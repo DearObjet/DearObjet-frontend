@@ -15,6 +15,7 @@ interface TenantItem {
 interface TenantListTableProps {
   items: TenantItem[];
   onView: (id: string) => void;
+  variant?: 'artist' | 'shop';
 }
 
 const COL_WIDTHS = ['44px', '67px', '54px', '59px', '67px', '59px', '59px'];
@@ -27,7 +28,13 @@ const Colgroup = () => (
   </colgroup>
 );
 
-export const TenantListTable = ({ items, onView }: TenantListTableProps) => {
+export const TenantListTable = ({
+  items,
+  onView,
+  variant = 'artist',
+}: TenantListTableProps) => {
+  const nameHeader = variant === 'artist' ? '매장명' : '작가명';
+
   return (
     <div className="w-full px-[1.6875rem] pt-[1.625rem]">
       <table className="w-full table-fixed">
@@ -35,7 +42,7 @@ export const TenantListTable = ({ items, onView }: TenantListTableProps) => {
         <thead>
           <tr className="border-b border-gray-200 text-center text-sm text-gray-500">
             <th className="py-4 font-medium">번호</th>
-            <th className="py-4 font-medium">매장명</th>
+            <th className="py-4 font-medium">{nameHeader}</th>
             <th className="py-4 font-medium">계약시작일</th>
             <th className="py-4 font-medium">계약종료일</th>
             <th className="py-4 font-medium">상태</th>

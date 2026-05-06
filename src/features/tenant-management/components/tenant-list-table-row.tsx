@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Button } from '../../../../shared/components/ui';
+import { Button } from '../../../shared/components/ui';
 
 import { TenantStatusBadge } from './tenant-status-badge';
 import type { TenantStatus } from './tenant-status-badge';
