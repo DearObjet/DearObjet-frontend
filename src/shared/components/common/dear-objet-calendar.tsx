@@ -65,6 +65,7 @@ interface ClassCalendarProps {
   value: Date | null;
   onChange: (date: Date) => void;
   minDate?: Date;
+  color: string;
 }
 
 interface CalendarNavigationProps {
@@ -116,6 +117,7 @@ export const DearObjetCalendar = ({
   value,
   onChange,
   minDate,
+  color,
 }: ClassCalendarProps) => {
   const [activeDate, setActiveDate] = useState(new Date());
 
@@ -123,6 +125,7 @@ export const DearObjetCalendar = ({
     <div className="w-full">
       <CalendarNavigation activeDate={activeDate} onChange={setActiveDate} />
       <Calendar
+        className={color}
         onChange={(date) => onChange(date as Date)}
         value={value}
         activeStartDate={activeDate}
