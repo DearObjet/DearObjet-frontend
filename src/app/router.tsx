@@ -30,8 +30,8 @@ import { Chat } from '../features/chat/pages/chat';
 import { InventoryManagement } from '../features/artist/inventory-management/pages/inventory-mangement';
 import { OutboundManagement } from '../features/artist/outbound-management';
 import { InboundManagement } from '../features/shop/inbound-management';
-import { TenantManagement } from '../features/tenant-management/pages/tenant-management';
-import { ShopTenantManagement } from '../features/tenant-management/pages/shop-tenant-management';
+import { ShopTenantManagement } from '../features/shop/tenant-management/pages/artist-tenant-management';
+import { ArtistTenantManagement } from '../features/artist/tenant-management/pages/shop-tenant-management';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -95,7 +95,10 @@ export const router = createBrowserRouter([
                 path: ROUTES.SHOP_MANAGE_RESERVATIONS,
                 element: <ClassReservation />,
               },
-              { path: ROUTES.SHOP_ARTISTS, element: <ShopTenantManagement /> },
+              {
+                path: ROUTES.SHOP_ARTISTS,
+                element: <ArtistTenantManagement />,
+              },
               { path: ROUTES.SHOP_INVENTORY, element: <InboundManagement /> },
               { path: ROUTES.SHOP_CONTRACTS, element: <div>계약 관리</div> },
               { path: ROUTES.SHOP_SETTLEMENTS, element: <div>정산</div> },
@@ -122,7 +125,10 @@ export const router = createBrowserRouter([
                 path: ROUTES.ARTIST_INVENTORY,
                 element: <InventoryManagement />,
               },
-              { path: ROUTES.ARTIST_SHOPS, element: <TenantManagement /> },
+              {
+                path: ROUTES.ARTIST_SHOPS,
+                element: <ShopTenantManagement />,
+              },
               {
                 path: ROUTES.ARTIST_SHIPMENTS,
                 element: <OutboundManagement />,
