@@ -3,106 +3,95 @@ import { useState } from 'react';
 import { ProductInventoryTable } from '../components/product-inventory-table';
 import { ProductForm } from '../components/prodcut-form';
 import { ProductMemo } from '../components/product-memo';
-import type { Product, ProductFormData } from '../types/inventory';
-
-let nextId = 6;
-
-const MOCK_PRODUCTS: Product[] = [
-  {
-    id: 1,
-    imageUrl: '',
-    name: '1번 상품 어쩌고 짱구 흰둥이',
-    price: 3000000,
-    stock: 100,
-    registeredAt: '2025.09.20',
-  },
-  {
-    id: 2,
-    imageUrl: '',
-    name: '2번 상품 어쩌고 짱구 흰둥이',
-    price: 30000,
-    stock: 30,
-    registeredAt: '2025.09.20',
-  },
-  {
-    id: 3,
-    imageUrl: '',
-    name: '3번 상품 어쩌고 짱구 흰둥이',
-    price: 30000,
-    stock: 5,
-    registeredAt: '2025.09.20',
-  },
-  {
-    id: 4,
-    imageUrl: '',
-    name: '4번 상품 어쩌고 짱구 흰둥이',
-    price: 30000,
-    stock: 9,
-    registeredAt: '2025.09.20',
-  },
-  {
-    id: 5,
-    imageUrl: '',
-    name: '5번 상품 어쩌고 짱구 흰둥이',
-    price: 30000,
-    stock: 160,
-    registeredAt: '2025.09.20',
-  },
-];
+import {
+  useGetArtistProductsQuery,
+  useCreateArtistProductMutation,
+  useUpdateArtistProductMutation,
+  useUpdateArtistProductStocksMutation,
+  useDeleteArtistProductMutation,
+} from '../api/artist-product-api';
+import type { ArtistProduct, ProductFormData } from '../types/inventory';
 
 export const InventoryManagement = () => {
-  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [formKey, setFormKey] = useState(0);
 
-  const selectedProduct = products.find((p) => p.id === selectedId) ?? null;
+  const { data, isLoading } = useGetArtistProductsQuery({ page: 1, size: 20 });
+  const [createProduct] = useCreateArtistProductMutation();
+  const [updateProduct] = useUpdateArtistProductMutation();
+  const [updateStocks] = useUpdateArtistProductStocksMutation();
+  const [deleteProduct] = useDeleteArtistProductMutation();
 
-  const handleRowClick = (product: Product) => {
-    setSelectedId((prev) => (prev === product.id ? null : product.id));
-  };
+  const products = data?.items ?? [];
+  const selectedProduct =
+    products.find((p) => p.productId === selectedId) ?? null;
 
-  const handleStockSave = (stocks: Record<number, number>) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id in stocks ? { ...p, stock: stocks[p.id] } : p))
+  const handleRowClick = (product: ArtistProduct) => {
+    setSelectedId((prev) =>
+      prev === product.productId ? null : product.productId
     );
-    alert('재고가 저장되었습니다.');
   };
 
-  const handleDelete = (ids: number[]) => {
-    setProducts((prev) => prev.filter((p) => !ids.includes(p.id)));
-    if (selectedId !== null && ids.includes(selectedId)) {
-      setSelectedId(null);
+  const handleStockSave = async (
+    items: { productId: number; stockQuantity: number; version: number }[]
+  ) => {
+    try {
+      await updateStocks(items).unwrap();
+      alert('재고가 저장되었습니다.');
+    } catch (error: unknown) {
+      const err = error as { status?: number };
+      if (err.status === 409) {
+        alert(
+          '다른 사용자가 재고를 변경했습니다. 목록을 새로고침 후 다시 시도해주세요.'
+        );
+      } else {
+        alert('재고 저장에 실패했습니다.');
+      }
     }
   };
 
-  const handleProductSave = (data: ProductFormData) => {
-    if (selectedId !== null) {
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === selectedId
-            ? { ...p, name: data.name, price: data.price, stock: data.stock }
-            : p
-        )
+  const handleDelete = async (ids: number[]) => {
+    try {
+      await Promise.all(ids.map((id) => deleteProduct(id).unwrap()));
+      if (selectedId !== null && ids.includes(selectedId)) {
+        setSelectedId(null);
+      }
+    } catch {
+      alert('상품 삭제에 실패했습니다.');
+    }
+  };
+
+  const handleProductSave = async (data: ProductFormData) => {
+    try {
+      if (selectedId !== null) {
+        await updateProduct({ productId: selectedId, data }).unwrap();
+        alert('상품이 수정되었습니다.');
+        setSelectedId(null);
+      } else {
+        await createProduct(data).unwrap();
+        alert('상품이 등록되었습니다.');
+        setFormKey((prev) => prev + 1);
+      }
+    } catch {
+      alert(
+        selectedId !== null
+          ? '상품 수정에 실패했습니다.'
+          : '상품 등록에 실패했습니다.'
       );
-      alert('상품이 수정되었습니다.');
-      setSelectedId(null);
-    } else {
-      const newProduct: Product = {
-        id: nextId++,
-        imageUrl: data.imageFile ? URL.createObjectURL(data.imageFile) : '',
-        name: data.name,
-        price: data.price,
-        stock: data.stock,
-        registeredAt: new Date().toISOString().slice(0, 10).replace(/-/g, '.'),
-      };
-      setProducts((prev) => [newProduct, ...prev]);
-      alert('상품이 등록되었습니다.');
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm text-gray-400">
+        로딩 중...
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex-1 overflow-hidden bg-gray-100">
       <div className="grid h-full grid-cols-2 gap-3">
-        {/* 품목 및 재고 테이블 */}
         <ProductInventoryTable
           products={products}
           selectedId={selectedId}
@@ -110,10 +99,9 @@ export const InventoryManagement = () => {
           onStockSave={handleStockSave}
           onDelete={handleDelete}
         />
-
-        {/* 상품 등록·수정 폼 + 메모 */}
         <div className="flex flex-col gap-3 overflow-y-auto">
           <ProductForm
+            key={formKey}
             selectedProduct={selectedProduct}
             onSave={handleProductSave}
           />
