@@ -36,7 +36,7 @@ const buildProductFormData = (data: ProductFormData): FormData => {
 export const artistProductApi = createApi({
   reducerPath: 'artistProductApi',
   baseQuery: createBaseQuery(),
-  tagTypes: ['ArtistProduct'],
+  tagTypes: ['ArtistProduct', 'ArtistProductMemo'],
   endpoints: (builder) => ({
     getArtistProducts: builder.query<ArtistProductListData, GetProductsParams>({
       query: ({ page = 1, size = 20 } = {}) => ({
@@ -87,6 +87,48 @@ export const artistProductApi = createApi({
       }),
       invalidatesTags: ['ArtistProduct'],
     }),
+
+    getProductMemo: builder.query<{ productId: number; memo: string }, number>({
+      query: (productId) => ({
+        url: `/api/v1/artist/products/${productId}/memo`,
+      }),
+      transformResponse: (res: { data: { productId: number; memo: string } }) =>
+        res.data,
+      providesTags: (_result, _error, productId) => [
+        { type: 'ArtistProductMemo', id: productId },
+      ],
+    }),
+
+    updateProductMemo: builder.mutation<
+      { productId: number; memo: string },
+      { productId: number; memo: string }
+    >({
+      query: ({ productId, memo }) => ({
+        url: `/api/v1/artist/products/${productId}/memo`,
+        method: 'PATCH',
+        body: { memo },
+      }),
+      transformResponse: (res: { data: { productId: number; memo: string } }) =>
+        res.data,
+      invalidatesTags: (_result, _error, { productId }) => [
+        { type: 'ArtistProductMemo', id: productId },
+      ],
+    }),
+
+    deleteProductMemo: builder.mutation<
+      { productId: number; memo: string },
+      number
+    >({
+      query: (productId) => ({
+        url: `/api/v1/artist/products/${productId}/memo`,
+        method: 'DELETE',
+      }),
+      transformResponse: (res: { data: { productId: number; memo: string } }) =>
+        res.data,
+      invalidatesTags: (_result, _error, productId) => [
+        { type: 'ArtistProductMemo', id: productId },
+      ],
+    }),
   }),
 });
 
@@ -96,4 +138,7 @@ export const {
   useUpdateArtistProductMutation,
   useUpdateArtistProductStocksMutation,
   useDeleteArtistProductMutation,
+  useGetProductMemoQuery,
+  useUpdateProductMemoMutation,
+  useDeleteProductMemoMutation,
 } = artistProductApi;

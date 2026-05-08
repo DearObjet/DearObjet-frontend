@@ -105,7 +105,7 @@ export const InventoryManagement = () => {
             selectedProduct={selectedProduct}
             onSave={handleProductSave}
           />
-          <ProductMemo />
+          <ProductMemo selectedId={selectedId} />
         </div>
       </div>
     </div>
