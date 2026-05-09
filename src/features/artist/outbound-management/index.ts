@@ -1,1 +1,1 @@
-export { OutboundManagement } from './pages/outbount-management';
+export { OutboundManagement } from './pages/outbound-management';
