@@ -5,7 +5,7 @@ import { BUSINESS_HOURS_ENDPOINTS } from '../constants/business-hours-constants'
 import type {
   ShopBusinessHoursResponse,
   UpdateBusinessHoursRequest,
-} from '../types/business-hours';
+} from '../types/business-hours-types';
 
 export const businessHoursApi = createApi({
   reducerPath: 'businessHoursApi',

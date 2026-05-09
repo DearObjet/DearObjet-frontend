@@ -5,7 +5,11 @@ import {
   useGetBusinessHoursQuery,
   useUpdateBusinessHoursMutation,
 } from '../api/business-hours-api';
-import type { BusinessHours, DayHours, DayKey } from '../types/business-hours';
+import type {
+  BusinessHours,
+  DayHours,
+  DayKey,
+} from '../types/business-hours-types';
 
 const DAY_LABELS: { key: DayKey; label: string; full: string }[] = [
   { key: 'monday', label: '월', full: '월요일' },
