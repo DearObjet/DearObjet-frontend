@@ -9,8 +9,11 @@ import { themeApi } from '../features/admin/theme';
 import { authApi } from '../features/auth';
 import { noticeApi } from '../features/notice';
 import { signupApi } from '../features/signup';
-import { classApi } from '../features/shop/shop-management/api/class-api';
-import { storyApi } from '../features/shop/shop-management/api/story-api';
+import {
+  businessHoursApi,
+  classApi,
+  storyApi,
+} from '../features/shop/shop-management';
 import { mapApi, oneDayClassApi } from '../features/map';
 import { chatApi } from '../features/chat/api/chat-api';
 import { myPageApi } from '../features/my-page/api/my-page-api';
@@ -32,6 +35,7 @@ export const store = configureStore({
     [signupApi.reducerPath]: signupApi.reducer,
     [classApi.reducerPath]: classApi.reducer,
     [storyApi.reducerPath]: storyApi.reducer,
+    [businessHoursApi.reducerPath]: businessHoursApi.reducer,
     [mapApi.reducerPath]: mapApi.reducer,
     [oneDayClassApi.reducerPath]: oneDayClassApi.reducer,
     [chatApi.reducerPath]: chatApi.reducer,
@@ -49,6 +53,7 @@ export const store = configureStore({
       .concat(signupApi.middleware)
       .concat(classApi.middleware)
       .concat(storyApi.middleware)
+      .concat(businessHoursApi.middleware)
       .concat(mapApi.middleware)
       .concat(oneDayClassApi.middleware)
       .concat(chatApi.middleware)

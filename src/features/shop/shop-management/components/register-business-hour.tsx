@@ -1,11 +1,16 @@
 import { useState, useEffect, type ChangeEvent, useRef } from 'react';
 
 import { Button } from '../../../../shared/components/ui';
+
 import {
   useGetBusinessHoursQuery,
   useUpdateBusinessHoursMutation,
-} from '../api/story-api';
-import type { BusinessHours, DayHours, DayKey } from '../types/business-hour';
+} from '../api/business-hours-api';
+import type {
+  BusinessHours,
+  DayHours,
+  DayKey,
+} from '../types/business-hours-types';
 
 const DAY_LABELS: { key: DayKey; label: string; full: string }[] = [
   { key: 'monday', label: '월', full: '월요일' },
@@ -38,6 +43,7 @@ export const RegisterBusinessHour = () => {
   const previewRef = useRef<HTMLDivElement>(null);
 
   const { data: businessHoursData } = useGetBusinessHoursQuery();
+  console.log(businessHoursData);
   const [updateBusinessHours, { isLoading }] = useUpdateBusinessHoursMutation();
 
   useEffect(() => {
