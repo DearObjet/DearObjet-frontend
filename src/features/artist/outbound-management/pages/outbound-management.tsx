@@ -4,7 +4,7 @@ import type {
   OutboundProduct,
   OutboundRecord,
   Shop,
-} from '../types/outbound';
+} from '../types/outbound-types';
 import { ShopList } from '../components/shop-list';
 import { OutboundList } from '../components/outbound-list';
 import { OutboundProductList } from '../components/outbound-product-list';

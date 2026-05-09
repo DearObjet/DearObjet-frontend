@@ -1,6 +1,6 @@
 import { Button } from '../../../../shared/components/ui';
 
-import type { ShopListProps } from '../types/outbound';
+import type { ShopListProps } from '../types/outbound-types';
 
 export const ShopList = ({
   shops,

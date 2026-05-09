@@ -3,7 +3,7 @@ import { Search } from 'lucide-react';
 
 import { Button } from '../../../../shared/components/ui';
 
-import type { OutboundProductListProps } from '../types/outbound';
+import type { OutboundProductListProps } from '../types/outbound-types';
 
 export const OutboundProductList = ({
   products,

@@ -1,6 +1,6 @@
 import { Button } from '../../../../shared/components/ui';
 
-import type { OutboundListProps } from '../types/outbound';
+import type { OutboundListProps } from '../types/outbound-types';
 
 export const OutboundList = ({
   records,
