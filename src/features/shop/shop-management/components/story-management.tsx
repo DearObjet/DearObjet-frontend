@@ -1,5 +1,8 @@
 import { useState, useRef, type ChangeEvent } from 'react';
-import { ImagePlus, X, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUp, ArrowDown } from 'lucide-react';
+
+import XIcon from '../../../../assets/x-icon.svg';
+import UploadFile from '../../../../assets/upload-file.svg';
 
 import { Button } from '../../../../shared/components/ui';
 import { Input } from '../../../../shared/components/ui';
@@ -170,16 +173,17 @@ export const StoryManage = () => {
                   alt="story-preview"
                   className="h-full w-full rounded-lg bg-gray-200 object-cover"
                 />
-                <button
+                <Button
+                  icon={<img src={XIcon} alt="" width={12} height={12} />}
+                  variant="icon"
                   className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow"
                   onClick={handleImageRemove}
-                >
-                  <X className="h-3 w-3" />
-                </button>
+                  aria-label="닫기"
+                />
               </>
             ) : (
               <label className="flex h-full w-full cursor-pointer items-center justify-center rounded-lg bg-gray-200">
-                <ImagePlus className="h-5 w-5" />
+                <img src={UploadFile} alt="" aria-label="이미지 등록" />
                 <input
                   ref={fileInputRef}
                   type="file"
