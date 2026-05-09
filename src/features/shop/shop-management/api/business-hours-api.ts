@@ -1,41 +1,41 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 
 import { createBaseQuery } from '../../../../shared/constants';
-import { STORY_ENDPOINTS } from '../constants/story-constants';
+import { BUSINESS_HOURS_ENDPOINTS } from '../constants/business-hours-constants';
 import type {
   ShopBusinessHoursResponse,
   UpdateBusinessHoursRequest,
-} from '../types/business-hour';
+} from '../types/business-hours';
 
-export const storyApi = createApi({
-  reducerPath: 'storyApi',
+export const businessHoursApi = createApi({
+  reducerPath: 'businessHoursApi',
   baseQuery: createBaseQuery(),
-  tagTypes: ['Story'],
+  tagTypes: ['BusinessHours'],
   endpoints: (builder) => ({
     getBusinessHours: builder.query<ShopBusinessHoursResponse, void>({
       query: () => ({
-        url: STORY_ENDPOINTS.BUSINESS_HOURS,
+        url: BUSINESS_HOURS_ENDPOINTS.BUSINESS_HOURS,
         method: 'GET',
       }),
       transformResponse: (response: { data: ShopBusinessHoursResponse }) =>
         response.data,
-      providesTags: ['Story'],
+      providesTags: ['BusinessHours'],
     }),
     updateBusinessHours: builder.mutation<
       ShopBusinessHoursResponse,
       UpdateBusinessHoursRequest
     >({
       query: (body) => ({
-        url: STORY_ENDPOINTS.BUSINESS_HOURS,
+        url: BUSINESS_HOURS_ENDPOINTS.BUSINESS_HOURS,
         method: 'PATCH',
         body,
       }),
       transformResponse: (response: { data: ShopBusinessHoursResponse }) =>
         response.data,
-      invalidatesTags: ['Story'],
+      invalidatesTags: ['BusinessHours'],
     }),
   }),
 });
 
 export const { useGetBusinessHoursQuery, useUpdateBusinessHoursMutation } =
-  storyApi;
+  businessHoursApi;

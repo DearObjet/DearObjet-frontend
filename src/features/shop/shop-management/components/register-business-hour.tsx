@@ -4,8 +4,8 @@ import { Button } from '../../../../shared/components/ui';
 import {
   useGetBusinessHoursQuery,
   useUpdateBusinessHoursMutation,
-} from '../api/story-api';
-import type { BusinessHours, DayHours, DayKey } from '../types/business-hour';
+} from '../api/business-hours-api';
+import type { BusinessHours, DayHours, DayKey } from '../types/business-hours';
 
 const DAY_LABELS: { key: DayKey; label: string; full: string }[] = [
   { key: 'monday', label: '월', full: '월요일' },
