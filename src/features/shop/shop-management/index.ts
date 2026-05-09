@@ -1,4 +1,5 @@
-export { ShopManagement } from '../shop-management/pages/shop-management';
+export { ShopManagement } from './pages/shop-management';
 
-export { classApi } from '../shop-management/api/class-api';
-export { storyApi } from './api/business-hours-api';
+export { classApi } from './api/class-api';
+export { businessHoursApi } from './api/business-hours-api';
+export { storyApi } from './api/story-api';

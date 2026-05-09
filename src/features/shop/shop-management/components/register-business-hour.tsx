@@ -1,6 +1,7 @@
 import { useState, useEffect, type ChangeEvent, useRef } from 'react';
 
 import { Button } from '../../../../shared/components/ui';
+
 import {
   useGetBusinessHoursQuery,
   useUpdateBusinessHoursMutation,
@@ -42,6 +43,7 @@ export const RegisterBusinessHour = () => {
   const previewRef = useRef<HTMLDivElement>(null);
 
   const { data: businessHoursData } = useGetBusinessHoursQuery();
+  console.log(businessHoursData);
   const [updateBusinessHours, { isLoading }] = useUpdateBusinessHoursMutation();
 
   useEffect(() => {
