@@ -1,41 +1,76 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 
 import { createBaseQuery } from '../../../../shared/constants';
+
 import { STORY_ENDPOINTS } from '../constants/story-constants';
 import type {
-  ShopBusinessHoursResponse,
-  UpdateBusinessHoursRequest,
-} from '../types/business-hour';
+  CreateStoryRequest,
+  StoryListResponse,
+  StoryResponse,
+  UpdateStoryRequest,
+} from '../types/story-types';
 
 export const storyApi = createApi({
   reducerPath: 'storyApi',
   baseQuery: createBaseQuery(),
   tagTypes: ['Story'],
   endpoints: (builder) => ({
-    getBusinessHours: builder.query<ShopBusinessHoursResponse, void>({
-      query: () => ({
-        url: STORY_ENDPOINTS.BUSINESS_HOURS,
+    getStories: builder.query<StoryListResponse, number>({
+      query: (page) => ({
+        url: STORY_ENDPOINTS.STORIES,
         method: 'GET',
+        params: { page },
       }),
-      transformResponse: (response: { data: ShopBusinessHoursResponse }) =>
+      transformResponse: (response: { data: StoryListResponse }) =>
         response.data,
       providesTags: ['Story'],
     }),
-    updateBusinessHours: builder.mutation<
-      ShopBusinessHoursResponse,
-      UpdateBusinessHoursRequest
-    >({
-      query: (body) => ({
-        url: STORY_ENDPOINTS.BUSINESS_HOURS,
-        method: 'PATCH',
-        body,
+    createStory: builder.mutation<StoryResponse, CreateStoryRequest>({
+      query: ({ title, content, thumbnailImage }) => {
+        const formData = new FormData();
+        const request = new Blob([JSON.stringify({ title, content })], {
+          type: 'application/json',
+        });
+        formData.append('request', request);
+        formData.append('thumbnailImage', thumbnailImage);
+        return {
+          url: STORY_ENDPOINTS.STORIES,
+          method: 'POST',
+          body: formData,
+        };
+      },
+      transformResponse: (response: { data: StoryResponse }) => response.data,
+    }),
+    updateStory: builder.mutation<StoryResponse, UpdateStoryRequest>({
+      query: ({ storyId, title, content, thumbnailImage }) => {
+        const formData = new FormData();
+        const request = new Blob([JSON.stringify({ title, content })], {
+          type: 'application/json',
+        });
+        formData.append('request', request);
+        if (thumbnailImage) {
+          formData.append('thumbnailImage', thumbnailImage);
+        }
+        return {
+          url: `${STORY_ENDPOINTS.STORIES}/${storyId}`,
+          method: 'PUT',
+          body: formData,
+        };
+      },
+      transformResponse: (response: { data: StoryResponse }) => response.data,
+    }),
+    deleteStory: builder.mutation<void, number>({
+      query: (storyId) => ({
+        url: `${STORY_ENDPOINTS.STORIES}/${storyId}`,
+        method: 'DELETE',
       }),
-      transformResponse: (response: { data: ShopBusinessHoursResponse }) =>
-        response.data,
-      invalidatesTags: ['Story'],
     }),
   }),
 });
 
-export const { useGetBusinessHoursQuery, useUpdateBusinessHoursMutation } =
-  storyApi;
+export const {
+  useLazyGetStoriesQuery,
+  useCreateStoryMutation,
+  useUpdateStoryMutation,
+  useDeleteStoryMutation,
+} = storyApi;

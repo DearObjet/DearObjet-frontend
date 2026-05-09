@@ -13,7 +13,7 @@ import {
   useDeleteClassMutation,
 } from '../api/class-api';
 
-import { StoryManage } from '../components/story-management';
+import { StoryManagement } from '../components/story-management';
 import { RegisterBusinessHour } from '../components/register-business-hour';
 
 type Mode = 'default' | 'registering' | 'selected' | 'editing';
@@ -183,7 +183,7 @@ export const ShopManagement = () => {
     <div className="grid w-full flex-1 grid-cols-2 gap-3 overflow-y-auto bg-gray-100">
       {/* 클래스 등록 및 매장 운영 정보 등록 */}
       <div className="flex flex-col gap-3">
-        <StoryManage />
+        <StoryManagement />
         <RegisterBusinessHour />
       </div>
 

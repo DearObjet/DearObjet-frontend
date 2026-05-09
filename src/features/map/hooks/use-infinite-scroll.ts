@@ -12,10 +12,12 @@ export const useInfiniteScroll = <T>({
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const observerTargetRef = useRef<HTMLDivElement>(null);
+  const isLoadingRef = useRef(false);
 
   const loadMore = useCallback(async () => {
-    if (isLoading || !hasMore) return;
+    if (isLoadingRef.current || !hasMore) return;
 
+    isLoadingRef.current = true;
     setIsLoading(true);
     try {
       const { items: newItems, hasMore: more } = await fetchData(page);
@@ -23,9 +25,10 @@ export const useInfiniteScroll = <T>({
       setHasMore(more);
       setPage((prev) => prev + 1);
     } finally {
+      isLoadingRef.current = false;
       setIsLoading(false);
     }
-  }, [page, isLoading, hasMore, fetchData]);
+  }, [page, hasMore, fetchData]);
 
   useEffect(() => {
     const target = observerTargetRef.current;

@@ -1,3 +1,5 @@
 export const STORY_ENDPOINTS = {
-  BUSINESS_HOURS: '/api/v1/shops/me/business-hours',
+  STORIES: '/api/v1/stories',
 } as const;
+
+export const LIST_HEIGHT = '15rem';
