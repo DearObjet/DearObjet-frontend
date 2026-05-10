@@ -1,61 +1,60 @@
+import { useCallback } from 'react';
+
 import { useInfiniteScroll } from '../hooks/use-infinite-scroll';
 
-interface Story {
-  storyId: number;
-  imageUrl: string | null;
-  title: string;
-  content: string;
-  createdAt: string;
-}
+import { useLazyGetShopStoriesQuery } from '../api/map-story-api';
+import type { MapStoryItem, StoryTabProps } from '../types/map-story-types';
 
-// 더미 데이터 생성 함수
-const fetchStories = async (page: number) => {
-  await new Promise((resolve) => setTimeout(resolve, 500)); // 로딩 시뮬레이션
+const formatDate = (createdAt: string) =>
+  createdAt.slice(0, 10).replace(/-/g, '.');
 
-  const items: Story[] = Array.from({ length: 5 }, (_, i) => ({
-    storyId: (page - 1) * 5 + i + 1,
-    imageUrl: null,
-    title: `스토리 제목 ${(page - 1) * 5 + i + 1}`,
-    content: '소품샵의 새로운 소식을 전해드립니다.',
-    createdAt: '2025.09.16',
-  }));
+export const StoryTab = ({ shopId }: StoryTabProps) => {
+  const [fetchStories] = useLazyGetShopStoriesQuery();
 
-  return { items, hasMore: page < 5 };
-};
+  const fetchData = useCallback(
+    async (page: number) => {
+      const result = await fetchStories({ shopId, page }).unwrap();
+      return {
+        items: result.items,
+        hasMore: page < result.totalPages,
+      };
+    },
+    [fetchStories, shopId]
+  );
 
-export const StoryTab = () => {
   const { items, isLoading, hasMore, observerTargetRef } =
-    useInfiniteScroll<Story>({
-      fetchData: fetchStories,
-    });
+    useInfiniteScroll<MapStoryItem>({ fetchData });
 
   return (
     <div className="flex flex-col divide-y divide-theme-200">
       {items.map((story) => (
         <div key={story.storyId} className="flex flex-col gap-3 p-4">
-          {/* 이미지 */}
           <div className="aspect-video w-full overflow-hidden rounded bg-theme-200">
-            {story.imageUrl && (
-              <img
-                src={story.imageUrl}
-                alt={story.title}
-                className="h-full w-full object-cover"
-              />
-            )}
+            <img
+              src={story.thumbnailImageUrl}
+              alt={story.title}
+              className="h-full w-full object-cover"
+            />
           </div>
-          {/* 제목 */}
-          <p className="font-semibold text-theme-900">{story.title}</p>
-          {/* 내용 */}
-          <p className="text-sm text-theme-700">{story.content}</p>
-          {/* 작성일 */}
-          <p className="text-right text-xs text-theme-500">{story.createdAt}</p>
+          <p className="break-all font-semibold text-theme-900">
+            {story.title}
+          </p>
+          <p className="break-all text-sm text-theme-700">{story.content}</p>
+          <p className="text-right text-xs text-theme-500">
+            {formatDate(story.createdAt)}
+          </p>
         </div>
       ))}
-      {/* IntersectionObserver 타겟 */}
+
       <div ref={observerTargetRef} className="py-2 text-center">
         {isLoading && <p className="text-sm text-theme-300">불러오는 중...</p>}
-        {!hasMore && (
+        {!hasMore && items.length > 0 && (
           <p className="text-sm text-theme-300">마지막 스토리입니다.</p>
+        )}
+        {!isLoading && items.length === 0 && (
+          <p className="py-6 text-center text-xs text-theme-300">
+            등록된 스토리가 없습니다.
+          </p>
         )}
       </div>
     </div>

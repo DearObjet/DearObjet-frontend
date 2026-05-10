@@ -188,7 +188,7 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
 
       {/* 탭 컨텐츠 */}
       <div className="flex-1">
-        {activeTab === '스토리' && <StoryTab />}
+        {activeTab === '스토리' && shopId && <StoryTab shopId={shopId} />}
         {activeTab === '원데이클래스' && shopId && (
           <OneDayClassTab shopId={shopId} shopName={shopDetail.shopName} />
         )}

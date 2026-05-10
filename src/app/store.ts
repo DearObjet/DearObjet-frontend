@@ -14,7 +14,7 @@ import {
   classApi,
   storyApi,
 } from '../features/shop/shop-management';
-import { mapApi, oneDayClassApi } from '../features/map';
+import { mapApi, oneDayClassApi, mapStoryApi } from '../features/map';
 import { chatApi } from '../features/chat/api/chat-api';
 import { myPageApi } from '../features/my-page/api/my-page-api';
 import { classReservationApi } from '../features/shop/class-reservation-management/api/class-reservation-api';
@@ -39,6 +39,7 @@ export const store = configureStore({
     [businessHoursApi.reducerPath]: businessHoursApi.reducer,
     [mapApi.reducerPath]: mapApi.reducer,
     [oneDayClassApi.reducerPath]: oneDayClassApi.reducer,
+    [mapStoryApi.reducerPath]: mapStoryApi.reducer,
     [chatApi.reducerPath]: chatApi.reducer,
     [myPageApi.reducerPath]: myPageApi.reducer,
     [userMeApi.reducerPath]: userMeApi.reducer,
@@ -58,6 +59,7 @@ export const store = configureStore({
       .concat(businessHoursApi.middleware)
       .concat(mapApi.middleware)
       .concat(oneDayClassApi.middleware)
+      .concat(mapStoryApi.middleware)
       .concat(chatApi.middleware)
       .concat(myPageApi.middleware)
       .concat(userMeApi.middleware)
