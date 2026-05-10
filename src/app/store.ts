@@ -20,6 +20,7 @@ import { myPageApi } from '../features/my-page/api/my-page-api';
 import { classReservationApi } from '../features/shop/class-reservation-management/api/class-reservation-api';
 import { userMeApi } from '../shared/components/layout/aside/api/user-me-api';
 import { inboundApi } from '../features/shop/inbound-management/api/inbound-api';
+import { outboundApi } from '../features/artist/outbound-management';
 import { artistProductApi } from '../features/artist/inventory-management';
 
 export const store = configureStore({
@@ -42,6 +43,7 @@ export const store = configureStore({
     [myPageApi.reducerPath]: myPageApi.reducer,
     [userMeApi.reducerPath]: userMeApi.reducer,
     [inboundApi.reducerPath]: inboundApi.reducer,
+    [outboundApi.reducerPath]: outboundApi.reducer,
     [classReservationApi.reducerPath]: classReservationApi.reducer,
     [artistProductApi.reducerPath]: artistProductApi.reducer,
   },
@@ -60,6 +62,7 @@ export const store = configureStore({
       .concat(myPageApi.middleware)
       .concat(userMeApi.middleware)
       .concat(inboundApi.middleware)
+      .concat(outboundApi.middleware)
       .concat(classReservationApi.middleware)
       .concat(artistProductApi.middleware),
 });

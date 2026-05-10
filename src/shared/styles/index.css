@@ -5,6 +5,9 @@
 @tailwind utilities;
 
 @layer base {
+  img {
+    @apply inline-block;
+  }
   :root {
     /* Primary Button Colors */
     --color-primary-bg: 83 152 255;
