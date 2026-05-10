@@ -2,56 +2,50 @@ import { useState } from 'react';
 
 import { Button } from '../../../../shared/components/ui';
 import { UserProfile } from '../../../../shared/components/layout/aside/user-profile';
+import { useAppSelector } from '../../../../app/hooks';
 
 import { TenantListTable } from '../../../artist/tenant-management/components/tenant-list-table';
-
-const mockTenants = [
-  {
-    id: '1',
-    shopName: '1번작가',
-    contractStart: '2025.03.19',
-    contractEnd: '2025.03.19',
-    status: '계약완료' as const,
-    contract: '1번작가의 계약서 내용입니다.',
-  },
-  {
-    id: '2',
-    shopName: '2번작가',
-    contractStart: '2025.03.19',
-    contractEnd: '2025.03.19',
-    status: '계약중' as const,
-    contract: '2번작가의 계약서 내용입니다.',
-  },
-  {
-    id: '3',
-    shopName: '3번작가',
-    contractStart: '2025.03.20',
-    contractEnd: '2025.01.20',
-    status: '해제승인' as const,
-    contract: '3번작가의 계약서 내용입니다.',
-  },
-];
-
-const suggestionItems = [
-  { userName: '작가 이름', userId: 'user1', userImage: '' },
-  { userName: '작가 이름', userId: 'user2', userImage: '' },
-  { userName: '작가 이름', userId: 'user3', userImage: '' },
-  { userName: '작가 이름', userId: 'user4', userImage: '' },
-  { userName: '작가 이름', userId: 'user5', userImage: '' },
-  { userName: '작가 이름', userId: 'user6', userImage: '' },
-  { userName: '작가 이름', userId: 'user7', userImage: '' },
-  { userName: '작가 이름', userId: 'user8', userImage: '' },
-  { userName: '작가 이름', userId: 'user9', userImage: '' },
-  { userName: '작가 이름', userId: 'user10', userImage: '' },
-];
+import {
+  useGetArtistContractsQuery,
+  useGetArtistContractDetailQuery,
+  useGetArtistSuggestionsQuery,
+} from '../api/artist-tenant-api';
+import { ContractDocument } from '../constants/contract-document';
 
 export const ArtistTenantManagement = () => {
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [selectedContract, setSelectedContract] = useState<string | null>(null);
+  const userId = useAppSelector((state) => state.auth.user?.userId);
 
+  const [selectedContractId, setSelectedContractId] = useState<number | null>(
+    null
+  );
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
+  const { data: contractsData } = useGetArtistContractsQuery(userId!, {
+    skip: !userId,
+  });
+
+  const { data: contractDetail } = useGetArtistContractDetailQuery(
+    { contractId: selectedContractId!, userId: userId! },
+    { skip: !selectedContractId || !userId }
+  );
+
+  const { data: suggestionsData } = useGetArtistSuggestionsQuery(userId!, {
+    skip: !userId,
+  });
+
+  const tenantItems =
+    contractsData?.items.map((item) => ({
+      id: String(item.contractId),
+      shopName: item.artistName,
+      contractStart: item.contractStartDate,
+      contractEnd: item.contractEndDate,
+      status: item.contractStatusLabel,
+      contract: '',
+      nextAction: item.nextAction,
+      detailAvailable: item.detailAvailable,
+    })) ?? [];
   const handleView = (id: string) => {
-    const tenant = mockTenants.find((t) => t.id === id);
-    setSelectedContract(tenant?.contract ?? null);
+    setSelectedContractId(Number(id));
   };
 
   return (
@@ -60,7 +54,7 @@ export const ArtistTenantManagement = () => {
         <section className="flex h-[39.1875rem] w-[46.8125rem] flex-col rounded-xl bg-white">
           <h2 className="hidden">작가 리스트</h2>
           <TenantListTable
-            items={mockTenants}
+            items={tenantItems}
             onView={handleView}
             variant="shop"
           />
@@ -77,13 +71,13 @@ export const ArtistTenantManagement = () => {
           </div>
 
           <div className="grid grid-cols-5 gap-y-2 p-2">
-            {suggestionItems.map((item) => (
+            {suggestionsData?.items.map((item) => (
               <UserProfile
                 key={item.userId}
                 variant="author"
-                userName={item.userName}
-                userId={item.userId}
-                userImage={item.userImage}
+                userName={item.artistName}
+                userId={String(item.userId)}
+                userImage={item.artistImageUrl}
                 isSelected={selectedUserId === item.userId}
                 onAction={() => setSelectedUserId(item.userId)}
               />
@@ -101,9 +95,13 @@ export const ArtistTenantManagement = () => {
         <h2 className="mb-[2.1875rem] text-center text-[32px] font-medium">
           입점 계약서
         </h2>
-        <p className="ml-[1.875rem] h-[53.1875rem] w-[33.75rem] overflow-y-auto whitespace-pre-wrap break-words text-gray-700">
-          {selectedContract ?? '작가를 선택해주세요.'}
-        </p>
+        <div className="ml-[1.875rem]">
+          {contractDetail ? (
+            <ContractDocument contractDetail={contractDetail} />
+          ) : (
+            <p className="text-gray-500">작가를 선택해주세요.</p>
+          )}
+        </div>
       </section>
     </div>
   );

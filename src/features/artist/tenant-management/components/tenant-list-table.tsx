@@ -10,6 +10,11 @@ interface TenantItem {
   contractEnd: string;
   status: TenantStatus;
   contract: string;
+  nextAction: {
+    code: string;
+    label: string;
+  };
+  detailAvailable: boolean;
 }
 
 interface TenantListTableProps {
@@ -60,10 +65,12 @@ export const TenantListTable = ({
               <TenantListTableRow
                 key={item.id}
                 index={i + 1}
+                contractId={Number(item.id)}
                 shopName={item.shopName}
                 contractStart={item.contractStart}
                 contractEnd={item.contractEnd}
                 status={item.status}
+                nextAction={item.nextAction}
                 onView={() => onView(item.id)}
               />
             ))}

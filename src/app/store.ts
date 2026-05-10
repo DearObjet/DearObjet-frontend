@@ -16,6 +16,7 @@ import { chatApi } from '../features/chat/api/chat-api';
 import { myPageApi } from '../features/my-page/api/my-page-api';
 import { classReservationApi } from '../features/shop/class-reservation-management/api/class-reservation-api';
 import { userMeApi } from '../shared/components/layout/aside/api/user-me-api';
+import { artistTenantApi } from '../features/shop/tenant-management/api/artist-tenant-api';
 
 export const store = configureStore({
   reducer: {
@@ -36,6 +37,7 @@ export const store = configureStore({
     [myPageApi.reducerPath]: myPageApi.reducer,
     [userMeApi.reducerPath]: userMeApi.reducer,
     [classReservationApi.reducerPath]: classReservationApi.reducer,
+    [artistTenantApi.reducerPath]: artistTenantApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -50,7 +52,8 @@ export const store = configureStore({
       .concat(chatApi.middleware)
       .concat(myPageApi.middleware)
       .concat(userMeApi.middleware)
-      .concat(classReservationApi.middleware),
+      .concat(classReservationApi.middleware)
+      .concat(artistTenantApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
