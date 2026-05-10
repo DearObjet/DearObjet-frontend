@@ -32,6 +32,7 @@ import { OutboundManagement } from '../features/artist/outbound-management';
 import { InboundManagement } from '../features/shop/inbound-management';
 import { ArtistTenantManagement } from '../features/shop/tenant-management/pages/artist-tenant-management';
 import { ShopTenantManagement } from '../features/artist/tenant-management/pages/shop-tenant-management';
+import { ContractManagement } from '../features/shop/contract-management/contract-management';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -100,7 +101,7 @@ export const router = createBrowserRouter([
                 element: <ArtistTenantManagement />,
               },
               { path: ROUTES.SHOP_INVENTORY, element: <InboundManagement /> },
-              { path: ROUTES.SHOP_CONTRACTS, element: <div>계약 관리</div> },
+              { path: ROUTES.SHOP_CONTRACTS, element: <ContractManagement /> },
               { path: ROUTES.SHOP_SETTLEMENTS, element: <div>정산</div> },
               { path: ROUTES.SHOP_MESSAGES, element: <Chat /> },
               { path: ROUTES.SHOP_PROFILE, element: <PartnerProfile /> },
