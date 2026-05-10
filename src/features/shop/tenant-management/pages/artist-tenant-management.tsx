@@ -1,13 +1,16 @@
 import { useState } from 'react';
 
-import { Button } from '../../../../shared/components/ui';
-import { UserProfile } from '../../../../shared/components/layout/aside/user-profile';
 import { useAppSelector } from '../../../../app/hooks';
+import { UserProfile } from '../../../../shared/components/layout/aside/user-profile';
+import { Button } from '../../../../shared/components/ui';
 
-import { TenantListTable } from '../../../artist/tenant-management/components/tenant-list-table';
 import {
-  useGetArtistContractsQuery,
+  TenantListTable,
+  type TenantStatus,
+} from '../../../artist/tenant-management/components/tenant-list-table';
+import {
   useGetArtistContractDetailQuery,
+  useGetArtistContractsQuery,
   useGetArtistSuggestionsQuery,
 } from '../api/artist-tenant-api';
 import { ContractDocument } from '../constants/contract-document';
@@ -39,11 +42,12 @@ export const ArtistTenantManagement = () => {
       shopName: item.artistName,
       contractStart: item.contractStartDate,
       contractEnd: item.contractEndDate,
-      status: item.contractStatusLabel,
+      status: item.contractStatusLabel as TenantStatus,
       contract: '',
       nextAction: item.nextAction,
       detailAvailable: item.detailAvailable,
     })) ?? [];
+
   const handleView = (id: string) => {
     setSelectedContractId(Number(id));
   };
@@ -53,6 +57,7 @@ export const ArtistTenantManagement = () => {
       <div className="flex h-full flex-col gap-2">
         <section className="flex h-[39.1875rem] w-[46.8125rem] flex-col rounded-xl bg-white">
           <h2 className="hidden">작가 리스트</h2>
+
           <TenantListTable
             items={tenantItems}
             onView={handleView}
@@ -63,6 +68,7 @@ export const ArtistTenantManagement = () => {
         <section className="flex h-[23.125rem] w-[46.8125rem] flex-col rounded-xl bg-white">
           <div className="ml-[1.625rem] mr-5 flex justify-between border-b border-b-gray-200">
             <h2 className="mt-5">입점 작가 제안</h2>
+
             <Button
               variant="secondaryDark"
               label="입점 제안하기"
@@ -92,9 +98,11 @@ export const ArtistTenantManagement = () => {
           className="mr-5 mt-4 self-end"
           label="PDF로 내려받기"
         />
+
         <h2 className="mb-[2.1875rem] text-center text-[32px] font-medium">
           입점 계약서
         </h2>
+
         <div className="ml-[1.875rem]">
           {contractDetail ? (
             <ContractDocument contractDetail={contractDetail} />
