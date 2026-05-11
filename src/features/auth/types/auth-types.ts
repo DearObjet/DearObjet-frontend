@@ -5,6 +5,7 @@ export interface AuthUser {
   email: string;
   name: string;
   role: UserRole;
+  profileUrl: string;
   phoneNumber: string | null;
   userStatus: 'ACTIVE' | 'INACTIVE';
 }

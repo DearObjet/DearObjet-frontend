@@ -11,29 +11,31 @@ import { ConfirmModal } from './confirm-modal';
 import type { CreatePostModalProps } from '../types/post-type';
 
 export const CreatePostModal = ({
-  authorName,
+  user,
   onSubmit,
   onClose,
 }: CreatePostModalProps) => {
-  const [draftImage, setDraftImage] = useState<string | null>(null);
+  const [draftFile, setDraftFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [draftContent, setDraftContent] = useState('');
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = () => {
-    if (!draftImage) {
+    if (!draftFile) {
       alert('이미지를 첨부해주세요.');
       return;
     }
+
     if (!draftContent.trim()) {
       alert('포스트 내용을 입력해주세요.');
       return;
     }
-    onSubmit(draftImage, draftContent);
+    onSubmit(draftFile, draftContent);
   };
 
   const handleClose = () => {
-    if (draftImage || draftContent.trim()) {
+    if (draftFile || draftContent.trim()) {
       setShowExitConfirm(true);
     } else {
       onClose();
@@ -47,7 +49,10 @@ export const CreatePostModal = ({
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) setDraftImage(URL.createObjectURL(file));
+    if (file) {
+      setDraftFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
   return (
@@ -57,8 +62,8 @@ export const CreatePostModal = ({
     >
       <div className="relative flex max-h-[calc(100%-90px)] w-96 flex-col overflow-hidden rounded-xl bg-white shadow-xl">
         <div className="flex shrink-0 items-center gap-2.5 px-4 py-3">
-          <Avatar name={authorName} />
-          <span className="flex-1 text-sm font-medium">{authorName}</span>
+          <Avatar user={user} />
+          <span className="flex-1 text-sm font-medium">{user.name}</span>
           <Button
             icon={<img src={CheckIcon} alt="" width={16} height={16} />}
             size="small"
@@ -79,9 +84,9 @@ export const CreatePostModal = ({
           onClick={() => fileInputRef.current?.click()}
           className="flex aspect-square w-full shrink-0 cursor-pointer flex-col items-center justify-center overflow-hidden bg-theme-300"
         >
-          {draftImage ? (
+          {previewUrl ? (
             <img
-              src={draftImage}
+              src={previewUrl}
               alt=""
               className="h-full w-full object-cover"
             />
@@ -97,7 +102,6 @@ export const CreatePostModal = ({
           className="hidden"
         />
 
-        {/* 내용 입력 */}
         <div className="flex-1 overflow-auto px-4 py-3">
           <textarea
             value={draftContent}
@@ -108,7 +112,6 @@ export const CreatePostModal = ({
         </div>
       </div>
 
-      {/* 종료 확인 모달 */}
       {showExitConfirm && (
         <ConfirmModal
           message="포스트를 저장하지 않고 종료하시겠습니까?"

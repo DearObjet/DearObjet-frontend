@@ -11,16 +11,22 @@ import type { PostViewModalProps } from '../types/post-type';
 
 export const PostViewModal = ({
   post,
-  currentUserId,
+  user,
   onClose,
   onDelete,
 }: PostViewModalProps) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const isAuthor = currentUserId === post.userId;
+  const isAuthor = user.userId === post.userId;
+  const imageUrl = post.imageUrls[0] ?? null;
+
+  const postAuthor = {
+    name: post.userName,
+    profileUrl: post.authorProfileUrl,
+  };
 
   const handleDelete = () => {
-    onDelete(post.id);
+    onDelete(post.postId);
     setShowDeleteConfirm(false);
   };
 
@@ -32,7 +38,7 @@ export const PostViewModal = ({
       <div className="relative flex max-h-[calc(100%-90px)] w-96 flex-col overflow-hidden rounded-xl bg-white shadow-xl">
         {/* 헤더 */}
         <div className="flex shrink-0 items-center gap-2.5 px-4 py-3">
-          <Avatar name={post.userName} />
+          <Avatar user={postAuthor} />
           <span className="flex-1 text-sm font-medium">{post.userName}</span>
           {isAuthor && (
             <Button
@@ -53,14 +59,13 @@ export const PostViewModal = ({
         </div>
 
         {/* 이미지 */}
-        <div className="aspect-square w-full shrink-0 overflow-hidden">
-          <img
-            src={post.imageUrl}
-            alt=""
-            className="h-full w-full object-cover"
-          />
+        <div className="aspect-square w-full shrink-0 overflow-hidden bg-theme-200">
+          {imageUrl && (
+            <img src={imageUrl} alt="" className="h-full w-full object-cover" />
+          )}
         </div>
 
+        {/* 내용 */}
         <div className="max-h-52 min-h-32 overflow-y-auto px-4 py-3.5">
           <p className="whitespace-pre-wrap text-xs text-gray-700">
             {post.content}

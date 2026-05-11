@@ -14,6 +14,7 @@ import {
   classApi,
   storyApi,
 } from '../features/shop/shop-management';
+import { postApi } from '../features/post';
 import { mapApi, oneDayClassApi, mapStoryApi } from '../features/map';
 import { chatApi } from '../features/chat/api/chat-api';
 import { myPageApi } from '../features/my-page/api/my-page-api';
@@ -35,6 +36,7 @@ export const store = configureStore({
     [themeApi.reducerPath]: themeApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [noticeApi.reducerPath]: noticeApi.reducer,
+    [postApi.reducerPath]: postApi.reducer,
     [signupApi.reducerPath]: signupApi.reducer,
     [classApi.reducerPath]: classApi.reducer,
     [storyApi.reducerPath]: storyApi.reducer,
@@ -55,6 +57,7 @@ export const store = configureStore({
       .concat(themeApi.middleware)
       .concat(authApi.middleware)
       .concat(noticeApi.middleware)
+      .concat(postApi.middleware)
       .concat(signupApi.middleware)
       .concat(classApi.middleware)
       .concat(storyApi.middleware)
