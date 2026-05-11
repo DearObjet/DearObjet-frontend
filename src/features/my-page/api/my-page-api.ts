@@ -8,6 +8,9 @@ const MY_PAGE_ENDPOINTS = {
   BUSINESS_PROFILE: '/users/me/business-profile',
   SEND_PHONE_VERIFICATION: '/auth/phone-verifications/send',
   VERIFY_PHONE: '/auth/phone-verifications/verify',
+  RESERVATIONS_ME: '/api/v1/class-reservations/me',
+  RESERVATION_CANCEL: (reservationId: number) =>
+    `/api/v1/class-reservations/${reservationId}/cancel`,
 } as const;
 
 interface UserProfile {
@@ -77,10 +80,23 @@ interface VerifyPhoneResponse {
   verified: boolean;
 }
 
+interface Reservation {
+  reservationNumber: number;
+  status: string;
+  reservationStore: string;
+  reservationTime: string;
+  className: string;
+}
+
+interface ReservationsResponse {
+  currentReservations: Reservation[];
+  pastReservations: Reservation[];
+}
+
 export const myPageApi = createApi({
   reducerPath: 'myPageApi',
   baseQuery: createBaseQuery(),
-  tagTypes: ['Profile', 'BusinessProfile'],
+  tagTypes: ['Profile', 'BusinessProfile', 'Reservations'],
   endpoints: (builder) => ({
     getProfile: builder.query<UserProfile, void>({
       query: () => MY_PAGE_ENDPOINTS.PROFILE,
@@ -165,6 +181,21 @@ export const myPageApi = createApi({
       transformResponse: (response: ApiResponse<VerifyPhoneResponse>) =>
         response.data,
     }),
+
+    getMyReservations: builder.query<ReservationsResponse, void>({
+      query: () => MY_PAGE_ENDPOINTS.RESERVATIONS_ME,
+      transformResponse: (response: ApiResponse<ReservationsResponse>) =>
+        response.data,
+      providesTags: ['Reservations'],
+    }),
+
+    cancelReservation: builder.mutation<void, number>({
+      query: (reservationId) => ({
+        url: MY_PAGE_ENDPOINTS.RESERVATION_CANCEL(reservationId),
+        method: 'POST',
+      }),
+      invalidatesTags: ['Reservations'],
+    }),
   }),
 });
 
@@ -175,4 +206,6 @@ export const {
   useUpdateBusinessProfileMutation,
   useSendPhoneVerificationMutation,
   useVerifyPhoneMutation,
+  useGetMyReservationsQuery,
+  useCancelReservationMutation,
 } = myPageApi;
