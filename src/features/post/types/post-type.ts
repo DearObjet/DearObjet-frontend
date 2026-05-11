@@ -1,21 +1,36 @@
-export interface PostData {
-  id: number;
+import type { AuthUser } from '../../auth/types/auth-types';
+
+export interface PostDetail {
+  postId: number;
   userId: number;
   userName: string;
-  imageUrl: string;
+  authorProfileUrl: string | null;
   content: string;
+  imageUrls: string[];
+  isPublic: boolean;
+  createdAt: string;
 }
 
-export interface PostGridProps {
-  posts: PostData[];
-  onPostClick: (post: PostData) => void;
+export interface PostListItem {
+  postId: number;
+  thumbnailUrl: string | null;
+  createdAt: string;
 }
 
-export interface PostViewModalProps {
-  post: PostData;
-  currentUserId: number | null;
-  onClose: () => void;
-  onDelete: (postId: number) => void;
+export interface PostListResponse {
+  items: PostListItem[];
+  page: number;
+  totalPages: number;
+}
+
+export type AvatarInformProps = {
+  name: string;
+  profileUrl: string | null;
+};
+
+export interface AvatarProps {
+  user: AvatarInformProps;
+  size?: 'sm' | 'md';
 }
 
 export interface ConfirmModalProps {
@@ -24,13 +39,15 @@ export interface ConfirmModalProps {
   onNo: () => void;
 }
 
-export interface AvatarProps {
-  name: string;
-  size?: 'sm' | 'md';
+export interface CreatePostModalProps {
+  user: AuthUser;
+  onSubmit: (image: File, content: string) => void;
+  onClose: () => void;
 }
 
-export interface CreatePostModalProps {
-  authorName: string;
-  onSubmit: (imageUrl: string, content: string) => void;
+export interface PostViewModalProps {
+  post: PostDetail;
+  user: AuthUser;
   onClose: () => void;
+  onDelete: (postId: number) => void;
 }

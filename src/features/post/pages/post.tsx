@@ -1,66 +1,86 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import { Button } from '../../../shared/components/ui';
+import { useAppSelector } from '../../../app/hooks';
 
+import {
+  useLazyGetAllPostsQuery,
+  useLazyGetPostQuery,
+  useCreatePostMutation,
+  useDeletePostMutation,
+} from '../api/post-api';
 import { PostGrid } from '../components/post-grid';
 import { CreatePostModal } from '../components/create-post-modal';
 import { PostViewModal } from '../components/post-view-modal';
-import type { PostData } from '../types/post-type';
-
-const fetchPosts = async (page: number) => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  const items: PostData[] = Array.from({ length: 9 }, (_, i) => ({
-    id: (page - 1) * 9 + i + 1,
-    userId: 1,
-    userName: '김명화',
-    imageUrl: '',
-    content: '테스트 포스트입니다.',
-  }));
-
-  return { items, hasMore: page < 3 };
-};
-
-const CURRENT_USER = { id: 1, name: '김명화' };
+import type { PostDetail, PostListItem } from '../types/post-type';
 
 export const Post = () => {
   const [showCreate, setShowCreate] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<PostData | null>(null);
+  const [selectedPost, setSelectedPost] = useState<PostDetail | null>(null);
 
-  const handleSubmitPost = (imageUrl: string, content: string) => {
-    console.log('새 포스트:', { imageUrl, content });
+  const [triggerGetAllPosts] = useLazyGetAllPostsQuery();
+  const [triggerGetPost] = useLazyGetPostQuery();
+  const [createPost] = useCreatePostMutation();
+  const [deletePost] = useDeletePostMutation();
+
+  const user = useAppSelector((state) => state.auth.user);
+
+  const fetchPosts = useCallback(
+    async (
+      page: number
+    ): Promise<{ items: PostListItem[]; hasMore: boolean }> => {
+      const result = await triggerGetAllPosts(page).unwrap();
+      return {
+        items: result.items,
+        hasMore: result.page < result.totalPages,
+      };
+    },
+    [triggerGetAllPosts]
+  );
+
+  const handlePostClick = async (postId: number) => {
+    const detail = await triggerGetPost(postId).unwrap();
+    setSelectedPost(detail);
+  };
+
+  const handleSubmitPost = async (image: File, content: string) => {
+    const formData = new FormData();
+    formData.append(
+      'request',
+      new Blob([JSON.stringify({ content })], { type: 'application/json' })
+    );
+    formData.append('images', image);
+
+    await createPost(formData).unwrap();
     setShowCreate(false);
   };
 
-  const handleDeletePost = (postId: number) => {
-    console.log('삭제할 포스트 id:', postId);
+  const handleDeletePost = async (postId: number) => {
+    await deletePost(postId).unwrap();
     setSelectedPost(null);
   };
 
   return (
     <div className="relative min-h-screen bg-white">
-      <div className="flex justify-end py-4">
-        <Button
-          label="새 게시글"
-          onClick={() => setShowCreate(true)}
-          variant="secondaryLight"
-        />
-      </div>
+      {user && (
+        <div className="flex justify-end px-5 py-3.5">
+          <button onClick={() => setShowCreate(true)}>새 게시글</button>
+        </div>
+      )}
 
-      <PostGrid fetchData={fetchPosts} onPostClick={setSelectedPost} />
+      <PostGrid fetchData={fetchPosts} onPostClick={handlePostClick} />
 
-      {showCreate && (
+      {showCreate && user && (
         <CreatePostModal
-          authorName={CURRENT_USER.name}
+          user={user}
           onSubmit={handleSubmitPost}
           onClose={() => setShowCreate(false)}
         />
       )}
 
-      {selectedPost && (
+      {selectedPost && user && (
         <PostViewModal
           post={selectedPost}
-          currentUserId={CURRENT_USER.id}
+          user={user}
           onClose={() => setSelectedPost(null)}
           onDelete={handleDeletePost}
         />

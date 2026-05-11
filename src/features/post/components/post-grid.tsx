@@ -1,9 +1,12 @@
 import { useInfiniteScroll } from '../../map/hooks/use-infinite-scroll';
-import type { PostData } from '../types/post-type';
+
+import type { PostListItem } from '../types/post-type';
 
 interface PostGridProps {
-  fetchData: (page: number) => Promise<{ items: PostData[]; hasMore: boolean }>;
-  onPostClick: (post: PostData) => void;
+  fetchData: (
+    page: number
+  ) => Promise<{ items: PostListItem[]; hasMore: boolean }>;
+  onPostClick: (postId: number) => void;
 }
 
 export const PostGrid = ({ fetchData, onPostClick }: PostGridProps) => {
@@ -12,7 +15,7 @@ export const PostGrid = ({ fetchData, onPostClick }: PostGridProps) => {
     isLoading,
     hasMore,
     observerTargetRef,
-  } = useInfiniteScroll<PostData>({ fetchData });
+  } = useInfiniteScroll<PostListItem>({ fetchData });
 
   if (!isLoading && posts.length === 0) {
     return (
@@ -27,15 +30,19 @@ export const PostGrid = ({ fetchData, onPostClick }: PostGridProps) => {
       <div className="grid grid-cols-3 gap-1">
         {posts.map((post) => (
           <button
-            key={post.id}
-            onClick={() => onPostClick(post)}
+            key={post.postId}
+            onClick={() => onPostClick(post.postId)}
             className="group aspect-square overflow-hidden focus:outline-none"
           >
-            <img
-              src={post.imageUrl}
-              alt=""
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
+            {post.thumbnailUrl ? (
+              <img
+                src={post.thumbnailUrl}
+                alt=""
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+            ) : (
+              <div className="h-full w-full bg-theme-200" />
+            )}
           </button>
         ))}
       </div>
