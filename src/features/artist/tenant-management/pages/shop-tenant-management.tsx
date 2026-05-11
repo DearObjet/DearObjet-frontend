@@ -13,6 +13,8 @@ const mockTenants = [
     contractEnd: '2025.03.19',
     status: '계약완료' as const,
     contract: '1번소품샵의 계약서 내용입니다.',
+    nextAction: { code: 'NONE', label: '없음' },
+    detailAvailable: true,
   },
   {
     id: '2',
@@ -21,6 +23,8 @@ const mockTenants = [
     contractEnd: '2025.03.19',
     status: '계약대기' as const,
     contract: '2번소품샵의 계약서 내용입니다.',
+    nextAction: { code: 'APPROVE', label: '승인대기' },
+    detailAvailable: false,
   },
   {
     id: '3',
@@ -29,6 +33,8 @@ const mockTenants = [
     contractEnd: '2025.03.20',
     status: '계약연장' as const,
     contract: '3번소품샵의 계약서 내용입니다.',
+    nextAction: { code: 'RENEWAL', label: '연장협의' },
+    detailAvailable: true,
   },
 ];
 
