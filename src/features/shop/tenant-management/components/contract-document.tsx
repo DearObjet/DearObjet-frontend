@@ -11,7 +11,10 @@ const c = CONTRACT_STATIC_TEXT;
 export const ContractDocument = ({ contractDetail }: ContractDocumentProps) => {
   return (
     <div className="h-[53.1875rem] w-[33.75rem] overflow-y-auto pr-4 text-gray-700">
-      <p className="mb-6 text-center font-medium">{c.title}</p>
+      {/* <p className="mb-6 text-center font-medium">{c.title}</p> */}
+      <h2 className="mb-[2.1875rem] text-center text-[32px] font-medium">
+        {c.title}
+      </h2>
       <p className="mb-6 text-sm">{c.intro}</p>
 
       <p className="mb-2 font-medium">{c.article1.title}</p>

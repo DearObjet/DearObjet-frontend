@@ -10,6 +10,7 @@ export const ARTIST_TENANT_ENDPOINTS = {
 };
 
 export const CONTRACT_STATIC_TEXT = {
+  title: '입점계약서',
   intro:
     '본 계약은 아래 당사자 간 상호 신뢰를 바탕으로 소품의 위탁 판매 및 정산에 관한 사항을 정함을 목적으로 한다.',
 

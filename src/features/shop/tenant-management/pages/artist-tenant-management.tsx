@@ -99,9 +99,9 @@ export const ArtistTenantManagement = () => {
           label="PDF로 내려받기"
         />
 
-        <h2 className="mb-[2.1875rem] text-center text-[32px] font-medium">
+        {/* <h2 className="mb-[2.1875rem] text-center text-[32px] font-medium">
           입점 계약서
-        </h2>
+        </h2> */}
 
         <div className="ml-[1.875rem]">
           {contractDetail ? (
