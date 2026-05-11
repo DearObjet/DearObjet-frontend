@@ -11,6 +11,7 @@ const MY_PAGE_ENDPOINTS = {
   RESERVATIONS_ME: '/api/v1/class-reservations/me',
   RESERVATION_CANCEL: (reservationId: number) =>
     `/api/v1/class-reservations/${reservationId}/cancel`,
+  WITHDRAWAL: '/users/me/withdrawal',
 } as const;
 
 interface UserProfile {
@@ -196,6 +197,14 @@ export const myPageApi = createApi({
       }),
       invalidatesTags: ['Reservations'],
     }),
+
+    withdrawal: builder.mutation<void, void>({
+      query: () => ({
+        url: MY_PAGE_ENDPOINTS.WITHDRAWAL,
+        method: 'POST',
+      }),
+      transformResponse: () => undefined,
+    }),
   }),
 });
 
@@ -208,4 +217,5 @@ export const {
   useVerifyPhoneMutation,
   useGetMyReservationsQuery,
   useCancelReservationMutation,
+  useWithdrawalMutation,
 } = myPageApi;
