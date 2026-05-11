@@ -31,6 +31,9 @@ import { Chat } from '../features/chat/pages/chat';
 import { InventoryManagement } from '../features/artist/inventory-management/pages/inventory-mangement';
 import { OutboundManagement } from '../features/artist/outbound-management';
 import { InboundManagement } from '../features/shop/inbound-management';
+import { ArtistTenantManagement } from '../features/shop/tenant-management/pages/artist-tenant-management';
+import { ShopTenantManagement } from '../features/artist/tenant-management/pages/shop-tenant-management';
+import { ContractManagement } from '../features/shop/contract-management/pages/contract-management';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -94,9 +97,12 @@ export const router = createBrowserRouter([
                 path: ROUTES.SHOP_MANAGE_RESERVATIONS,
                 element: <ClassReservation />,
               },
-              { path: ROUTES.SHOP_ARTISTS, element: <div>작가 관리</div> },
+              {
+                path: ROUTES.SHOP_ARTISTS,
+                element: <ArtistTenantManagement />,
+              },
               { path: ROUTES.SHOP_INVENTORY, element: <InboundManagement /> },
-              { path: ROUTES.SHOP_CONTRACTS, element: <div>계약 관리</div> },
+              { path: ROUTES.SHOP_CONTRACTS, element: <ContractManagement /> },
               { path: ROUTES.SHOP_SETTLEMENTS, element: <div>정산</div> },
               { path: ROUTES.SHOP_MESSAGES, element: <Chat /> },
               { path: ROUTES.SHOP_PROFILE, element: <PartnerProfile /> },
@@ -121,7 +127,10 @@ export const router = createBrowserRouter([
                 path: ROUTES.ARTIST_INVENTORY,
                 element: <InventoryManagement />,
               },
-              { path: ROUTES.ARTIST_SHOPS, element: <div>소품샵 목록</div> },
+              {
+                path: ROUTES.ARTIST_SHOPS,
+                element: <ShopTenantManagement />,
+              },
               {
                 path: ROUTES.ARTIST_SHIPMENTS,
                 element: <OutboundManagement />,
@@ -133,7 +142,7 @@ export const router = createBrowserRouter([
               },
               { path: ROUTES.ARTIST_MESSAGES, element: <Chat /> },
               { path: ROUTES.ARTIST_PROFILE, element: <PartnerProfile /> },
-              { path: ROUTES.ARTIST_NOTICES, element: <div>작가 공지</div> },
+              { path: ROUTES.ARTIST_NOTICES, element: <PartnerNotice /> },
               { path: ROUTES.ARTIST_NOTICE_DETAIL, element: <PartnerNotice /> },
               { path: ROUTES.ARTIST_SETTINGS, element: <ArtistSettingPage /> },
             ],
