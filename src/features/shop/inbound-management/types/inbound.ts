@@ -51,6 +51,7 @@ export type InboundRecord = {
 export type ArtistListProps = {
   artists: InboundArtist[];
   selectedId: number | null;
+  isLoading: boolean;
   onRowClick: (artist: InboundArtist) => void;
   onInboundAllView: (artistId: number) => void;
   onInboundRecentView: (artistId: number) => void;
@@ -59,6 +60,8 @@ export type ArtistListProps = {
 
 export type InboundMemoProps = {
   memo: string;
+  isDisabled: boolean;
+  isSaving: boolean;
   onChange: (value: string) => void;
   onSave: () => void;
   onDelete: () => void;
@@ -67,5 +70,57 @@ export type InboundMemoProps = {
 export type InboundRecordListProps = {
   records: InboundRecord[];
   isRecentMode: boolean;
-  onStockSave: (stocks: Record<number, number>) => void;
+  isLoading: boolean;
+  onStockSave: (stocks: Record<number, number>) => Promise<void>;
+};
+
+export type RawInventoryItem = {
+  contractId: number;
+  artistImageUrl: string;
+  artistName: string;
+  specialty: string;
+  recentStockedAt: string | null;
+  inboundConfirmed: boolean;
+};
+
+export type RawContractProduct = {
+  contractProductId: number;
+  totalQuantity: number;
+  productImageUrl: string;
+  productName: string;
+  sellingPrice: number;
+  stockQuantity: number;
+  commissionType: 'RATE' | 'FIXED_AMOUNT';
+  commissionValue: number;
+  marginAmount: number;
+  unitSettlementAmount: number;
+  artistName: string;
+  recentStockedAt: string | null;
+};
+
+export type RawContractProductsData = {
+  contractId: number;
+  artistName: string;
+  memo: string;
+  items: RawContractProduct[];
+};
+
+export type ContractProductsResult = {
+  memo: string;
+  records: InboundRecord[];
+};
+
+export type StockMovementRequest = {
+  contractId: number;
+  contractProductId: number;
+  movementType:
+    | 'INBOUND'
+    | 'ADJUSTMENT_INCREASE'
+    | 'ADJUSTMENT_DECREASE'
+    | 'SALE_DECREASE'
+    | 'RETURN_INCREASE'
+    | 'CANCEL_RESTORE';
+  quantity: number;
+  occurredAt: string;
+  memo?: string;
 };

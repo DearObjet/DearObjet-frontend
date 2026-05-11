@@ -4,6 +4,8 @@ import type { InboundMemoProps } from '../types/inbound';
 
 export const InboundMemo = ({
   memo,
+  isDisabled,
+  isSaving,
   onChange,
   onSave,
   onDelete,
@@ -17,12 +19,14 @@ export const InboundMemo = ({
             variant="secondaryLight"
             className="px-4 py-2 text-xs"
             label="삭제"
+            disabled={isDisabled || isSaving}
             onClick={onDelete}
           />
           <Button
             variant="secondaryDark"
             className="px-4 py-2 text-xs"
-            label="저장"
+            label={isSaving ? '저장 중...' : '저장'}
+            disabled={isDisabled || isSaving}
             onClick={onSave}
           />
         </div>
@@ -32,10 +36,15 @@ export const InboundMemo = ({
       </label>
       <textarea
         id="inbound-memo"
-        className="mt-4 flex-1 resize-none text-sm leading-relaxed text-gray-700 outline-none placeholder:text-gray-400"
+        className="mt-4 flex-1 resize-none text-sm leading-relaxed text-gray-700 outline-none placeholder:text-gray-400 disabled:cursor-not-allowed disabled:text-gray-400"
         value={memo}
+        disabled={isDisabled}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="작가를 선택하면 메모를 입력할 수 있습니다."
+        placeholder={
+          isDisabled
+            ? '작가를 선택하면 메모를 입력할 수 있습니다.'
+            : '메모를 입력해주세요.'
+        }
       />
     </section>
   );

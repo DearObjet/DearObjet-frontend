@@ -1,5 +1,6 @@
-import { useState, useMemo, type ChangeEvent } from 'react';
+import { useState, useMemo, useEffect, type ChangeEvent } from 'react';
 import { ArrowUp, ArrowDown, ChevronsUpDown, Search } from 'lucide-react';
+import * as XLSX from 'xlsx';
 
 import { Button } from '../../../../shared/components/ui';
 
@@ -23,6 +24,7 @@ const SortIcon = ({ column, sortKey, sortOrder }: RecordSortIconProps) => {
 
 export const InboundRecordList = ({
   records,
+  isLoading,
   isRecentMode,
   onStockSave,
 }: InboundRecordListProps) => {
@@ -33,6 +35,7 @@ export const InboundRecordList = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [sortKey, setSortKey] = useState<RecordSortKey>('lastInboundDate');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleSortChange = (key: RecordSortKey) => {
     if (sortKey === key) {
@@ -54,22 +57,23 @@ export const InboundRecordList = ({
   }, [records, searchQuery]);
 
   const sortedRecords = useMemo(() => {
+    const comparators: Record<
+      RecordSortKey,
+      (a: InboundRecord, b: InboundRecord) => number
+    > = {
+      productName: (a, b) => a.productName.localeCompare(b.productName, 'ko'),
+      price: (a, b) => a.price - b.price,
+      stock: (a, b) => a.stock - b.stock,
+      commission: (a, b) => a.commissionRate - b.commissionRate,
+      marginAmount: (a, b) => a.marginAmount - b.marginAmount,
+      settlementPerUnit: (a, b) => a.settlementPerUnit - b.settlementPerUnit,
+      artistName: (a, b) => a.artistName.localeCompare(b.artistName, 'ko'),
+      lastInboundDate: (a, b) =>
+        a.lastInboundDate.localeCompare(b.lastInboundDate),
+    };
+
     return [...filteredRecords].sort((a, b) => {
-      let comparison = 0;
-      if (sortKey === 'productName')
-        comparison = a.productName.localeCompare(b.productName, 'ko');
-      else if (sortKey === 'price') comparison = a.price - b.price;
-      else if (sortKey === 'stock') comparison = a.stock - b.stock;
-      else if (sortKey === 'commission')
-        comparison = a.commissionRate - b.commissionRate;
-      else if (sortKey === 'marginAmount')
-        comparison = a.marginAmount - b.marginAmount;
-      else if (sortKey === 'settlementPerUnit')
-        comparison = a.settlementPerUnit - b.settlementPerUnit;
-      else if (sortKey === 'artistName')
-        comparison = a.artistName.localeCompare(b.artistName, 'ko');
-      else if (sortKey === 'lastInboundDate')
-        comparison = a.lastInboundDate.localeCompare(b.lastInboundDate);
+      const comparison = comparators[sortKey](a, b);
       return sortOrder === 'asc' ? comparison : -comparison;
     });
   }, [filteredRecords, sortKey, sortOrder]);
@@ -100,9 +104,14 @@ export const InboundRecordList = ({
     setPendingStocks((prev) => ({ ...prev, [id]: Math.max(0, value) }));
   };
 
-  const handleSave = () => {
-    onStockSave(pendingStocks);
-    setPendingStocks({});
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await onStockSave(pendingStocks);
+      setPendingStocks({});
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleReset = () => {
@@ -110,31 +119,69 @@ export const InboundRecordList = ({
   };
 
   const handleExcelDownload = () => {
-    alert('엑셀 다운로드 기능은 준비 중입니다.');
+    const selectedRecords = sortedRecords.filter((r) => checkedIds.has(r.id));
+
+    if (selectedRecords.length === 0) {
+      alert('다운로드할 항목을 선택해주세요.');
+      return;
+    }
+
+    const excelData = selectedRecords.map((record) => ({
+      상품명: record.productName,
+      판매가: record.price,
+      재고: record.stock,
+      수수료: record.commission,
+      마진금액: record.marginAmount,
+      '개당 정산금액': record.settlementPerUnit,
+      작가: record.artistName,
+      최근입고일: record.lastInboundDate,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    worksheet['!cols'] = [
+      { wch: 30 }, // 상품명
+      { wch: 12 }, // 판매가
+      { wch: 8 }, // 재고
+      { wch: 8 }, // 수수료
+      { wch: 12 }, // 마진금액
+      { wch: 15 }, // 개당 정산금액
+      { wch: 15 }, // 작가
+      { wch: 12 }, // 최근입고일
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, '전체입고');
+
+    const today = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(workbook, `전체입고_${today}.xlsx`);
   };
 
-  const colSpanCount = isRecentMode ? 8 : 10;
+  const colSpanCount = 10;
+
+  useEffect(() => {
+    setPendingStocks({});
+  }, [records]);
 
   return (
     <section className="flex flex-1 flex-col overflow-hidden rounded-xl bg-white px-6 pb-5 pt-4">
       <header className="flex shrink-0 items-center justify-between border-b pb-3">
         <h2 className="font-bold">
           {isRecentMode ? '최근입고 리스트' : '전체입고'}
-          {!isRecentMode && records.length > 0 && (
+          {records.length > 0 && (
             <span className="ml-1 font-normal text-blue-500">
               {records.length}
             </span>
           )}
         </h2>
         <div className="flex items-center gap-2">
-          {!isRecentMode && (
-            <Button
-              variant="secondaryDark"
-              className="shrink-0 px-4 py-2 text-xs"
-              label="엑셀로 내려받기"
-              onClick={handleExcelDownload}
-            />
-          )}
+          <Button
+            variant="secondaryDark"
+            className="shrink-0 px-4 py-2 text-xs"
+            label="엑셀로 내려받기"
+            onClick={handleExcelDownload}
+          />
+
           <div className="relative flex items-center">
             <Search
               className="absolute left-2.5 h-3.5 w-3.5 text-gray-400"
@@ -143,12 +190,12 @@ export const InboundRecordList = ({
             <input
               type="text"
               className="w-52 rounded-md border border-gray-300 py-2 pl-8 pr-3 text-xs outline-none focus:ring-1 focus:ring-gray-400"
-              placeholder="상품명, 작가명 검색"
+              placeholder="상품명 검색"
               value={searchQuery}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setSearchQuery(e.target.value)
               }
-              aria-label="상품명, 작가명 검색"
+              aria-label="상품명 검색"
             />
           </div>
         </div>
@@ -157,20 +204,19 @@ export const InboundRecordList = ({
       <table className="w-full table-fixed text-sm">
         <thead className="block w-full">
           <tr className="table w-full border-b text-center text-gray-500">
-            {!isRecentMode && (
-              <th className="w-[4%] py-3" scope="col">
-                <div className="flex items-center justify-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 checked:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-40"
-                    checked={isAllChecked}
-                    onChange={(e) => handleCheckAll(e.target.checked)}
-                    disabled={sortedRecords.length === 0}
-                    aria-label="전체 선택"
-                  />
-                </div>
-              </th>
-            )}
+            <th className="w-[4%] py-3" scope="col">
+              <div className="flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 checked:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-40"
+                  checked={isAllChecked}
+                  onChange={(e) => handleCheckAll(e.target.checked)}
+                  disabled={sortedRecords.length === 0}
+                  aria-label="전체 선택"
+                />
+              </div>
+            </th>
+
             <th className="w-[6%] py-3" scope="col" />
             <th className="w-[20%] py-3" scope="col">
               <button
@@ -202,23 +248,22 @@ export const InboundRecordList = ({
                 />
               </button>
             </th>
-            {!isRecentMode && (
-              <th className="w-[9%] py-3" scope="col">
-                <button
-                  type="button"
-                  className="mx-auto flex items-center gap-1"
-                  onClick={() => handleSortChange('stock')}
-                  aria-label="재고 정렬"
-                >
-                  재고
-                  <SortIcon
-                    column="stock"
-                    sortKey={sortKey}
-                    sortOrder={sortOrder}
-                  />
-                </button>
-              </th>
-            )}
+            <th className="w-[9%] py-3" scope="col">
+              <button
+                type="button"
+                className="mx-auto flex items-center gap-1"
+                onClick={() => handleSortChange('stock')}
+                aria-label="재고 정렬"
+              >
+                재고
+                <SortIcon
+                  column="stock"
+                  sortKey={sortKey}
+                  sortOrder={sortOrder}
+                />
+              </button>
+            </th>
+
             <th className="w-[9%] py-3" scope="col">
               <button
                 type="button"
@@ -304,7 +349,16 @@ export const InboundRecordList = ({
             scrollbarGutter: 'stable',
           }}
         >
-          {records.length === 0 ? (
+          {isLoading ? (
+            <tr className="table w-full">
+              <td
+                colSpan={colSpanCount}
+                className="py-10 text-center text-gray-400"
+              >
+                불러오는 중...
+              </td>
+            </tr>
+          ) : records.length === 0 ? (
             <tr className="table w-full">
               <td
                 colSpan={colSpanCount}
@@ -332,21 +386,18 @@ export const InboundRecordList = ({
                   !isRecentMode && checkedIds.has(record.id) ? 'bg-gray-50' : ''
                 }`}
               >
-                {!isRecentMode && (
-                  <td className="w-[4%] py-2">
-                    <div className="flex items-center justify-center">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 checked:bg-gray-900"
-                        checked={checkedIds.has(record.id)}
-                        onChange={(e) =>
-                          handleCheck(record.id, e.target.checked)
-                        }
-                        aria-label={`${record.productName} 선택`}
-                      />
-                    </div>
-                  </td>
-                )}
+                <td className="w-[4%] py-2">
+                  <div className="flex items-center justify-center">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 checked:bg-gray-900"
+                      checked={checkedIds.has(record.id)}
+                      onChange={(e) => handleCheck(record.id, e.target.checked)}
+                      aria-label={`${record.productName} 선택`}
+                    />
+                  </div>
+                </td>
+
                 <td className="w-[6%] px-2 py-2">
                   {record.imageUrl ? (
                     <img
@@ -367,7 +418,7 @@ export const InboundRecordList = ({
                 <td className="w-[10%] py-2">
                   {record.price.toLocaleString()}원
                 </td>
-                {!isRecentMode && (
+                {!isRecentMode ? (
                   <td className="w-[9%] py-2">
                     <input
                       type="number"
@@ -380,6 +431,8 @@ export const InboundRecordList = ({
                       aria-label={`${record.productName} 재고 수량`}
                     />
                   </td>
+                ) : (
+                  <td className="w-[9%] py-2">{record.stock}</td>
                 )}
                 <td className="w-[9%] py-2">{record.commission}</td>
                 <td className="w-[11%] py-2">
@@ -404,12 +457,14 @@ export const InboundRecordList = ({
             variant="secondaryLight"
             className="px-5 py-2 text-xs"
             label="되돌리기"
+            disabled={isSaving}
             onClick={handleReset}
           />
           <Button
             variant="secondaryDark"
             className="px-5 py-2 text-xs"
-            label="저장하기"
+            label={isSaving ? '저장 중...' : '저장하기'}
+            disabled={isSaving}
             onClick={handleSave}
           />
         </footer>

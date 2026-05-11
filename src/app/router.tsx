@@ -23,6 +23,7 @@ import { ShopManagement } from '../features/shop/shop-management';
 import { ClassReservation } from '../features/shop/class-reservation-management/pages/class-reservation';
 import { HomePage } from '../pages/home/home-page';
 import { Map } from '../features/map';
+import { Post } from '../features/post';
 import { MyPage } from '../features/my-page/pages/my-page';
 import { ShopSettingPage } from '../features/shop/setting/pages/shop-setting-page';
 import { ArtistSettingPage } from '../features/artist/setting/pages/artist-setting-page';
@@ -54,7 +55,7 @@ export const router = createBrowserRouter([
     children: [
       { path: ROUTES.HOME, element: <HomePage /> },
       { path: ROUTES.NOTICES, element: <CustomerNotice /> },
-      { path: ROUTES.POSTS, element: <div>포스트</div> },
+      { path: ROUTES.POSTS, element: <Post /> },
       { path: ROUTES.ARTISTS, element: <div>작가</div> },
 
       // customer만 접근 가능
