@@ -32,7 +32,7 @@ import { OutboundManagement } from '../features/artist/outbound-management';
 import { InboundManagement } from '../features/shop/inbound-management';
 import { ArtistTenantManagement } from '../features/shop/tenant-management/pages/artist-tenant-management';
 import { ShopTenantManagement } from '../features/artist/tenant-management/pages/shop-tenant-management';
-import { ContractManagement } from '../features/shop/contract-management/contract-management';
+import { ContractManagement } from '../features/shop/contract-management/pages/contract-management';
 
 export const router = createBrowserRouter([
   // 비로그인 전용

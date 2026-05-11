@@ -13,7 +13,7 @@ import {
   useGetArtistContractsQuery,
   useGetArtistSuggestionsQuery,
 } from '../api/artist-tenant-api';
-import { ContractDocument } from '../constants/contract-document';
+import { ContractDocument } from '../components/contract-document';
 
 export const ArtistTenantManagement = () => {
   const userId = useAppSelector((state) => state.auth.user?.userId);
