@@ -12,7 +12,7 @@ interface PostImage {
   alt: string;
 }
 
-interface PostProps {
+interface UserPostListProps {
   userName?: string;
   userImage?: string;
   userId?: string;
@@ -32,7 +32,7 @@ export const UserPostList = ({
   showSuggest = false,
   onSuggest,
   hasPost = true,
-}: PostProps) => {
+}: UserPostListProps) => {
   const userRole = useSelector((state: RootState) => state.auth.user?.role);
   const isShop = userRole === USER_ROLE.SHOP;
 
