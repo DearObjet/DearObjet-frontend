@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import type { RootState } from '../../../app/store';
 
+import { useGetBusinessProfileQuery } from '../../my-page/api/my-page-api';
 import { Button, Input } from '../../../shared/components/ui';
 
 import { CONTRACT_STATIC_TEXT } from '../../shop/tenant-management/constants/artist-tenant-constants';
@@ -11,14 +12,88 @@ const c = CONTRACT_STATIC_TEXT;
 
 type TemplateMode = 'new' | 'existing' | null;
 
+const GAP_FIELD_MAP: Record<string, string> = {
+  상호명: 'businessName',
+  대표자: 'ownerName',
+  사업자등록번호: 'businessNumber',
+  주소: 'businessAddress',
+  연락처: 'phoneNumber',
+};
+
+const EUL_FIELD_MAP: Record<string, string> = {
+  '성명(작가명)': 'userName',
+  '사업자등록번호(해당 시)': 'businessNumber',
+  주소: 'businessAddress',
+  연락처: 'phoneNumber',
+};
+
+const GAP_FOOTER_FIELD_MAP: Record<string, string> = {
+  상호명: 'businessName',
+  대표자: 'ownerName',
+};
+
 export const ContractManagement = () => {
   const [mode, setMode] = useState<TemplateMode>(null);
   const [hasInput, setHasInput] = useState(false);
   const [hasEdit, setHasEdit] = useState(false);
+  const [gapValues, setGapValues] = useState<Record<string, string>>({});
+  const [eulValues, setEulValues] = useState<Record<string, string>>({});
+  const [gapFooterValues, setGapFooterValues] = useState<
+    Record<string, string>
+  >({});
+  const [eulFooterValue, setEulFooterValue] = useState('');
+  const [contractStartDate, setContractStartDate] = useState('');
+  const [contractEndDate, setContractEndDate] = useState('');
+  const [contractDate, setContractDate] = useState('');
+  const [commissionValue, setCommissionValue] = useState('');
+  const [settlementValues, setSettlementValues] = useState<
+    Record<string, string>
+  >({});
+  const [bankValues, setBankValues] = useState<Record<string, string>>({});
+
   const role = useSelector((state: RootState) => state.auth.user?.role);
   const isShop = role === 'SHOP';
 
-  const handleChange = () => {
+  const { data: businessProfile } = useGetBusinessProfileQuery();
+
+  useEffect(() => {
+    if (!businessProfile) return;
+
+    if (isShop) {
+      const newGapValues: Record<string, string> = {};
+      c.article1.gap.fields.forEach((field) => {
+        const key = GAP_FIELD_MAP[field];
+        if (key)
+          newGapValues[field] =
+            (businessProfile[key as keyof typeof businessProfile] as string) ??
+            '';
+      });
+      setGapValues(newGapValues);
+
+      const newFooterValues: Record<string, string> = {};
+      c.footer.signatureFields.gap.fields.forEach((field) => {
+        const key = GAP_FOOTER_FIELD_MAP[field];
+        if (key)
+          newFooterValues[field] =
+            (businessProfile[key as keyof typeof businessProfile] as string) ??
+            '';
+      });
+      setGapFooterValues(newFooterValues);
+    } else {
+      const newEulValues: Record<string, string> = {};
+      c.article1.eul.fields.forEach((field) => {
+        const key = EUL_FIELD_MAP[field];
+        if (key)
+          newEulValues[field] =
+            (businessProfile[key as keyof typeof businessProfile] as string) ??
+            '';
+      });
+      setEulValues(newEulValues);
+      setEulFooterValue(businessProfile.userName ?? '');
+    }
+  }, [businessProfile, isShop]);
+
+  const triggerChange = () => {
     if (mode === 'new') setHasInput(true);
     if (mode === 'existing') setHasEdit(true);
   };
@@ -69,7 +144,14 @@ export const ContractManagement = () => {
                   size="small"
                   className="flex-1"
                   placeholder={field === '상호명' ? '[소품샵명]' : ''}
-                  onChange={handleChange}
+                  value={gapValues[field] ?? ''}
+                  onChange={(e) => {
+                    setGapValues((prev) => ({
+                      ...prev,
+                      [field]: e.target.value,
+                    }));
+                    triggerChange();
+                  }}
                   disabled={!isShop}
                 />
               </div>
@@ -85,7 +167,14 @@ export const ContractManagement = () => {
                   placeholder={
                     field === '성명(작가명)' ? '[작가명 또는 브랜드명]' : ''
                   }
-                  onChange={handleChange}
+                  value={eulValues[field] ?? ''}
+                  onChange={(e) => {
+                    setEulValues((prev) => ({
+                      ...prev,
+                      [field]: e.target.value,
+                    }));
+                    triggerChange();
+                  }}
                   disabled={isShop}
                 />
               </div>
@@ -100,7 +189,11 @@ export const ContractManagement = () => {
               <Input
                 size="small"
                 placeholder="[계약 시작일]"
-                onChange={handleChange}
+                value={contractStartDate}
+                onChange={(e) => {
+                  setContractStartDate(e.target.value);
+                  triggerChange();
+                }}
                 disabled={!isShop}
               />
             </div>
@@ -109,7 +202,11 @@ export const ContractManagement = () => {
               <Input
                 size="small"
                 placeholder="[계약 종료일]"
-                onChange={handleChange}
+                value={contractEndDate}
+                onChange={(e) => {
+                  setContractEndDate(e.target.value);
+                  triggerChange();
+                }}
                 disabled={!isShop}
               />
             </div>
@@ -122,7 +219,11 @@ export const ContractManagement = () => {
                 size="small"
                 className="w-24"
                 placeholder="[수수료율]"
-                onChange={handleChange}
+                value={commissionValue}
+                onChange={(e) => {
+                  setCommissionValue(e.target.value);
+                  triggerChange();
+                }}
                 disabled={!isShop}
               />
               <span className="shrink-0">{c.article5.content1Suffix}</span>
@@ -134,7 +235,14 @@ export const ContractManagement = () => {
                 <Input
                   size="small"
                   className="flex-1"
-                  onChange={handleChange}
+                  value={settlementValues[field] ?? ''}
+                  onChange={(e) => {
+                    setSettlementValues((prev) => ({
+                      ...prev,
+                      [field]: e.target.value,
+                    }));
+                    triggerChange();
+                  }}
                   disabled={!isShop}
                 />
               </div>
@@ -145,7 +253,14 @@ export const ContractManagement = () => {
                 <Input
                   size="small"
                   className="flex-1"
-                  onChange={handleChange}
+                  value={bankValues[field] ?? ''}
+                  onChange={(e) => {
+                    setBankValues((prev) => ({
+                      ...prev,
+                      [field]: e.target.value,
+                    }));
+                    triggerChange();
+                  }}
                   disabled={!isShop}
                 />
               </div>
@@ -190,7 +305,11 @@ export const ContractManagement = () => {
                 <Input
                   size="small"
                   placeholder="[계약일]"
-                  onChange={handleChange}
+                  value={contractDate}
+                  onChange={(e) => {
+                    setContractDate(e.target.value);
+                    triggerChange();
+                  }}
                   disabled={!isShop}
                 />
               </div>
@@ -208,7 +327,14 @@ export const ContractManagement = () => {
                     size="small"
                     className="flex-1"
                     placeholder={field === '상호명' ? '[소품샵명]' : ''}
-                    onChange={handleChange}
+                    value={gapFooterValues[field] ?? ''}
+                    onChange={(e) => {
+                      setGapFooterValues((prev) => ({
+                        ...prev,
+                        [field]: e.target.value,
+                      }));
+                      triggerChange();
+                    }}
                     disabled={!isShop}
                   />
                 </div>
@@ -225,7 +351,11 @@ export const ContractManagement = () => {
                   size="small"
                   className="flex-1"
                   placeholder="[작가명 또는 브랜드명]"
-                  onChange={handleChange}
+                  value={eulFooterValue}
+                  onChange={(e) => {
+                    setEulFooterValue(e.target.value);
+                    triggerChange();
+                  }}
                   disabled={isShop}
                 />
                 <span>(서명)</span>
