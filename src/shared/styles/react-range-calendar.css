@@ -1,0 +1,158 @@
+.react-calendar--range {
+  width: 100%;
+  height: 100%;
+  border: none;
+  font-family: inherit;
+}
+
+/* 네비게이션 */
+.react-calendar--range .react-calendar__navigation {
+  display: none;
+}
+
+/* 요일 헤더 */
+.react-calendar--range .react-calendar__month-view__weekdays {
+  background-color: #eeeeee;
+  text-align: center;
+  padding: 0 12px;
+}
+
+.react-calendar--range .react-calendar__month-view__weekdays__weekday {
+  font-weight: 400;
+  color: #9e9e9e;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  width: 48px;
+  height: 48px;
+}
+
+.react-calendar--range .react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+}
+
+/* 날짜 타일 컨테이너 */
+.react-calendar--range .react-calendar__month-view__days {
+  padding: 0 12px;
+  background-color: #f7f7f7;
+}
+
+/* 날짜 타일 기본 */
+.react-calendar--range .react-calendar__tile {
+  background: none;
+  border: none;
+  color: #212121;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  width: 48px;
+  height: 48px;
+}
+
+.react-calendar--range .react-calendar__tile abbr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  z-index: 1;
+  position: relative;
+}
+
+.react-calendar--range .react-calendar__tile abbr:hover {
+  background-color: #e3e3e3;
+  border-radius: 50%;
+}
+
+.react-calendar--range .react-calendar__tile--active abbr {
+  background-color: transparent;
+  color: #212121;
+  border-radius: 50%;
+  font-weight: normal;
+  width: 48px;
+  height: 48px;
+}
+
+/* 오늘 날짜 */
+.react-calendar--range .react-calendar__tile--now {
+  background-color: transparent;
+  color: rgb(212, 43, 43);
+  font-weight: 900;
+}
+
+/* 비활성화 */
+.react-calendar--range .react-calendar__tile:disabled {
+  color: #ddd;
+  cursor: not-allowed;
+}
+
+/* 이웃 달 날짜 숨기기 */
+.react-calendar--range
+  .react-calendar__month-view__days__day--neighboringMonth {
+  visibility: hidden;
+}
+
+/* 범위 안 전체 */
+.react-calendar--range .react-calendar__tile--range {
+  background-color: #e3e3e3;
+}
+
+/* 사이 날짜 */
+.react-calendar--range .react-calendar__tile--rangeBetween abbr {
+  background-color: transparent;
+  color: #212121;
+  font-weight: normal;
+  border-radius: 0;
+}
+
+.react-calendar--range .react-calendar__tile--rangeBetween abbr:hover {
+  background-color: #e3e3e3;
+  border-radius: 50%;
+}
+
+/* 시작일 */
+.react-calendar--range .react-calendar__tile--rangeStart {
+  background: linear-gradient(to right, #f7f7f7 50%, #e3e3e3 50%);
+}
+
+.react-calendar--range .react-calendar__tile--rangeStart abbr {
+  background-color: #212121;
+  color: white;
+  font-weight: 900;
+  border-radius: 50%;
+}
+
+.react-calendar--range .react-calendar__tile--rangeStart abbr:hover {
+  background-color: #212121;
+  border-radius: 50%;
+}
+
+/* 종료일 */
+.react-calendar--range .react-calendar__tile--rangeEnd {
+  background: linear-gradient(to left, #f7f7f7 50%, #e3e3e3 50%);
+}
+
+.react-calendar--range .react-calendar__tile--rangeEnd abbr {
+  background-color: #212121;
+  color: white;
+  font-weight: 900;
+  border-radius: 50%;
+}
+
+.react-calendar--range .react-calendar__tile--rangeEnd abbr:hover {
+  background-color: #212121;
+  border-radius: 50%;
+}
+
+/* 시작일 = 종료일 (하루만 선택): 띠 없이 원형만 */
+.react-calendar--range
+  .react-calendar__tile--rangeStart.react-calendar__tile--rangeEnd {
+  background: none;
+}
