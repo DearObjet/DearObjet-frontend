@@ -17,12 +17,12 @@ export const PostViewModal = ({
 }: PostViewModalProps) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const isAuthor = user.userId === post.userId;
+  const isAuthor = user !== null && user.userId === post.userId;
   const imageUrl = post.imageUrls[0] ?? null;
 
   const postAuthor = {
     name: post.userName,
-    profileUrl: post.authorProfileUrl,
+    profileUrl: post.profileUrl,
   };
 
   const handleDelete = () => {

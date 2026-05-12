@@ -1,6 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 
 import { createBaseQuery } from '../../../shared/constants';
+import type { ApiResponse } from '../../../shared/types';
 
 import type { PostDetail, PostListResponse } from '../types/post-type';
 
@@ -11,6 +12,7 @@ export const postApi = createApi({
   endpoints: (builder) => ({
     getAllPosts: builder.query<PostListResponse, number>({
       query: (page) => `/api/v1/posts/all?page=${page}`,
+      transformResponse: (res: ApiResponse<PostListResponse>) => res.data,
       providesTags: ['Post'],
     }),
 
@@ -20,11 +22,13 @@ export const postApi = createApi({
     >({
       query: ({ userId, page }) =>
         `/api/v1/posts?userId=${userId}&page=${page}`,
+      transformResponse: (res: ApiResponse<PostListResponse>) => res.data,
       providesTags: ['Post'],
     }),
 
     getPost: builder.query<PostDetail, number>({
-      query: (postId) => `/posts/${postId}`,
+      query: (postId) => `/api/v1/posts/${postId}`,
+      transformResponse: (res: ApiResponse<PostDetail>) => res.data,
     }),
 
     createPost: builder.mutation<PostDetail, FormData>({
@@ -33,6 +37,7 @@ export const postApi = createApi({
         method: 'POST',
         body: formData,
       }),
+      transformResponse: (res: ApiResponse<PostDetail>) => res.data,
       invalidatesTags: ['Post'],
     }),
 
@@ -41,7 +46,6 @@ export const postApi = createApi({
         url: `/api/v1/posts/${postId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Post'],
     }),
 
     updatePost: builder.mutation<
@@ -53,6 +57,7 @@ export const postApi = createApi({
         method: 'PUT',
         body: formData,
       }),
+      transformResponse: (res: ApiResponse<PostDetail>) => res.data,
       invalidatesTags: ['Post'],
     }),
   }),

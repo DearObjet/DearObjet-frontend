@@ -38,25 +38,36 @@ export const Post = () => {
   );
 
   const handlePostClick = async (postId: number) => {
-    const detail = await triggerGetPost(postId).unwrap();
-    setSelectedPost(detail);
+    try {
+      const detail = await triggerGetPost(postId).unwrap();
+      setSelectedPost(detail);
+    } catch {
+      alert('다시 시도해주세요.');
+    }
   };
 
   const handleSubmitPost = async (image: File, content: string) => {
-    const formData = new FormData();
-    formData.append(
-      'request',
-      new Blob([JSON.stringify({ content })], { type: 'application/json' })
-    );
-    formData.append('images', image);
-
-    await createPost(formData).unwrap();
-    setShowCreate(false);
+    try {
+      const formData = new FormData();
+      formData.append(
+        'request',
+        new Blob([JSON.stringify({ content })], { type: 'application/json' })
+      );
+      formData.append('images', image);
+      await createPost(formData).unwrap();
+      setShowCreate(false);
+    } catch {
+      alert('다시 시도해주세요.');
+    }
   };
 
   const handleDeletePost = async (postId: number) => {
-    await deletePost(postId).unwrap();
-    setSelectedPost(null);
+    try {
+      await deletePost(postId).unwrap();
+      setSelectedPost(null);
+    } catch {
+      alert('다시 시도해주세요.');
+    }
   };
 
   return (
@@ -77,7 +88,7 @@ export const Post = () => {
         />
       )}
 
-      {selectedPost && user && (
+      {selectedPost && (
         <PostViewModal
           post={selectedPost}
           user={user}
