@@ -1,4 +1,5 @@
-import { useState, ChangeEvent } from 'react';
+import { useState } from 'react';
+import type { ChangeEvent } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 
 import { useGetFestivalsQuery } from '../api/festival-api';
