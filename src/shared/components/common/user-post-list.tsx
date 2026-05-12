@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 
 import type { RootState } from '../../../app/store';
 
-import { USER_ROLE } from '../../../shared/constants';
+import { USER_ROLE } from '../../constants';
 
 import { Button } from '../ui';
 import { UserProfile } from '../layout/aside/user-profile';
@@ -22,7 +22,7 @@ interface PostProps {
   hasPost?: boolean;
 }
 
-export const Post = ({
+export const UserPostList = ({
   userName = '',
   userImage = '',
   images = Array.from({ length: 9 }, (_, i) => ({

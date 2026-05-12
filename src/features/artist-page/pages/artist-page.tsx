@@ -10,7 +10,7 @@ import { ARTIST_PAGE_SIZE } from '../constants/artist-page-constants';
 import { ROUTES } from '../../../shared/constants';
 
 import { UserProfile } from '../../../shared/components/layout/aside/user-profile';
-import { Post } from '../../../shared/components/common/post';
+import { UserPostList } from '../../../shared/components/common/user-post-list';
 
 const FIXED_SEED = Math.floor(Math.random() * 10000);
 
@@ -84,7 +84,7 @@ export const ArtistPage = () => {
         {selectedArtist && (
           <section className="w-[33.5625rem] shrink-0">
             <h4 className="hidden">작가의 포스터</h4>
-            <Post
+            <UserPostList
               userName={selectedArtist.name}
               userId={String(selectedArtist.artistId)}
               userImage={selectedArtist.profileUrl}
