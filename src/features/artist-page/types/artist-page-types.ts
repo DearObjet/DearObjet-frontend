@@ -1,5 +1,6 @@
 export interface Artist {
   artistId: number;
+  userId: number;
   profileUrl: string;
   name: string;
 }
