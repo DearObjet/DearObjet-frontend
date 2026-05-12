@@ -23,6 +23,7 @@ import { inboundApi } from '../features/shop/inbound-management/api/inbound-api'
 import { outboundApi } from '../features/artist/outbound-management/api/outbound-api';
 import { artistTenantApi } from '../features/shop/tenant-management/api/artist-tenant-api';
 import { artistPageApi } from '../features/artist-page/api/artist-page-api';
+import { festivalApi } from '../features/festival/api/festival-api';
 
 export const store = configureStore({
   reducer: {
@@ -49,6 +50,7 @@ export const store = configureStore({
     [classReservationApi.reducerPath]: classReservationApi.reducer,
     [artistTenantApi.reducerPath]: artistTenantApi.reducer,
     [artistPageApi.reducerPath]: artistPageApi.reducer,
+    [festivalApi.reducerPath]: festivalApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -69,7 +71,8 @@ export const store = configureStore({
       .concat(inboundApi.middleware)
       .concat(outboundApi.middleware)
       .concat(artistTenantApi.middleware)
-      .concat(artistPageApi.middleware),
+      .concat(artistPageApi.middleware)
+      .concat(festivalApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

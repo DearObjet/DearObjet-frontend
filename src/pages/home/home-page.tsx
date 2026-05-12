@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 
 import { useAppSelector } from '../../app/hooks';
 import { Button } from '../../shared/components/ui';
 import { API_BASE_URL } from '../../shared/constants';
 import { useGetNoticesQuery } from '../../features/notice/api/notice-api';
 import { CATEGORY_LABEL } from '../../features/notice/constants/notice-constants';
+import { FestivalSection } from '../../features/festival/components/festival-section';
 
 import KakaoLogo from '../../assets/kakao-logo.svg';
 import CatImg from '../../assets/cat.png';
@@ -17,12 +18,6 @@ export const HomePage = () => {
   const [currentNoticePage, setCurrentNoticePage] = useState(1);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const navigate = useNavigate();
-
-  const regions = [
-    { value: 'seoul', label: '서울' },
-    { value: 'busan', label: '부산' },
-    { value: 'incheon', label: '인천' },
-  ];
 
   const { data: noticeData } = useGetNoticesQuery({
     target: 'USER',
@@ -115,29 +110,7 @@ export const HomePage = () => {
           )}
         </section>
 
-        <section className="flex flex-col gap-3">
-          <h2 className="sr-only">축제</h2>
-          <div className="flex items-center rounded-sm border border-gray-300 px-7 py-2">
-            <p className="pr-8 text-xs">지역</p>
-            <div className="relative">
-              <select className="appearance-none pr-6 text-sm font-extrabold">
-                {regions.map((region) => (
-                  <option key={region.value} value={region.value}>
-                    {region.label}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2" />
-            </div>
-          </div>
-
-          <div className="h-[15.75rem] bg-gray-200" />
-
-          <div className="flex gap-10 self-center">
-            <Button variant="icon" icon={<ChevronLeft />} />
-            <Button variant="icon" icon={<ChevronRight />} />
-          </div>
-        </section>
+        <FestivalSection />
 
         <section className="flex flex-col gap-3">
           <h2>공지&이벤트</h2>
