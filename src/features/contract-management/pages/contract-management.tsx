@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
-import { Button, Input } from '../../../../shared/components/ui';
+import type { RootState } from '../../../app/store';
 
-import { CONTRACT_STATIC_TEXT } from '../../tenant-management/constants/artist-tenant-constants';
+import { Button, Input } from '../../../shared/components/ui';
+
+import { CONTRACT_STATIC_TEXT } from '../../shop/tenant-management/constants/artist-tenant-constants';
 
 const c = CONTRACT_STATIC_TEXT;
 
@@ -12,6 +15,8 @@ export const ContractManagement = () => {
   const [mode, setMode] = useState<TemplateMode>(null);
   const [hasInput, setHasInput] = useState(false);
   const [hasEdit, setHasEdit] = useState(false);
+  const role = useSelector((state: RootState) => state.auth.user?.role);
+  const isShop = role === 'SHOP';
 
   const handleChange = () => {
     if (mode === 'new') setHasInput(true);
@@ -65,6 +70,7 @@ export const ContractManagement = () => {
                   className="flex-1"
                   placeholder={field === '상호명' ? '[소품샵명]' : ''}
                   onChange={handleChange}
+                  disabled={!isShop}
                 />
               </div>
             ))}
@@ -80,6 +86,7 @@ export const ContractManagement = () => {
                     field === '성명(작가명)' ? '[작가명 또는 브랜드명]' : ''
                   }
                   onChange={handleChange}
+                  disabled={isShop}
                 />
               </div>
             ))}
@@ -94,6 +101,7 @@ export const ContractManagement = () => {
                 size="small"
                 placeholder="[계약 시작일]"
                 onChange={handleChange}
+                disabled={!isShop}
               />
             </div>
             <div className="mb-2 flex items-center gap-2 text-sm">
@@ -102,6 +110,7 @@ export const ContractManagement = () => {
                 size="small"
                 placeholder="[계약 종료일]"
                 onChange={handleChange}
+                disabled={!isShop}
               />
             </div>
             <p className="mb-6 text-sm">{c.article3.suffix}</p>
@@ -114,6 +123,7 @@ export const ContractManagement = () => {
                 className="w-24"
                 placeholder="[수수료율]"
                 onChange={handleChange}
+                disabled={!isShop}
               />
               <span className="shrink-0">{c.article5.content1Suffix}</span>
             </div>
@@ -125,6 +135,7 @@ export const ContractManagement = () => {
                   size="small"
                   className="flex-1"
                   onChange={handleChange}
+                  disabled={!isShop}
                 />
               </div>
             ))}
@@ -135,6 +146,7 @@ export const ContractManagement = () => {
                   size="small"
                   className="flex-1"
                   onChange={handleChange}
+                  disabled={!isShop}
                 />
               </div>
             ))}
@@ -179,6 +191,7 @@ export const ContractManagement = () => {
                   size="small"
                   placeholder="[계약일]"
                   onChange={handleChange}
+                  disabled={!isShop}
                 />
               </div>
 
@@ -196,6 +209,7 @@ export const ContractManagement = () => {
                     className="flex-1"
                     placeholder={field === '상호명' ? '[소품샵명]' : ''}
                     onChange={handleChange}
+                    disabled={!isShop}
                   />
                 </div>
               ))}
@@ -212,6 +226,7 @@ export const ContractManagement = () => {
                   className="flex-1"
                   placeholder="[작가명 또는 브랜드명]"
                   onChange={handleChange}
+                  disabled={isShop}
                 />
                 <span>(서명)</span>
               </div>
@@ -227,28 +242,21 @@ export const ContractManagement = () => {
       <div className="grid h-full grid-rows-2 gap-4">
         <section className="flex w-[25.125rem] flex-col overflow-hidden rounded-xl bg-white">
           <div className="flex shrink-0 items-center justify-between px-5 py-4">
-            <h3>계약서 템플릿</h3>
+            <h3>작성중인 계약서</h3>
             <div className="flex gap-2">
-              <Button
-                variant="primary"
-                size="small"
-                label="새 템플릿 만들기"
-                onClick={() => {
-                  setMode('new');
-                  setHasInput(false);
-                  setHasEdit(false);
-                }}
-              />
-              <Button
-                variant="secondaryDark"
-                size="small"
-                label="삭제"
-                onClick={() => {
-                  setMode('new');
-                  setHasInput(false);
-                  setHasEdit(false);
-                }}
-              />
+              {isShop && (
+                <Button
+                  variant="primary"
+                  size="small"
+                  label="새 계약서 작성"
+                  onClick={() => {
+                    setMode('new');
+                    setHasInput(false);
+                    setHasEdit(false);
+                  }}
+                />
+              )}
+              <Button variant="secondaryDark" size="small" label="삭제" />
             </div>
           </div>
           <div className="overflow-y-auto" />
@@ -257,17 +265,7 @@ export const ContractManagement = () => {
         <section className="flex w-[25.125rem] flex-col overflow-hidden rounded-xl bg-white">
           <div className="flex shrink-0 items-center justify-between px-5 py-4">
             <h3>완료된 계약</h3>
-
-            <Button
-              variant="secondaryDark"
-              size="small"
-              label="삭제"
-              onClick={() => {
-                setMode('new');
-                setHasInput(false);
-                setHasEdit(false);
-              }}
-            />
+            <Button variant="secondaryDark" size="small" label="삭제" />
           </div>
           <div className="overflow-y-auto" />
         </section>
