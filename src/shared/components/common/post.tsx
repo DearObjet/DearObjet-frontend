@@ -1,3 +1,9 @@
+import { useSelector } from 'react-redux';
+
+import type { RootState } from '../../../app/store';
+
+import { USER_ROLE } from '../../../shared/constants';
+
 import { Button } from '../ui';
 import { UserProfile } from '../layout/aside/user-profile';
 
@@ -27,6 +33,9 @@ export const Post = ({
   onSuggest,
   hasPost = true,
 }: PostProps) => {
+  const userRole = useSelector((state: RootState) => state.auth.user?.role);
+  const isShop = userRole === USER_ROLE.SHOP;
+
   return (
     <div className="w-[33.75rem]">
       <div className="mb-3 flex items-center justify-between">
@@ -36,7 +45,7 @@ export const Post = ({
           userImage={userImage}
           className="text-black"
         />
-        {showSuggest && (
+        {showSuggest && isShop && (
           <Button
             variant="secondaryDark"
             label="입점 제안하기"
