@@ -276,7 +276,7 @@ export const Aside = () => {
                   <Asidetab
                     label="정산내역"
                     focusable={false}
-                    onClick={handleComingSoon('정산내역')}
+                    onClick={() => handleClick(ROUTES.SHOP_SETTLEMENTS_HISTORY)}
                   />
                 </li>
               </>

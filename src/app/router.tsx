@@ -34,6 +34,7 @@ import { InboundManagement } from '../features/shop/inbound-management';
 import { ArtistTenantManagement } from '../features/shop/tenant-management/pages/artist-tenant-management';
 import { ShopTenantManagement } from '../features/artist/tenant-management/pages/shop-tenant-management';
 import { ContractManagement } from '../features/shop/contract-management/pages/contract-management';
+import { SettlementHistory } from '../features/settlement-hisotry';
 import { ArtistPage } from '../features/artist-page/pages/artist-page';
 
 export const router = createBrowserRouter([
@@ -104,7 +105,10 @@ export const router = createBrowserRouter([
               },
               { path: ROUTES.SHOP_INVENTORY, element: <InboundManagement /> },
               { path: ROUTES.SHOP_CONTRACTS, element: <ContractManagement /> },
-              { path: ROUTES.SHOP_SETTLEMENTS, element: <div>정산</div> },
+              {
+                path: ROUTES.SHOP_SETTLEMENTS_HISTORY,
+                element: <SettlementHistory />,
+              },
               { path: ROUTES.SHOP_MESSAGES, element: <Chat /> },
               { path: ROUTES.SHOP_PROFILE, element: <PartnerProfile /> },
               { path: ROUTES.SHOP_NOTICES, element: <PartnerNotice /> },
@@ -139,7 +143,7 @@ export const router = createBrowserRouter([
               { path: ROUTES.ARTIST_SETTLEMENTS, element: <div>정산</div> },
               {
                 path: ROUTES.ARTIST_SETTLEMENTS_HISTORY,
-                element: <div>정산 내역</div>,
+                element: <SettlementHistory />,
               },
               { path: ROUTES.ARTIST_MESSAGES, element: <Chat /> },
               { path: ROUTES.ARTIST_PROFILE, element: <PartnerProfile /> },
