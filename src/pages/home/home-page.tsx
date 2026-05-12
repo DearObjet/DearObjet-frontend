@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 
+import { useAppSelector } from '../../app/hooks';
 import { Button } from '../../shared/components/ui';
 import { API_BASE_URL } from '../../shared/constants';
 
 import KakaoLogo from '../../assets/kakao-logo.svg';
+import CatImg from '../../assets/cat.png';
 
 export const HomePage = () => {
   const [currentNoticePage, setCurrentNoticePage] = useState(1);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const noticesPerPage = 5;
 
   const regions = [
@@ -71,29 +74,45 @@ export const HomePage = () => {
       </div>
 
       <aside className="flex w-full flex-col gap-3 lg:w-[17.125rem] lg:shrink-0">
-        <section className="flex h-[15.0625rem] w-full flex-col justify-center gap-6 rounded-sm border border-gray-300">
-          <h2 className="sr-only">회원가입</h2>
-          <div className="flex flex-col items-center gap-5">
-            <p className="text-center text-base font-semibold">
-              지금 가입해서{' '}
-              <span className="font-extrabold">전국의 소품샵</span>을 <br />
-              <span className="font-extrabold">한눈에 확인</span>하세요!
-            </p>
+        <section className="flex h-[15.0625rem] w-full flex-col items-center justify-center gap-6 rounded-sm border border-gray-300">
+          {isAuthenticated ? (
+            <>
+              <h2 className="sr-only">이번주말 추천</h2>
+              <p className="text-base font-semibold">이번주말 ~ 어때요?</p>
+              <div className="h-[8rem] w-[8rem] overflow-hidden rounded-full bg-gray-200">
+                <img
+                  src={CatImg}
+                  alt="이번주말 추천 이미지"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="sr-only">회원가입</h2>
+              <div className="flex flex-col items-center gap-5">
+                <p className="text-center text-base font-semibold">
+                  지금 가입해서{' '}
+                  <span className="font-extrabold">전국의 소품샵</span>을 <br />
+                  <span className="font-extrabold">한눈에 확인</span>하세요!
+                </p>
 
-            <div className="relative inline-block rounded-[12.5px] border border-gray-200 bg-white px-3 py-1 shadow-[0_1px_0_0_rgba(0,0,0,0.25)] after:absolute after:left-1/2 after:top-full after:-translate-x-1/2 after:border-8 after:border-transparent after:border-t-white after:drop-shadow-[0_1px_0_rgba(0,0,0,0.25)]">
-              <p className="text-xs font-medium">
-                <span className="font-semibold">3초안에</span> 빠른 회원가입
-              </p>
-            </div>
+                <div className="relative inline-block rounded-[12.5px] border border-gray-200 bg-white px-3 py-1 shadow-[0_1px_0_0_rgba(0,0,0,0.25)] after:absolute after:left-1/2 after:top-full after:-translate-x-1/2 after:border-8 after:border-transparent after:border-t-white after:drop-shadow-[0_1px_0_rgba(0,0,0,0.25)]">
+                  <p className="text-xs font-medium">
+                    <span className="font-semibold">3초안에</span> 빠른 회원가입
+                  </p>
+                </div>
 
-            <button
-              className="flex w-[13.25rem] items-center justify-center gap-2 rounded-sm bg-[#FEE500] py-2 text-xs font-bold"
-              onClick={handleKakaoLogin}
-            >
-              카카오로 시작하기
-              <img src={KakaoLogo} alt="" aria-hidden="true" />
-            </button>
-          </div>
+                <button
+                  className="flex w-[13.25rem] items-center justify-center gap-2 rounded-sm bg-[#FEE500] py-2 text-xs font-bold"
+                  onClick={handleKakaoLogin}
+                >
+                  카카오로 시작하기
+                  <img src={KakaoLogo} alt="" aria-hidden="true" />
+                </button>
+              </div>
+            </>
+          )}
         </section>
 
         <section className="flex flex-col gap-3">
