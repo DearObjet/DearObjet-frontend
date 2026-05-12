@@ -34,7 +34,7 @@ import { InboundManagement } from '../features/shop/inbound-management';
 import { ArtistTenantManagement } from '../features/shop/tenant-management/pages/artist-tenant-management';
 import { ShopTenantManagement } from '../features/artist/tenant-management/pages/shop-tenant-management';
 import { ContractManagement } from '../features/shop/contract-management/pages/contract-management';
-import { SettlementHistory } from '../features/settlement-datail';
+import { SettlementHistory } from '../features/settlement-hisotry';
 import { ArtistPage } from '../features/artist-page/pages/artist-page';
 
 export const router = createBrowserRouter([
