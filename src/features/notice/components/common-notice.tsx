@@ -59,8 +59,7 @@ export const CommonNotice = ({
   };
 
   return (
-    <section className="flex flex-1 flex-col justify-between rounded-xl bg-white px-[3.125rem] pb-[1.6875rem] pt-10">
-      {' '}
+    <section className="flex h-[63.25rem] w-[42.0625rem] flex-col justify-between rounded-xl bg-white px-[3.125rem] pb-[1.6875rem] pt-10">
       <div className="flex flex-1 flex-col">
         <h3 className="hidden">공지사항 리스트</h3>
         <div className="mb-[2.6875rem] flex gap-4">
@@ -72,7 +71,7 @@ export const CommonNotice = ({
             >
               {category.label}
               {selectedCategory === category.value && (
-                <span className="absolute bottom-0 left-1/2 h-[2px] w-[58px] -translate-x-1/2 bg-gray-900"></span>
+                <span className="absolute bottom-[-8px] left-1/2 h-[2px] w-[58px] -translate-x-1/2 bg-gray-900"></span>
               )}
             </button>
           ))}

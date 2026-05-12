@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 
 import { useGetNoticeDetailQuery, useGetNoticesQuery } from '../api/notice-api';
 import { toNoticeItem } from '../utils/notice-utils';
@@ -8,7 +8,6 @@ import { CommonNotice } from '../components/common-notice';
 
 export const CustomerNotice = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const noticeId = searchParams.get('id');
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,44 +38,38 @@ export const CustomerNotice = () => {
   };
 
   const handleBack = () => {
-    navigate('/');
+    setSearchParams({});
   };
 
   return (
-    <div className="flex h-screen w-screen">
-      <div className="flex flex-1 flex-col bg-white">
-        <header className="h-[4.5rem] w-full p-10 text-black"></header>
-        <main className="h-full px-80">
-          {!selectedNotice ? (
-            <CommonNotice
-              target="USER"
-              noticeData={noticeData}
-              totalPages={totalPages}
-              currentPage={currentPage}
-              selectedCategory={selectedCategory}
-              onPageChange={setCurrentPage}
-              onCategoryChange={handleCategoryChange}
-              onSelectNotice={handleSelectNotice}
-            />
-          ) : (
-            <section className="my-10 h-full">
-              <div className="border-gray-3 my-10 h-[68.5rem] w-full overflow-y-scroll rounded-xl border px-[4.5rem] py-[4.25rem] text-2xl [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black [&::-webkit-scrollbar-track]:my-12 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-300 [&::-webkit-scrollbar]:w-1">
-                <div className="mb-[5rem] flex justify-between">
-                  <h4 className="font-medium">{selectedNotice.title}</h4>
-                  <p className="font-normal">{selectedNotice.date}</p>
-                </div>
-                <div className="whitespace-pre-wrap text-gray-700">
-                  {selectedNotice.content}
-                </div>
-              </div>
-
-              <div className="mb-[4.9375rem] flex justify-end">
-                <button onClick={handleBack}>공지 목록 보기</button>
-              </div>
-            </section>
-          )}
-        </main>
-      </div>
+    <div className="flex h-full w-full justify-center">
+      {!noticeId || !selectedNotice ? (
+        <CommonNotice
+          target="USER"
+          noticeData={noticeData}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          selectedCategory={selectedCategory}
+          onPageChange={setCurrentPage}
+          onCategoryChange={handleCategoryChange}
+          onSelectNotice={handleSelectNotice}
+        />
+      ) : (
+        <section className="flex w-full flex-col gap-[3.0625rem]">
+          <div className="h-[63.25rem] w-full overflow-y-scroll rounded-xl border border-gray-300 px-[4.5rem] py-[4.25rem] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black [&::-webkit-scrollbar-track]:my-12 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-300 [&::-webkit-scrollbar]:w-1">
+            <div className="mb-[5rem] flex justify-between">
+              <h4 className="text-2xl font-medium">{selectedNotice.title}</h4>
+              <p className="text-2xl font-normal">{selectedNotice.date}</p>
+            </div>
+            <div className="whitespace-pre-wrap text-gray-700">
+              {selectedNotice.content}
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <button onClick={handleBack}>공지 목록 보기</button>
+          </div>
+        </section>
+      )}
     </div>
   );
 };
