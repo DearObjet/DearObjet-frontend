@@ -76,9 +76,7 @@ export const UserProfile = ({
           </div>
         )}
         <div className="flex flex-col">
-          <span className="text-base font-normal text-gray-200">
-            {userName}
-          </span>
+          <span className="text-base font-normal">{userName}</span>
           <span className="text-xs text-gray-300">{userId}</span>
         </div>
       </div>
