@@ -1,40 +1,49 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
-import { useAppSelector } from '../../../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
+import { selectChatRoom } from '../../../../features/chat/slices/chat-slice';
+import { useGetOrCreateDirectChatMutation } from '../../../../features/chat/api/chat-api';
 import { UserProfile } from '../../../../shared/components/layout/aside/user-profile';
+import { Post } from '../../../../shared/components/common/post';
 import { Button } from '../../../../shared/components/ui';
-
-import {
-  TenantListTable,
-  type TenantStatus,
-} from '../../../artist/tenant-management/components/tenant-list-table';
+import { ROUTES } from '../../../../shared/constants';
 import {
   useGetArtistContractDetailQuery,
   useGetArtistContractsQuery,
   useGetArtistSuggestionsQuery,
 } from '../api/artist-tenant-api';
+import type { ArtistSuggestionItem } from '../types/artist-tenant-types';
 import { ContractDocument } from '../components/contract-document';
+import {
+  TenantListTable,
+  type TenantStatus,
+} from '../../../artist/tenant-management/components/tenant-list-table';
 
 export const ArtistTenantManagement = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.user?.userId);
 
   const [selectedContractId, setSelectedContractId] = useState<number | null>(
     null
   );
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedSuggestion, setSelectedSuggestion] =
+    useState<ArtistSuggestionItem | null>(null);
 
   const { data: contractsData } = useGetArtistContractsQuery(userId!, {
     skip: !userId,
   });
-
   const { data: contractDetail } = useGetArtistContractDetailQuery(
     { contractId: selectedContractId!, userId: userId! },
     { skip: !selectedContractId || !userId }
   );
-
   const { data: suggestionsData } = useGetArtistSuggestionsQuery(userId!, {
     skip: !userId,
   });
+
+  const [getOrCreateDirectChat] = useGetOrCreateDirectChatMutation();
 
   const tenantItems =
     contractsData?.items.map((item) => ({
@@ -50,14 +59,36 @@ export const ArtistTenantManagement = () => {
 
   const handleView = (id: string) => {
     setSelectedContractId(Number(id));
+    setSelectedSuggestion(null);
+    setSelectedUserId(null);
   };
+
+  const handleSelectSuggestion = (item: ArtistSuggestionItem) => {
+    setSelectedUserId(item.userId);
+    setSelectedSuggestion(item);
+    setSelectedContractId(null);
+  };
+
+  const handleSuggest = async () => {
+    if (!selectedSuggestion) return;
+    const room = await getOrCreateDirectChat(
+      selectedSuggestion.userId
+    ).unwrap();
+    dispatch(selectChatRoom(room.roomId));
+    navigate(ROUTES.SHOP_MESSAGES);
+  };
+
+  const rightPanelContent = selectedSuggestion
+    ? 'post'
+    : selectedContractId
+      ? 'contract'
+      : 'empty';
 
   return (
     <div className="flex h-full gap-2">
       <div className="flex h-full flex-col gap-2">
         <section className="flex h-[39.1875rem] w-[46.8125rem] flex-col rounded-xl bg-white">
           <h2 className="hidden">작가 리스트</h2>
-
           <TenantListTable
             items={tenantItems}
             onView={handleView}
@@ -68,11 +99,12 @@ export const ArtistTenantManagement = () => {
         <section className="flex h-[23.125rem] w-[46.8125rem] flex-col rounded-xl bg-white">
           <div className="ml-[1.625rem] mr-5 flex justify-between border-b border-b-gray-200">
             <h2 className="mt-5">입점 작가 제안</h2>
-
             <Button
               variant="secondaryDark"
               label="입점 제안하기"
               className="mb-[0.4375rem] mt-[0.875rem]"
+              disabled={!selectedSuggestion}
+              onClick={handleSuggest}
             />
           </div>
 
@@ -85,28 +117,36 @@ export const ArtistTenantManagement = () => {
                 userId={String(item.userId)}
                 userImage={item.artistImageUrl}
                 isSelected={selectedUserId === item.userId}
-                onAction={() => setSelectedUserId(item.userId)}
+                onAction={() => handleSelectSuggestion(item)}
               />
             ))}
           </div>
         </section>
       </div>
 
-      <section className="flex h-[63rem] w-full flex-col rounded-xl bg-white pb-[2.625rem]">
-        <Button
-          variant="secondaryDark"
-          className="mr-5 mt-4 self-end"
-          label="PDF로 내려받기"
-        />
-
-        {/* <h2 className="mb-[2.1875rem] text-center text-[32px] font-medium">
-          입점 계약서
-        </h2> */}
+      <section className="flex h-[63rem] w-full flex-col items-center justify-center rounded-xl bg-white pb-[2.625rem]">
+        {rightPanelContent === 'contract' && (
+          <Button
+            variant="secondaryDark"
+            className="mr-5 mt-4 self-end"
+            label="PDF로 내려받기"
+          />
+        )}
 
         <div className="ml-[1.875rem]">
-          {contractDetail ? (
+          {rightPanelContent === 'post' && (
+            <Post
+              userName={selectedSuggestion!.artistName}
+              userImage={selectedSuggestion!.artistImageUrl}
+              userId={String(selectedSuggestion!.userId)}
+              showSuggest={false}
+              hasPost={false}
+            />
+          )}
+          {rightPanelContent === 'contract' && contractDetail && (
             <ContractDocument contractDetail={contractDetail} />
-          ) : (
+          )}
+          {rightPanelContent === 'empty' && (
             <p className="text-gray-500">작가를 선택해주세요.</p>
           )}
         </div>
