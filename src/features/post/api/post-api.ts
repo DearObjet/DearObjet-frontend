@@ -65,6 +65,7 @@ export const postApi = createApi({
 
 export const {
   useLazyGetAllPostsQuery,
+  useGetUserPostsQuery,
   useLazyGetUserPostsQuery,
   useLazyGetPostQuery,
   useCreatePostMutation,

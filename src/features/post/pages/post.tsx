@@ -12,6 +12,7 @@ import { PostGrid } from '../components/post-grid';
 import { CreatePostModal } from '../components/create-post-modal';
 import { PostViewModal } from '../components/post-view-modal';
 import type { PostDetail, PostListItem } from '../types/post-type';
+import { Button } from '../../../shared/components/ui';
 
 export const Post = () => {
   const [showCreate, setShowCreate] = useState(false);
@@ -53,7 +54,9 @@ export const Post = () => {
         'request',
         new Blob([JSON.stringify({ content })], { type: 'application/json' })
       );
+
       formData.append('images', image);
+
       await createPost(formData).unwrap();
       setShowCreate(false);
     } catch {
@@ -73,8 +76,12 @@ export const Post = () => {
   return (
     <div className="relative min-h-screen bg-white">
       {user && (
-        <div className="flex justify-end px-5 py-3.5">
-          <button onClick={() => setShowCreate(true)}>새 게시글</button>
+        <div className="flex justify-end py-4">
+          <Button
+            label="새 게시글"
+            onClick={() => setShowCreate(true)}
+            variant="secondaryLight"
+          />
         </div>
       )}
 
