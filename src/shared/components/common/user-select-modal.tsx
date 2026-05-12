@@ -5,9 +5,12 @@ import { useAppDispatch } from '../../../app/hooks';
 import {
   useGetUserListQuery,
   useGetOrCreateDirectChatMutation,
-} from '../api/chat-api';
-import { selectChatRoom } from '../slices/chat-slice';
-import type { UserListProps, UserSelectModalProps } from '../types/chat-types';
+} from '../../../features/chat/api/chat-api';
+import { selectChatRoom } from '../../../features/chat/slices/chat-slice';
+import type {
+  UserListProps,
+  UserSelectModalProps,
+} from '../../../features/chat/types/chat-types';
 
 // 유저 목록 상태별 렌더링
 const UserList = ({
