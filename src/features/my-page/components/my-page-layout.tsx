@@ -16,7 +16,6 @@ export const MyPageLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex gap-9">
       <aside className="flex flex-col gap-4">
-        {/* 프로필 카드 동일 */}
         <nav className="h-[26.5625rem] w-[22.375rem] border px-[2.9375rem] py-[4.1875rem]">
           <ul className="flex flex-col gap-[2.125rem]">
             {NAV_ITEMS.map(({ label, tab }) => (

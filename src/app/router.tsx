@@ -34,6 +34,7 @@ import { InboundManagement } from '../features/shop/inbound-management';
 import { ArtistTenantManagement } from '../features/shop/tenant-management/pages/artist-tenant-management';
 import { ShopTenantManagement } from '../features/artist/tenant-management/pages/shop-tenant-management';
 import { ContractManagement } from '../features/shop/contract-management/pages/contract-management';
+import { ArtistPage } from '../features/artist-page/pages/artist-page';
 
 export const router = createBrowserRouter([
   // 비로그인 전용
@@ -56,7 +57,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.HOME, element: <HomePage /> },
       { path: ROUTES.NOTICES, element: <CustomerNotice /> },
       { path: ROUTES.POSTS, element: <Post /> },
-      { path: ROUTES.ARTISTS, element: <div>작가</div> },
+      { path: ROUTES.ARTISTS, element: <ArtistPage /> },
 
       // customer만 접근 가능
       {

@@ -11,6 +11,7 @@ import { useLogoutMutation, clearAuth } from '../../../features/auth';
 import {
   useGetProfileQuery,
   useUpdateProfileMutation,
+  useWithdrawalMutation,
 } from '../api/my-page-api';
 import { useMyPagePhoneVerification } from '../hooks/use-phone-verification';
 
@@ -175,6 +176,22 @@ export const ProfileForm = forwardRef<ProfileFormRef, ProfileFormProps>(
       } finally {
         dispatch(clearAuth());
         navigate(ROUTES.HOME);
+      }
+    };
+
+    const [withdrawal] = useWithdrawalMutation();
+    const handleWithdrawal = async () => {
+      const confirmed = window.confirm(
+        '정말 탈퇴하시겠습니까? 탈퇴 후 복구가 불가능합니다.'
+      );
+      if (!confirmed) return;
+
+      try {
+        await withdrawal().unwrap();
+        dispatch(clearAuth());
+        navigate(ROUTES.HOME);
+      } catch {
+        alert('회원탈퇴에 실패했습니다.');
       }
     };
 
@@ -389,7 +406,13 @@ export const ProfileForm = forwardRef<ProfileFormRef, ProfileFormProps>(
         </form>
 
         <div className="flex justify-between">
-          <button className="text-gray-5 underline">회원탈퇴</button>
+          <button
+            type="button"
+            className="text-gray-5 underline"
+            onClick={handleWithdrawal}
+          >
+            회원탈퇴
+          </button>
           <div className="flex gap-3">
             <Button
               variant="secondaryLight"
