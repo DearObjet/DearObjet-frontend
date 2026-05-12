@@ -1,17 +1,22 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 
 import { useAppSelector } from '../../app/hooks';
 import { Button } from '../../shared/components/ui';
 import { API_BASE_URL } from '../../shared/constants';
+import { useGetNoticesQuery } from '../../features/notice/api/notice-api';
+import { CATEGORY_LABEL } from '../../features/notice/constants/notice-constants';
 
 import KakaoLogo from '../../assets/kakao-logo.svg';
 import CatImg from '../../assets/cat.png';
 
+const HOME_NOTICES_PER_PAGE = 5;
+
 export const HomePage = () => {
   const [currentNoticePage, setCurrentNoticePage] = useState(1);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-  const noticesPerPage = 5;
+  const navigate = useNavigate();
 
   const regions = [
     { value: 'seoul', label: '서울' },
@@ -19,21 +24,16 @@ export const HomePage = () => {
     { value: 'incheon', label: '인천' },
   ];
 
-  const allNotices = [
-    { category: '공지', content: '10/20-10/22 KTX 반값!' },
-    { category: '부산', content: "황금연휴, '공짜'로 부산가기 이벤트!" },
-    { category: '이벤트', content: '선착순 EVENT 케이팝데몬헌터스 굿즈' },
-    { category: '축제', content: '단풍의 계절 10월 "청도 단풍 축제"' },
-    {
-      category: '문화공연',
-      content: '광안리 oo만명 인파 드론이 수놓은 한글날',
-    },
-  ];
+  const { data: noticeData } = useGetNoticesQuery({
+    target: 'USER',
+    page: 1,
+  });
 
-  const totalNoticePages = Math.ceil(allNotices.length / noticesPerPage);
+  const allNotices = noticeData?.items ?? [];
+  const totalNoticePages = Math.ceil(allNotices.length / HOME_NOTICES_PER_PAGE);
   const currentNotices = allNotices.slice(
-    (currentNoticePage - 1) * noticesPerPage,
-    currentNoticePage * noticesPerPage
+    (currentNoticePage - 1) * HOME_NOTICES_PER_PAGE,
+    currentNoticePage * HOME_NOTICES_PER_PAGE
   );
 
   const handleNoticePrevPage = () => {
@@ -141,22 +141,32 @@ export const HomePage = () => {
 
         <section className="flex flex-col gap-3">
           <h2>공지&이벤트</h2>
-          <div className="w-full rounded-sm border border-gray-300 p-3">
-            <div className="flex flex-col gap-3">
-              {currentNotices.map((notice, index) => (
-                <div key={index} className="flex text-[0.625rem] font-normal">
-                  <span className="w-12 shrink-0 text-center">
-                    {notice.category}
-                  </span>
-                  <span className="truncate text-left">{notice.content}</span>
-                </div>
-              ))}
-            </div>
+          <div className="h-[10rem] w-full rounded-sm border border-gray-300 p-3">
+            {currentNotices.length === 0 ? (
+              <div className="flex h-full items-center justify-center">
+                <p className="text-xs text-gray-400">등록된 공지가 없습니다.</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {currentNotices.map((notice) => (
+                  <button
+                    key={notice.noticeId}
+                    className="flex w-full text-[0.625rem] font-normal hover:underline"
+                    onClick={() => navigate(`/notices?id=${notice.noticeId}`)}
+                  >
+                    <span className="w-12 shrink-0 text-center">
+                      {CATEGORY_LABEL[notice.category]}
+                    </span>
+                    <span className="truncate text-left">{notice.title}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div
             className="relative flex items-center gap-10 self-center after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:text-sm after:content-[attr(data-page)]"
-            data-page={`${currentNoticePage}/${totalNoticePages}`}
+            data-page={`${currentNoticePage}/${totalNoticePages || 1}`}
           >
             <Button
               variant="icon"
