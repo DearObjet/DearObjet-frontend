@@ -2,9 +2,16 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import type { RootState } from '../../../app/store';
+import { useAppSelector } from '../../../app/hooks';
 
 import { useGetBusinessProfileQuery } from '../../my-page/api/my-page-api';
+import {
+  useSendContractMutation,
+  useArtistSubmissionMutation,
+} from '../api/contract-management-api';
+import type { ArtistSearchItem } from '../types/contract-management-types';
 import { Button, Input } from '../../../shared/components/ui';
+import { UserSelectModal } from '../../../shared/components/common/user-select-modal';
 
 import { CONTRACT_STATIC_TEXT } from '../../shop/tenant-management/constants/artist-tenant-constants';
 
@@ -32,10 +39,24 @@ const GAP_FOOTER_FIELD_MAP: Record<string, string> = {
   대표자: 'ownerName',
 };
 
+const formatDateInput = (value: string) => {
+  const digits = value.replace(/\D/g, '').slice(0, 8);
+  if (digits.length <= 4) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+};
+
+const formatNumberInput = (value: string) => value.replace(/\D/g, '');
+
 export const ContractManagement = () => {
   const [mode, setMode] = useState<TemplateMode>(null);
   const [hasInput, setHasInput] = useState(false);
   const [hasEdit, setHasEdit] = useState(false);
+  const [showArtistModal, setShowArtistModal] = useState(false);
+  const [selectedArtist, setSelectedArtist] = useState<ArtistSearchItem | null>(
+    null
+  );
+
   const [gapValues, setGapValues] = useState<Record<string, string>>({});
   const [eulValues, setEulValues] = useState<Record<string, string>>({});
   const [gapFooterValues, setGapFooterValues] = useState<
@@ -52,13 +73,15 @@ export const ContractManagement = () => {
   const [bankValues, setBankValues] = useState<Record<string, string>>({});
 
   const role = useSelector((state: RootState) => state.auth.user?.role);
+  const userId = useAppSelector((state) => state.auth.user?.userId);
   const isShop = role === 'SHOP';
 
   const { data: businessProfile } = useGetBusinessProfileQuery();
+  const [sendContract] = useSendContractMutation();
+  const [artistSubmission] = useArtistSubmissionMutation();
 
   useEffect(() => {
     if (!businessProfile) return;
-
     if (isShop) {
       const newGapValues: Record<string, string> = {};
       c.article1.gap.fields.forEach((field) => {
@@ -102,19 +125,92 @@ export const ContractManagement = () => {
     setMode(null);
     setHasInput(false);
     setHasEdit(false);
+    setSelectedArtist(null);
+  };
+
+  const handleSend = async (artist: ArtistSearchItem) => {
+    if (!userId) return;
+    await sendContract({
+      artistId: artist.artistId,
+      userId,
+      body: {
+        shopBusinessName: gapValues['상호명'] ?? '',
+        shopOwnerName: gapValues['대표자'] ?? '',
+        shopBusinessNumber: gapValues['사업자등록번호'] ?? '',
+        shopAddress: gapValues['주소'] ?? '',
+        shopContact: gapValues['연락처'] ?? '',
+        contractStartDate,
+        contractEndDate,
+        commissionRate: Number(commissionValue),
+        settlementDay: Number(
+          settlementValues[c.article5.settlementFields[0]] ?? 0
+        ),
+        paymentDay: Number(
+          settlementValues[c.article5.settlementFields[1]] ?? 0
+        ),
+        contractDate,
+        shopSignatureBusinessName: gapFooterValues['상호명'] ?? '',
+        shopSignatureOwnerName: gapFooterValues['대표자'] ?? '',
+      },
+    }).unwrap();
+    handleCancel();
+  };
+
+  const handleArtistSubmit = async (contractId: number) => {
+    if (!userId) return;
+    await artistSubmission({
+      contractId,
+      userId,
+      body: {
+        artistName: eulValues['성명(작가명)'] ?? '',
+        artistBusinessNumber: eulValues['사업자등록번호(해당 시)'] ?? '',
+        artistAddress: eulValues['주소'] ?? '',
+        artistContact: eulValues['연락처'] ?? '',
+        artistBankName: bankValues['은행명'] ?? '',
+        artistAccountHolder: bankValues['예금주'] ?? '',
+        artistAccountNumber: bankValues['계좌번호'] ?? '',
+        artistSignatureName: eulFooterValue,
+      },
+    }).unwrap();
+    handleCancel();
   };
 
   return (
     <div className="flex h-full gap-4">
+      {showArtistModal && (
+        <UserSelectModal
+          mode="contract"
+          onClose={() => setShowArtistModal(false)}
+          onSelectArtist={(artist) => {
+            setSelectedArtist(artist);
+            setShowArtistModal(false);
+            handleSend(artist);
+          }}
+        />
+      )}
+
       <section className="flex h-[63.25rem] w-[59.875rem] flex-col rounded-xl bg-white">
         {mode !== null ? (
           <div className="relative min-h-0 flex-1 overflow-y-auto p-10 text-gray-700">
             <div className="absolute right-6 top-4 flex gap-2">
-              {mode === 'new' && hasInput && (
+              {mode === 'new' && isShop && hasInput && (
                 <>
                   <Button variant="secondaryDark" size="small" label="저장" />
-                  <Button variant="primary" size="small" label="보내기" />
+                  <Button
+                    variant="primary"
+                    size="small"
+                    label="보내기"
+                    onClick={() => setShowArtistModal(true)}
+                  />
                 </>
+              )}
+              {mode === 'new' && !isShop && hasInput && (
+                <Button
+                  variant="primary"
+                  size="small"
+                  label="제출"
+                  onClick={() => handleArtistSubmit(0)}
+                />
               )}
               {mode === 'existing' && hasEdit && (
                 <>
@@ -129,10 +225,18 @@ export const ContractManagement = () => {
               )}
             </div>
 
+            {isShop && mode === 'new' && (
+              <div className="mb-4 flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  수신 작가:{' '}
+                  {selectedArtist ? selectedArtist.artistName : '미선택'}
+                </span>
+              </div>
+            )}
+
             <h2 className="mb-8 text-center text-2xl font-medium">
               입점 계약서
             </h2>
-
             <p className="mb-6 text-sm">{c.intro}</p>
 
             <p className="mb-2 font-medium">{c.article1.title}</p>
@@ -188,10 +292,10 @@ export const ContractManagement = () => {
               <span className="shrink-0">계약 시작일</span>
               <Input
                 size="small"
-                placeholder="[계약 시작일]"
+                placeholder="YYYY-MM-DD"
                 value={contractStartDate}
                 onChange={(e) => {
-                  setContractStartDate(e.target.value);
+                  setContractStartDate(formatDateInput(e.target.value));
                   triggerChange();
                 }}
                 disabled={!isShop}
@@ -201,10 +305,10 @@ export const ContractManagement = () => {
               <span className="shrink-0">계약 종료일</span>
               <Input
                 size="small"
-                placeholder="[계약 종료일]"
+                placeholder="YYYY-MM-DD"
                 value={contractEndDate}
                 onChange={(e) => {
-                  setContractEndDate(e.target.value);
+                  setContractEndDate(formatDateInput(e.target.value));
                   triggerChange();
                 }}
                 disabled={!isShop}
@@ -221,7 +325,7 @@ export const ContractManagement = () => {
                 placeholder="[수수료율]"
                 value={commissionValue}
                 onChange={(e) => {
-                  setCommissionValue(e.target.value);
+                  setCommissionValue(formatNumberInput(e.target.value));
                   triggerChange();
                 }}
                 disabled={!isShop}
@@ -239,7 +343,7 @@ export const ContractManagement = () => {
                   onChange={(e) => {
                     setSettlementValues((prev) => ({
                       ...prev,
-                      [field]: e.target.value,
+                      [field]: formatNumberInput(e.target.value),
                     }));
                     triggerChange();
                   }}
@@ -304,10 +408,10 @@ export const ContractManagement = () => {
                 <span className="shrink-0">계약일</span>
                 <Input
                   size="small"
-                  placeholder="[계약일]"
+                  placeholder="YYYY-MM-DD"
                   value={contractDate}
                   onChange={(e) => {
-                    setContractDate(e.target.value);
+                    setContractDate(formatDateInput(e.target.value));
                     triggerChange();
                   }}
                   disabled={!isShop}
@@ -383,6 +487,7 @@ export const ContractManagement = () => {
                     setMode('new');
                     setHasInput(false);
                     setHasEdit(false);
+                    setSelectedArtist(null);
                   }}
                 />
               )}
