@@ -106,6 +106,10 @@ export const router = createBrowserRouter([
               { path: ROUTES.SHOP_INVENTORY, element: <InboundManagement /> },
               { path: ROUTES.SHOP_CONTRACTS, element: <ContractManagement /> },
               {
+                path: ROUTES.SHOP_SETTLEMENTS,
+                element: <div>정산금액 계산</div>,
+              },
+              {
                 path: ROUTES.SHOP_SETTLEMENTS_HISTORY,
                 element: <SettlementHistory />,
               },
