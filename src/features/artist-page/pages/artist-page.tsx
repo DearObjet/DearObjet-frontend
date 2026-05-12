@@ -86,10 +86,9 @@ export const ArtistPage = () => {
             <h4 className="hidden">작가의 포스터</h4>
             <UserPostList
               userName={selectedArtist.name}
-              userId={String(selectedArtist.artistId)}
+              userId={selectedArtist.artistId}
               userImage={selectedArtist.profileUrl}
               showSuggest
-              hasPost={false}
               onSuggest={handleSuggest}
             />
           </section>
