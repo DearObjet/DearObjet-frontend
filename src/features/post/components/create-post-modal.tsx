@@ -31,6 +31,7 @@ export const CreatePostModal = ({
       alert('포스트 내용을 입력해주세요.');
       return;
     }
+
     onSubmit(draftFile, draftContent);
   };
 

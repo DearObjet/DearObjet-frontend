@@ -12,10 +12,12 @@ import { PostGrid } from '../components/post-grid';
 import { CreatePostModal } from '../components/create-post-modal';
 import { PostViewModal } from '../components/post-view-modal';
 import type { PostDetail, PostListItem } from '../types/post-type';
+import { Button } from '../../../shared/components/ui';
 
 export const Post = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostDetail | null>(null);
+  const [gridKey, setGridKey] = useState(0);
 
   const [triggerGetAllPosts] = useLazyGetAllPostsQuery();
   const [triggerGetPost] = useLazyGetPostQuery();
@@ -38,36 +40,54 @@ export const Post = () => {
   );
 
   const handlePostClick = async (postId: number) => {
-    const detail = await triggerGetPost(postId).unwrap();
-    setSelectedPost(detail);
+    try {
+      const detail = await triggerGetPost(postId).unwrap();
+      setSelectedPost(detail);
+    } catch {
+      alert('다시 시도해주세요.');
+    }
   };
 
-  const handleSubmitPost = async (image: File, content: string) => {
+  const handleSubmitPost = async (image: File | null, content: string) => {
     const formData = new FormData();
     formData.append(
       'request',
       new Blob([JSON.stringify({ content })], { type: 'application/json' })
     );
-    formData.append('images', image);
-
+    if (image) {
+      formData.append('images', image);
+    }
     await createPost(formData).unwrap();
     setShowCreate(false);
+    setGridKey((prev) => prev + 1);
   };
 
   const handleDeletePost = async (postId: number) => {
-    await deletePost(postId).unwrap();
-    setSelectedPost(null);
+    try {
+      await deletePost(postId).unwrap();
+      setSelectedPost(null);
+    } catch {
+      alert('다시 시도해주세요.');
+    }
   };
 
   return (
     <div className="relative min-h-screen bg-white">
       {user && (
-        <div className="flex justify-end px-5 py-3.5">
-          <button onClick={() => setShowCreate(true)}>새 게시글</button>
+        <div className="flex justify-end py-4">
+          <Button
+            label="새 게시글"
+            onClick={() => setShowCreate(true)}
+            variant="secondaryLight"
+          />
         </div>
       )}
 
-      <PostGrid fetchData={fetchPosts} onPostClick={handlePostClick} />
+      <PostGrid
+        key={gridKey}
+        fetchData={fetchPosts}
+        onPostClick={handlePostClick}
+      />
 
       {showCreate && user && (
         <CreatePostModal
@@ -77,7 +97,7 @@ export const Post = () => {
         />
       )}
 
-      {selectedPost && user && (
+      {selectedPost && (
         <PostViewModal
           post={selectedPost}
           user={user}
