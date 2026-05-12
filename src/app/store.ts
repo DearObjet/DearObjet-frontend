@@ -72,7 +72,6 @@ export const store = configureStore({
       .concat(classReservationApi.middleware)
       .concat(inboundApi.middleware)
       .concat(outboundApi.middleware)
-      .concat(classReservationApi.middleware)
       .concat(artistProductApi.middleware)
       .concat(artistTenantApi.middleware)
       .concat(artistPageApi.middleware)
