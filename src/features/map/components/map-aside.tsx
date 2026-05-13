@@ -15,6 +15,11 @@ import { ReviewTab } from './review-tab';
 import { NearbyTab } from './nearby-tab';
 
 import { useGetUserPostsQuery } from '../../post/api/post-api';
+import {
+  useAddShopFavoriteMutation,
+  useGetFavoriteShopListQuery,
+  useRemoveShopFavoriteMutation,
+} from '../api/favorite-api';
 
 export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
   const user = useAppSelector((state) => state.auth.user);
@@ -30,12 +35,33 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
 
   const postImages = (postData?.items ?? []).slice(0, 9);
 
+  const isCustomer = user?.role === USER_ROLE.CUSTOMER;
+
+  const { data: favoriteData } = useGetFavoriteShopListQuery(undefined, {
+    skip: !isCustomer,
+  });
+
+  const [addFavorite] = useAddShopFavoriteMutation();
+  const [removeFavorite] = useRemoveShopFavoriteMutation();
+
+  const isFavorited =
+    favoriteData?.items.some((item) => item.shopId === shopId) ?? false;
+
+  const handleLikeToggle = async () => {
+    if (!shopId || !isCustomer) return;
+
+    if (isFavorited) {
+      await removeFavorite(shopId);
+    } else {
+      await addFavorite(shopId);
+    }
+  };
+
   const handleTabClick = (tab: TabMenu) => {
     isTabClickedRef.current = true;
     setActiveTab(tab);
   };
 
-  const handleLikeToggle = () => console.log('좋아요');
   const handleWriteReview = () => console.log('리뷰작성하기');
   const handleShareContent = () => console.log('공유하기');
   const handleApplyForPartnership = () => console.log('입점신청하기');
@@ -107,12 +133,20 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
         </h2>
 
         <div className="flex gap-2">
+          {isCustomer && (
+            <Button
+              aria-label="찜하기"
+              variant="secondaryLight"
+              size="small"
+              onClick={handleLikeToggle}
+              icon={
+                <Star
+                  className={`h-5 w-5 transition-colors ${isFavorited ? 'fill-yellow-400 text-yellow-400' : ''}`}
+                />
+              }
+            />
+          )}
           {[
-            {
-              label: '찜하기',
-              icon: <Star className="h-5 w-5" />,
-              handler: handleLikeToggle,
-            },
             {
               label: '리뷰작성',
               icon: <MessageCircle className="h-5 w-5" />,
