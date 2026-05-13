@@ -14,6 +14,13 @@ import { ArtistTab } from './artist-tab';
 import { ReviewTab } from './review-tab';
 import { NearbyTab } from './nearby-tab';
 
+import { useGetUserPostsQuery } from '../../post/api/post-api';
+import {
+  useAddShopFavoriteMutation,
+  useGetFavoriteShopListQuery,
+  useRemoveShopFavoriteMutation,
+} from '../api/favorite-api';
+
 export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
   const user = useAppSelector((state) => state.auth.user);
   const [activeTab, setActiveTab] = useState<TabMenu>('스토리');
@@ -21,12 +28,40 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
   const isTabClickedRef = useRef(false);
   const tabMenuRef = useRef<HTMLDivElement>(null);
 
+  const { data: postData } = useGetUserPostsQuery(
+    { userId: shopDetail?.userId ?? 0, page: 1 },
+    { skip: !shopDetail?.userId }
+  );
+
+  const postImages = (postData?.items ?? []).slice(0, 9);
+
+  const isCustomer = user?.role === USER_ROLE.CUSTOMER;
+
+  const { data: favoriteData } = useGetFavoriteShopListQuery(undefined, {
+    skip: !isCustomer,
+  });
+
+  const [addFavorite] = useAddShopFavoriteMutation();
+  const [removeFavorite] = useRemoveShopFavoriteMutation();
+
+  const isFavorited =
+    favoriteData?.items.some((item) => item.shopId === shopId) ?? false;
+
+  const handleLikeToggle = async () => {
+    if (!shopId || !isCustomer) return;
+
+    if (isFavorited) {
+      await removeFavorite(shopId);
+    } else {
+      await addFavorite(shopId);
+    }
+  };
+
   const handleTabClick = (tab: TabMenu) => {
     isTabClickedRef.current = true;
     setActiveTab(tab);
   };
 
-  const handleLikeToggle = () => console.log('좋아요');
   const handleWriteReview = () => console.log('리뷰작성하기');
   const handleShareContent = () => console.log('공유하기');
   const handleApplyForPartnership = () => console.log('입점신청하기');
@@ -73,12 +108,23 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
     >
       {/* 포스트 사진 그리드 */}
       <div className="grid grid-cols-[repeat(3,136px)] grid-rows-[repeat(3,136px)] gap-[1.5px]">
-        {Array.from({ length: 9 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-[8.375rem] w-[8.375rem] overflow-hidden bg-theme-200"
-          />
-        ))}
+        {Array.from({ length: 9 }).map((_, i) => {
+          const post = postImages[i];
+          return (
+            <div
+              key={i}
+              className="h-[8.375rem] w-[8.375rem] overflow-hidden bg-theme-200"
+            >
+              {post?.thumbnailUrl && (
+                <img
+                  src={post.thumbnailUrl}
+                  alt={`${shopDetail?.shopName} 포스트 ${i + 1}`}
+                  className="h-full w-full object-cover"
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <div className="flex flex-col items-center gap-7 py-7">
@@ -87,12 +133,20 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
         </h2>
 
         <div className="flex gap-2">
+          {isCustomer && (
+            <Button
+              aria-label="찜하기"
+              variant="secondaryLight"
+              size="small"
+              onClick={handleLikeToggle}
+              icon={
+                <Star
+                  className={`h-5 w-5 transition-colors ${isFavorited ? 'fill-yellow-400 text-yellow-400' : ''}`}
+                />
+              }
+            />
+          )}
           {[
-            {
-              label: '찜하기',
-              icon: <Star className="h-5 w-5" />,
-              handler: handleLikeToggle,
-            },
             {
               label: '리뷰작성',
               icon: <MessageCircle className="h-5 w-5" />,

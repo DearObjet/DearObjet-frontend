@@ -48,6 +48,7 @@ export interface BusinessHours {
 }
 
 export interface ShopDetail {
+  userId: number;
   shopName: string;
   phoneNumber: string | null;
   businessAddress: string;

@@ -38,9 +38,8 @@ export const OAuthCallback = () => {
           dispatch(setSignupRequired(false));
           navigate(ROUTES.HOME);
         }
-      } catch (error) {
-        console.error('Token refresh failed:', error);
-        alert('로그인 처리 중 오류가 발생했습니다.');
+      } catch {
+        console.warn('OAuth callback failed - likely unauthorized access');
         navigate(ROUTES.HOME);
       }
     };

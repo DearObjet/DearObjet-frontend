@@ -48,6 +48,7 @@ export const ROUTES = {
 
   // shop_settlements
   SHOP_SETTLEMENTS: '/shop/settlements',
+  SHOP_SETTLEMENTS_HISTORY: '/shop/settlements/history',
 
   // shop_messages
   SHOP_MESSAGES: '/shop/messages',

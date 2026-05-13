@@ -4,7 +4,7 @@ export interface PostDetail {
   postId: number;
   userId: number;
   userName: string;
-  authorProfileUrl: string | null;
+  profileUrl: string | null;
   content: string;
   imageUrls: string[];
   isPublic: boolean;
@@ -14,6 +14,8 @@ export interface PostDetail {
 export interface PostListItem {
   postId: number;
   thumbnailUrl: string | null;
+  authorName: string;
+  authorProfileUrl: string | null;
   createdAt: string;
 }
 
@@ -47,7 +49,7 @@ export interface CreatePostModalProps {
 
 export interface PostViewModalProps {
   post: PostDetail;
-  user: AuthUser;
+  user: AuthUser | null;
   onClose: () => void;
   onDelete: (postId: number) => void;
 }

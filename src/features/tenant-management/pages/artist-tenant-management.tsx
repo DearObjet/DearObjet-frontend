@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectChatRoom } from '../../../features/chat/slices/chat-slice';
 import { useGetOrCreateDirectChatMutation } from '../../../features/chat/api/chat-api';
 import { UserProfile } from '../../../shared/components/layout/aside/user-profile';
-import { Post } from '../../../shared/components/common/post';
+import { UserPostList } from '../../../shared/components/common/user-post-list';
 import { Button } from '../../../shared/components/ui';
 import { ROUTES } from '../../../shared/constants';
 import {
@@ -138,12 +138,11 @@ export const ArtistTenantManagement = () => {
       <section className="flex h-[63rem] w-full flex-col items-center justify-center rounded-xl bg-white pb-[2.625rem]">
         <div className="ml-[1.875rem]">
           {rightPanelContent === 'post' && (
-            <Post
+            <UserPostList
               userName={selectedSuggestion!.artistName}
               userImage={selectedSuggestion!.artistImageUrl}
-              userId={String(selectedSuggestion!.userId)}
+              userId={selectedSuggestion!.userId}
               showSuggest={false}
-              hasPost={false}
             />
           )}
           {rightPanelContent === 'contract' && contractDetail && (
