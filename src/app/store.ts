@@ -20,6 +20,7 @@ import {
   oneDayClassApi,
   mapStoryApi,
   favoriteApi,
+  reviewApi,
 } from '../features/map';
 import { chatApi } from '../features/chat/api/chat-api';
 import { myPageApi } from '../features/my-page/api/my-page-api';
@@ -52,6 +53,7 @@ export const store = configureStore({
     [oneDayClassApi.reducerPath]: oneDayClassApi.reducer,
     [mapStoryApi.reducerPath]: mapStoryApi.reducer,
     [favoriteApi.reducerPath]: favoriteApi.reducer,
+    [reviewApi.reducerPath]: reviewApi.reducer,
     [chatApi.reducerPath]: chatApi.reducer,
     [myPageApi.reducerPath]: myPageApi.reducer,
     [userMeApi.reducerPath]: userMeApi.reducer,
@@ -78,6 +80,7 @@ export const store = configureStore({
       .concat(oneDayClassApi.middleware)
       .concat(mapStoryApi.middleware)
       .concat(favoriteApi.middleware)
+      .concat(reviewApi.middleware)
       .concat(chatApi.middleware)
       .concat(myPageApi.middleware)
       .concat(userMeApi.middleware)
