@@ -321,7 +321,7 @@ export const ContractManagement = () => {
                       label="취소"
                       onClick={handleCancel}
                     />
-                    <Button variant="secondaryDark" size="small" label="저장" />
+                    <Button variant="primary" size="small" label="저장" />
                   </>
                 ) : (
                   <>
