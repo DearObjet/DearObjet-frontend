@@ -1,13 +1,13 @@
-import { Button } from '../../../../shared/components/ui';
-import { useAppSelector } from '../../../../app/hooks';
+import { Button } from '../../../shared/components/ui';
+import { useAppSelector } from '../../../app/hooks';
 
 import {
   useReleaseRequestMutation,
   useReleaseCancellationMutation,
   useApproveContractMutation,
-} from '../../../shop/tenant-management/api/artist-tenant-api';
+} from '../api/artist-tenant-api';
 import { TenantStatusBadge } from './tenant-status-badge';
-import type { TenantStatus } from '../../../artist/tenant-management/components/tenant-list-table';
+import type { TenantStatus } from '../components/tenant-list-table';
 
 interface TenantListTableRowProps {
   index: number;

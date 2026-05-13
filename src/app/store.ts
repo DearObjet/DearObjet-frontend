@@ -23,7 +23,7 @@ import { userMeApi } from '../shared/components/layout/aside/api/user-me-api';
 import { inboundApi } from '../features/shop/inbound-management/api/inbound-api';
 import { outboundApi } from '../features/artist/outbound-management';
 import { artistProductApi } from '../features/artist/inventory-management';
-import { artistTenantApi } from '../features/shop/tenant-management/api/artist-tenant-api';
+import { artistTenantApi } from '../features/tenant-management/api/artist-tenant-api';
 import { artistPageApi } from '../features/artist-page/api/artist-page-api';
 import { festivalApi } from '../features/festival/api/festival-api';
 import { contractManagementApi } from '../features/contract-management/api/contract-management-api';

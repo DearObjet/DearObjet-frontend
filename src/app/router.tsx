@@ -31,8 +31,8 @@ import { Chat } from '../features/chat/pages/chat';
 import { InventoryManagement } from '../features/artist/inventory-management/pages/inventory-mangement';
 import { OutboundManagement } from '../features/artist/outbound-management';
 import { InboundManagement } from '../features/shop/inbound-management';
-import { ArtistTenantManagement } from '../features/shop/tenant-management/pages/artist-tenant-management';
-import { ShopTenantManagement } from '../features/artist/tenant-management/pages/shop-tenant-management';
+import { ArtistTenantManagement } from '../features/tenant-management/pages/artist-tenant-management';
+import { ShopTenantManagement } from '../features/tenant-management/pages/shop-tenant-management';
 import { ContractManagement } from '../features/contract-management/pages/contract-management';
 import { ArtistPage } from '../features/artist-page/pages/artist-page';
 

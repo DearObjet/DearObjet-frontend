@@ -1,24 +1,27 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
-import { selectChatRoom } from '../../../../features/chat/slices/chat-slice';
-import { useGetOrCreateDirectChatMutation } from '../../../../features/chat/api/chat-api';
-import { UserProfile } from '../../../../shared/components/layout/aside/user-profile';
-import { Post } from '../../../../shared/components/common/post';
-import { Button } from '../../../../shared/components/ui';
-import { ROUTES } from '../../../../shared/constants';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { selectChatRoom } from '../../../features/chat/slices/chat-slice';
+import { useGetOrCreateDirectChatMutation } from '../../../features/chat/api/chat-api';
+import { UserProfile } from '../../../shared/components/layout/aside/user-profile';
+import { Post } from '../../../shared/components/common/post';
+import { Button } from '../../../shared/components/ui';
+import { ROUTES } from '../../../shared/constants';
 import {
   useGetArtistContractDetailQuery,
   useGetArtistContractsQuery,
   useGetArtistSuggestionsQuery,
 } from '../api/artist-tenant-api';
-import type { ArtistSuggestionItem } from '../types/artist-tenant-types';
+import type {
+  ArtistSuggestionItem,
+  ArtistContractItem,
+} from '../types/artist-tenant-types';
 import { ContractDocument } from '../components/contract-document';
 import {
   TenantListTable,
   type TenantStatus,
-} from '../../../artist/tenant-management/components/tenant-list-table';
+} from '../components/tenant-list-table';
 
 export const ArtistTenantManagement = () => {
   const navigate = useNavigate();
@@ -46,7 +49,7 @@ export const ArtistTenantManagement = () => {
   const [getOrCreateDirectChat] = useGetOrCreateDirectChatMutation();
 
   const tenantItems =
-    contractsData?.items.map((item) => ({
+    contractsData?.items.map((item: ArtistContractItem) => ({
       id: String(item.contractId),
       shopName: item.artistName,
       contractStart: item.contractStartDate,
@@ -117,7 +120,7 @@ export const ArtistTenantManagement = () => {
           </div>
 
           <div className="grid grid-cols-5 gap-y-2 p-2">
-            {suggestionsData?.items.map((item) => (
+            {suggestionsData?.items.map((item: ArtistSuggestionItem) => (
               <UserProfile
                 key={item.userId}
                 variant="author"

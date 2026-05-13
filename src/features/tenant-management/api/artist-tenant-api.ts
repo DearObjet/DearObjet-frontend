@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 
-import { createBaseQuery } from '../../../../shared/constants';
+import { createBaseQuery } from '../../../shared/constants';
 
 import type {
   ArtistContractListResponse,

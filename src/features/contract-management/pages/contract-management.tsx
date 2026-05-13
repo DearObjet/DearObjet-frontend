@@ -16,7 +16,7 @@ import type { ArtistSearchItem } from '../types/contract-management-types';
 import { Button, Input } from '../../../shared/components/ui';
 import { UserSelectModal } from '../../../shared/components/common/user-select-modal';
 
-import { CONTRACT_STATIC_TEXT } from '../../shop/tenant-management/constants/artist-tenant-constants';
+import { CONTRACT_STATIC_TEXT } from '../../tenant-management/constants/artist-tenant-constants';
 
 const c = CONTRACT_STATIC_TEXT;
 

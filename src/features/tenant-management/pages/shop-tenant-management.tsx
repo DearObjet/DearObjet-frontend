@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { Button } from '../../../../shared/components/ui';
-import { UserProfile } from '../../../../shared/components/layout/aside/user-profile';
+import { Button } from '../../../shared/components/ui';
+import { UserProfile } from '../../../shared/components/layout/aside/user-profile';
 
 import { TenantListTable } from '../components/tenant-list-table';
 
