@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router';
 
 import { useAppSelector } from '../../../app/hooks';
 
@@ -18,6 +19,8 @@ export const Post = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostDetail | null>(null);
   const [gridKey, setGridKey] = useState(0);
+
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [triggerGetAllPosts] = useLazyGetAllPostsQuery();
   const [triggerGetPost] = useLazyGetPostQuery();
@@ -71,6 +74,24 @@ export const Post = () => {
     }
   };
 
+  const handleCloseModal = () => {
+    setSelectedPost(null);
+    if (searchParams.has('id')) {
+      searchParams.delete('id');
+      setSearchParams(searchParams, { replace: true });
+    }
+  };
+
+  useEffect(() => {
+    const postId = searchParams.get('id');
+    if (!postId) return;
+
+    triggerGetPost(Number(postId))
+      .unwrap()
+      .then((detail) => setSelectedPost(detail))
+      .catch(() => alert('포스트를 불러올 수 없습니다.'));
+  }, []);
+
   return (
     <div className="relative min-h-screen bg-white">
       {user && (
@@ -101,7 +122,7 @@ export const Post = () => {
         <PostViewModal
           post={selectedPost}
           user={user}
-          onClose={() => setSelectedPost(null)}
+          onClose={handleCloseModal}
           onDelete={handleDeletePost}
         />
       )}
