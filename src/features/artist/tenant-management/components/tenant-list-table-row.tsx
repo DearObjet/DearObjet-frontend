@@ -64,6 +64,7 @@ export const TenantListTableRow = ({
             size="small"
             label={nextAction.label}
             onClick={handleActionClick}
+            disabled={nextAction.code === 'WAITING_ARTIST_SUBMISSION'}
           />
         )}
       </td>

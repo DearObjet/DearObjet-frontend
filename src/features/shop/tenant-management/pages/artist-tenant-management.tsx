@@ -53,7 +53,13 @@ export const ArtistTenantManagement = () => {
       contractEnd: item.contractEndDate,
       status: item.contractStatusLabel as TenantStatus,
       contract: '',
-      nextAction: item.nextAction,
+      nextAction: {
+        code: item.nextAction.code,
+        label:
+          item.nextAction.code === 'WAITING_ARTIST_SUBMISSION'
+            ? '대기'
+            : item.nextAction.label,
+      },
       detailAvailable: item.detailAvailable,
     })) ?? [];
 
