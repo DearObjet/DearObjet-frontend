@@ -86,6 +86,7 @@ const formatNumberInput = (value: string) => value.replace(/\D/g, '');
 export const ContractManagement = () => {
   const [mode, setMode] = useState<TemplateMode>(null);
   const [hasInput, setHasInput] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(false);
   const [showArtistModal, setShowArtistModal] = useState(false);
   const [selectedArtist, setSelectedArtist] = useState<ArtistSearchItem | null>(
     null
@@ -123,6 +124,16 @@ export const ContractManagement = () => {
   );
   const [sendContract] = useSendContractMutation();
   const [artistSubmission] = useArtistSubmissionMutation();
+
+  const activeContracts = inProgressData?.items.filter((item) => {
+    if (isShop) return item.contractDocumentStatus === 'NONE';
+    return item.contractDocumentStatus === 'SHOP_SENT';
+  });
+
+  const completedContracts = inProgressData?.items.filter((item) => {
+    if (isShop) return false;
+    return item.contractDocumentStatus === 'ARTIST_SUBMITTED';
+  });
 
   const buildProfileValues = () => {
     if (!businessProfile) return;
@@ -165,7 +176,7 @@ export const ContractManagement = () => {
   }, [businessProfile, isShop]);
 
   useEffect(() => {
-    if (!contractDetail || mode !== 'existing') return;
+    if (!contractDetail || mode !== 'existing' || !selectedContractId) return;
     const doc = contractDetail.contractDocument;
 
     setGapValues({
@@ -202,11 +213,12 @@ export const ContractManagement = () => {
         계좌번호: doc.artistAccountNumber,
       });
     }
-  }, [contractDetail, mode]);
+  }, [contractDetail, mode, selectedContractId]);
 
   const handleCancel = () => {
     setMode(null);
     setHasInput(false);
+    setIsReadOnly(false);
     setSelectedArtist(null);
     setSelectedContractId(null);
     setContractStartDate('');
@@ -223,11 +235,15 @@ export const ContractManagement = () => {
     setMode('new');
   };
 
-  const handleSelectInProgress = (contractId: number) => {
+  const handleSelectInProgress = (
+    contractId: number,
+    documentStatus: string
+  ) => {
     setMode('existing');
     setHasInput(false);
     setSelectedContractId(contractId);
     setSelectedArtist(null);
+    setIsReadOnly(documentStatus === 'ARTIST_SUBMITTED');
   };
 
   const handleSend = async (artist: ArtistSearchItem) => {
@@ -255,7 +271,7 @@ export const ContractManagement = () => {
         shopSignatureOwnerName: gapFooterValues['대표자'] ?? '',
       },
     }).unwrap();
-    setShowArtistModal(false);
+    handleCancel();
   };
 
   const handleArtistSend = async () => {
@@ -294,31 +310,33 @@ export const ContractManagement = () => {
       <section className="flex h-[63.25rem] w-[59.875rem] flex-col rounded-xl bg-white">
         {mode !== null ? (
           <div className="relative min-h-0 flex-1 overflow-y-auto p-10 text-gray-700">
-            <div className="absolute right-6 top-4 flex gap-2">
-              {!hasInput ? (
-                <>
-                  <Button
-                    variant="secondaryDark"
-                    size="small"
-                    label="취소"
-                    onClick={handleCancel}
-                  />
-                  <Button variant="secondaryDark" size="small" label="저장" />
-                </>
-              ) : (
-                <>
-                  <Button variant="secondaryDark" size="small" label="저장" />
-                  <Button
-                    variant="primary"
-                    size="small"
-                    label="보내기"
-                    onClick={() =>
-                      isShop ? setShowArtistModal(true) : handleArtistSend()
-                    }
-                  />
-                </>
-              )}
-            </div>
+            {!isReadOnly && (
+              <div className="absolute right-6 top-4 flex gap-2">
+                {!hasInput ? (
+                  <>
+                    <Button
+                      variant="secondaryDark"
+                      size="small"
+                      label="취소"
+                      onClick={handleCancel}
+                    />
+                    <Button variant="secondaryDark" size="small" label="저장" />
+                  </>
+                ) : (
+                  <>
+                    <Button variant="secondaryDark" size="small" label="저장" />
+                    <Button
+                      variant="primary"
+                      size="small"
+                      label="보내기"
+                      onClick={() =>
+                        isShop ? setShowArtistModal(true) : handleArtistSend()
+                      }
+                    />
+                  </>
+                )}
+              </div>
+            )}
 
             {isShop && mode === 'new' && (
               <div className="mb-4 flex items-center gap-2">
@@ -376,7 +394,7 @@ export const ContractManagement = () => {
                     setEulValues((prev) => ({ ...prev, [field]: value }));
                     setHasInput(true);
                   }}
-                  disabled={isShop}
+                  disabled={isShop || isReadOnly}
                 />
               </div>
             ))}
@@ -456,7 +474,6 @@ export const ContractManagement = () => {
                 />
               </div>
             ))}
-
             {c.article5.bankFields.map((field) => (
               <div key={field} className="mb-2 flex items-center gap-2 text-sm">
                 <span className="w-32 shrink-0">{field}</span>
@@ -472,7 +489,7 @@ export const ContractManagement = () => {
                     setBankValues((prev) => ({ ...prev, [field]: value }));
                     setHasInput(true);
                   }}
-                  disabled={isShop}
+                  disabled={isShop || isReadOnly}
                 />
               </div>
             ))}
@@ -568,7 +585,7 @@ export const ContractManagement = () => {
                     setEulFooterValue(e.target.value);
                     setHasInput(true);
                   }}
-                  disabled={isShop}
+                  disabled={isShop || isReadOnly}
                 />
                 <span>(서명)</span>
               </div>
@@ -598,10 +615,15 @@ export const ContractManagement = () => {
             </div>
           </div>
           <div className="overflow-y-auto">
-            {inProgressData?.items.map((item) => (
+            {activeContracts?.map((item) => (
               <button
                 key={item.contractId}
-                onClick={() => handleSelectInProgress(item.contractId)}
+                onClick={() =>
+                  handleSelectInProgress(
+                    item.contractId,
+                    item.contractDocumentStatus
+                  )
+                }
                 className={`grid w-full grid-cols-3 border-b border-gray-100 px-4 py-3 text-left text-sm transition-colors hover:bg-gray-50 ${
                   selectedContractId === item.contractId ? 'bg-gray-100' : ''
                 }`}
@@ -619,7 +641,26 @@ export const ContractManagement = () => {
             <h3>완료된 계약</h3>
             <Button variant="secondaryDark" size="small" label="삭제" />
           </div>
-          <div className="overflow-y-auto" />
+          <div className="overflow-y-auto">
+            {completedContracts?.map((item) => (
+              <button
+                key={item.contractId}
+                onClick={() =>
+                  handleSelectInProgress(
+                    item.contractId,
+                    item.contractDocumentStatus
+                  )
+                }
+                className={`grid w-full grid-cols-3 border-b border-gray-100 px-4 py-3 text-left text-sm transition-colors hover:bg-gray-50 ${
+                  selectedContractId === item.contractId ? 'bg-gray-100' : ''
+                }`}
+              >
+                <span className="truncate">{item.title}</span>
+                <span className="text-gray-500">{item.contractDate}</span>
+                <span className="text-gray-500">{item.counterpartyName}</span>
+              </button>
+            ))}
+          </div>
         </section>
       </div>
     </div>
