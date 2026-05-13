@@ -60,14 +60,13 @@ export interface InProgressContractResponse {
 export interface CompletedContractItem {
   contractId: number;
   title: string;
-  viewerType: string;
-  counterpartyId: number;
-  counterpartyName: string;
   contractDate: string;
+  artistId: number;
+  artistName: string;
+  artistBusinessNumber: string;
+  artistContact: string;
   contractStartDate: string;
   contractEndDate: string;
-  contractDocumentStatus: string;
-  detailApiPath: string;
 }
 
 export interface CompletedContractResponse {

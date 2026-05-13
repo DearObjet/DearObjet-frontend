@@ -9,6 +9,7 @@ import {
   useSendContractMutation,
   useArtistSubmissionMutation,
   useGetInProgressContractsQuery,
+  useGetCompletedContractsQuery,
   useGetContractDetailQuery,
 } from '../api/contract-management-api';
 import type { ArtistSearchItem } from '../types/contract-management-types';
@@ -118,6 +119,9 @@ export const ContractManagement = () => {
   const { data: inProgressData } = useGetInProgressContractsQuery(userId!, {
     skip: !userId,
   });
+  const { data: completedData } = useGetCompletedContractsQuery(userId!, {
+    skip: !userId,
+  });
   const { data: contractDetail } = useGetContractDetailQuery(
     { contractId: selectedContractId!, userId: userId! },
     { skip: !selectedContractId || !userId || mode !== 'existing' }
@@ -130,10 +134,7 @@ export const ContractManagement = () => {
     return item.contractDocumentStatus === 'SHOP_SENT';
   });
 
-  const completedContracts = inProgressData?.items.filter((item) => {
-    if (isShop) return false;
-    return item.contractDocumentStatus === 'ARTIST_SUBMITTED';
-  });
+  const completedContracts = completedData?.items ?? [];
 
   const buildProfileValues = () => {
     if (!businessProfile) return;
@@ -199,20 +200,18 @@ export const ContractManagement = () => {
       [c.article5.settlementFields[1]]: String(doc.paymentDay),
     });
 
-    if (!isShop) {
-      setEulValues({
-        '성명(작가명)': doc.artistName,
-        '사업자등록번호(해당 시)': doc.artistBusinessNumber,
-        주소: doc.artistAddress,
-        연락처: doc.artistContact,
-      });
-      setEulFooterValue(doc.artistSignatureName);
-      setBankValues({
-        은행명: doc.artistBankName,
-        예금주: doc.artistAccountHolder,
-        계좌번호: doc.artistAccountNumber,
-      });
-    }
+    setEulValues({
+      '성명(작가명)': doc.artistName,
+      '사업자등록번호(해당 시)': doc.artistBusinessNumber,
+      주소: doc.artistAddress,
+      연락처: doc.artistContact,
+    });
+    setEulFooterValue(doc.artistSignatureName);
+    setBankValues({
+      은행명: doc.artistBankName,
+      예금주: doc.artistAccountHolder,
+      계좌번호: doc.artistAccountNumber,
+    });
   }, [contractDetail, mode, selectedContractId]);
 
   const handleCancel = () => {
@@ -243,7 +242,9 @@ export const ContractManagement = () => {
     setHasInput(false);
     setSelectedContractId(contractId);
     setSelectedArtist(null);
-    setIsReadOnly(documentStatus === 'ARTIST_SUBMITTED');
+    setIsReadOnly(
+      documentStatus === 'ARTIST_SUBMITTED' || documentStatus === 'APPROVED'
+    );
   };
 
   const handleSend = async (artist: ArtistSearchItem) => {
@@ -642,14 +643,11 @@ export const ContractManagement = () => {
             <Button variant="secondaryDark" size="small" label="삭제" />
           </div>
           <div className="overflow-y-auto">
-            {completedContracts?.map((item) => (
+            {completedContracts.map((item) => (
               <button
                 key={item.contractId}
                 onClick={() =>
-                  handleSelectInProgress(
-                    item.contractId,
-                    item.contractDocumentStatus
-                  )
+                  handleSelectInProgress(item.contractId, 'APPROVED')
                 }
                 className={`grid w-full grid-cols-3 border-b border-gray-100 px-4 py-3 text-left text-sm transition-colors hover:bg-gray-50 ${
                   selectedContractId === item.contractId ? 'bg-gray-100' : ''
@@ -657,7 +655,7 @@ export const ContractManagement = () => {
               >
                 <span className="truncate">{item.title}</span>
                 <span className="text-gray-500">{item.contractDate}</span>
-                <span className="text-gray-500">{item.counterpartyName}</span>
+                <span className="text-gray-500">{item.artistName}</span>
               </button>
             ))}
           </div>
