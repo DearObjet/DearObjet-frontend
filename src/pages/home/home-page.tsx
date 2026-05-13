@@ -81,7 +81,8 @@ export const HomePage = () => {
                     <div className="h-full w-full bg-theme-200" />
                   )}
 
-                  {/* 하단 작성자 정보 오버레이 */}
+                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/10 to-transparent" />
+
                   <div className="absolute bottom-0 left-0 right-0 flex items-center gap-2 bg-white px-3 py-3">
                     {post.authorProfileUrl ? (
                       <div className="h-7 w-7 shrink-0 overflow-hidden rounded-full">
