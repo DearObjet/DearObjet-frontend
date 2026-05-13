@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router';
 
 import { ROUTES, USER_ROLE } from '../shared/constants';
 import {
-  PublicOnlyRoute,
   ProtectedRoute,
   RoleGuard,
   TempOrGuestRoute,
@@ -38,16 +37,19 @@ import { SettlementHistory } from '../features/settlement-hisotry';
 import { ArtistPage } from '../features/artist-page/pages/artist-page';
 
 export const router = createBrowserRouter([
-  // 비로그인 전용
   {
-    element: <PublicOnlyRoute />,
     children: [{ path: ROUTES.OAUTH_CALLBACK, element: <OAuthCallback /> }],
   },
 
   // 비로그인 또는 TEMP만 접근 가능
   {
     element: <TempOrGuestRoute />,
-    children: [{ path: ROUTES.SIGNUP, element: <Signup /> }],
+    children: [
+      {
+        element: <MainLayout />,
+        children: [{ path: ROUTES.SIGNUP, element: <Signup /> }],
+      },
+    ],
   },
 
   // MainLayout
