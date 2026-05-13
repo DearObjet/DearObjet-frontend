@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import { Search, X } from 'lucide-react';
+
+import LeftShiftIcon from '../../../assets/left-shift.svg';
 
 import type { ShopMapItem } from '../types/map-types';
 
@@ -9,6 +12,9 @@ interface MapSearchBarProps {
 }
 
 export const MapSearchBar = ({ shops, onSelectShop }: MapSearchBarProps) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: string })?.from ?? '/';
   const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,8 +55,17 @@ export const MapSearchBar = ({ shops, onSelectShop }: MapSearchBarProps) => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative mx-2 my-2.5">
-      <div className="flex items-center gap-2 rounded-lg border border-theme-300 px-3 py-2">
+    <div
+      ref={containerRef}
+      className="relative mx-2 my-2.5 flex items-center gap-2"
+    >
+      {/* 뒤로가기 버튼 */}
+      <button onClick={() => navigate(from)} className="shrink-0">
+        <img src={LeftShiftIcon} alt="뒤로가기" className="h-4 w-4" />
+      </button>
+
+      {/* 검색창 */}
+      <div className="flex flex-1 items-center gap-2 rounded-lg border border-theme-300 px-3 py-2">
         <Search className="h-4 w-4 shrink-0 text-theme-300" />
         <input
           type="text"
@@ -72,7 +87,7 @@ export const MapSearchBar = ({ shops, onSelectShop }: MapSearchBarProps) => {
 
       {/* 검색 결과 드롭다운 */}
       {isOpen && value.trim() && (
-        <div className="absolute left-0 right-0 z-10 mt-1 overflow-hidden rounded-lg border border-theme-200 bg-white shadow-md">
+        <div className="absolute left-6 right-0 top-full z-10 mt-1 overflow-hidden rounded-lg border border-theme-200 bg-white shadow-md">
           {filteredShops.length > 0 ? (
             <ul className="max-h-[16rem] overflow-y-auto [&::-webkit-scrollbar]:hidden">
               {filteredShops.map((shop) => (
