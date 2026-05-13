@@ -43,8 +43,41 @@ const GAP_FOOTER_FIELD_MAP: Record<string, string> = {
 const formatDateInput = (value: string) => {
   const digits = value.replace(/\D/g, '').slice(0, 8);
   if (digits.length <= 4) return digits;
-  if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
-  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+
+  let month = digits.slice(4, 6);
+  if (month.length === 2) {
+    const m = Number(month);
+    if (m < 1) month = '01';
+    else if (m > 12) month = '12';
+  }
+
+  if (digits.length <= 6) return `${digits.slice(0, 4)}-${month}`;
+
+  let day = digits.slice(6, 8);
+  if (day.length === 2) {
+    const d = Number(day);
+    if (d < 1) day = '01';
+    else if (d > 31) day = '31';
+  }
+
+  return `${digits.slice(0, 4)}-${month}-${day}`;
+};
+
+const today = new Date().toISOString().split('T')[0];
+
+const validateDate = (value: string) => {
+  if (value.length < 10) return value;
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() + 1 !== month ||
+    date.getDate() !== day
+  ) {
+    return today;
+  }
+  if (value < today) return today;
+  return value;
 };
 
 const formatNumberInput = (value: string) => value.replace(/\D/g, '');
@@ -225,7 +258,7 @@ export const ContractManagement = () => {
                     label="취소"
                     onClick={handleCancel}
                   />
-                  <Button variant="primary" size="small" label="저장" />
+                  <Button variant="secondaryDark" size="small" label="저장" />
                 </>
               ) : (
                 <>
@@ -312,7 +345,8 @@ export const ContractManagement = () => {
                 placeholder="YYYY-MM-DD"
                 value={contractStartDate}
                 onChange={(e) => {
-                  setContractStartDate(formatDateInput(e.target.value));
+                  const formatted = formatDateInput(e.target.value);
+                  setContractStartDate(validateDate(formatted));
                   setHasInput(true);
                 }}
                 disabled={!isShop}
@@ -325,7 +359,8 @@ export const ContractManagement = () => {
                 placeholder="YYYY-MM-DD"
                 value={contractEndDate}
                 onChange={(e) => {
-                  setContractEndDate(formatDateInput(e.target.value));
+                  const formatted = formatDateInput(e.target.value);
+                  setContractEndDate(validateDate(formatted));
                   setHasInput(true);
                 }}
                 disabled={!isShop}
@@ -342,7 +377,10 @@ export const ContractManagement = () => {
                 placeholder="[수수료율]"
                 value={commissionValue}
                 onChange={(e) => {
-                  setCommissionValue(formatNumberInput(e.target.value));
+                  const raw = formatNumberInput(e.target.value);
+                  const num = Number(raw);
+                  const capped = num > 99 ? '99' : raw;
+                  setCommissionValue(capped);
                   setHasInput(true);
                 }}
                 disabled={!isShop}
@@ -358,9 +396,12 @@ export const ContractManagement = () => {
                   className="flex-1"
                   value={settlementValues[field] ?? ''}
                   onChange={(e) => {
+                    const raw = formatNumberInput(e.target.value);
+                    const num = Number(raw);
+                    const capped = num > 31 ? '31' : raw;
                     setSettlementValues((prev) => ({
                       ...prev,
-                      [field]: formatNumberInput(e.target.value),
+                      [field]: capped,
                     }));
                     setHasInput(true);
                   }}
@@ -428,7 +469,8 @@ export const ContractManagement = () => {
                   placeholder="YYYY-MM-DD"
                   value={contractDate}
                   onChange={(e) => {
-                    setContractDate(formatDateInput(e.target.value));
+                    const formatted = formatDateInput(e.target.value);
+                    setContractDate(validateDate(formatted));
                     setHasInput(true);
                   }}
                   disabled={!isShop}
