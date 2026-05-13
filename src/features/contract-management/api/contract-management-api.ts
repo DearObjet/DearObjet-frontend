@@ -11,6 +11,7 @@ import type {
   ArtistSubmissionRequest,
   InProgressContractResponse,
   CompletedContractResponse,
+  ContractDetailData,
 } from '../types/contract-management-types';
 
 export const contractManagementApi = createApi({
@@ -71,6 +72,16 @@ export const contractManagementApi = createApi({
         response.data,
       providesTags: ['Completed'],
     }),
+
+    getContractDetail: builder.query<
+      ContractDetailData,
+      { contractId: number; userId: number }
+    >({
+      query: ({ contractId, userId }) =>
+        `${CONTRACT_MANAGEMENT_ENDPOINTS.CONTRACT_DETAIL(contractId)}?userId=${userId}`,
+      transformResponse: (response: ApiResponse<ContractDetailData>) =>
+        response.data,
+    }),
   }),
 });
 
@@ -80,4 +91,5 @@ export const {
   useArtistSubmissionMutation,
   useGetInProgressContractsQuery,
   useGetCompletedContractsQuery,
+  useGetContractDetailQuery,
 } = contractManagementApi;

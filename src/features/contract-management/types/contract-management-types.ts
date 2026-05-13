@@ -100,3 +100,50 @@ export interface SendContractResponse {
   artistAccountNumber: string;
   artistSignatureName: string;
 }
+
+export interface ContractDocument {
+  contractId: number;
+  contractStatus: string;
+  contractDocumentStatus: string;
+  shopBusinessName: string;
+  shopOwnerName: string;
+  shopBusinessNumber: string;
+  shopAddress: string;
+  shopContact: string;
+  contractStartDate: string;
+  contractEndDate: string;
+  commissionRate: number;
+  settlementDay: number;
+  paymentDay: number;
+  contractDate: string;
+  shopSignatureBusinessName: string;
+  shopSignatureOwnerName: string;
+  artistName: string;
+  artistBusinessNumber: string;
+  artistAddress: string;
+  artistContact: string;
+  artistBankName: string;
+  artistAccountHolder: string;
+  artistAccountNumber: string;
+  artistSignatureName: string;
+}
+
+export interface ContractDetailData {
+  contractId: number;
+  shopId: number;
+  shopName: string;
+  artistId: number;
+  artistName: string;
+  contractStartDate: string;
+  contractEndDate: string;
+  contractStatus: string;
+  contractRequestType: string;
+  commissionType: string;
+  commissionValue: number;
+  memo: string;
+  contractDocument: ContractDocument;
+}
+
+export interface ContractDetailResponse {
+  data: ContractDetailData;
+}
