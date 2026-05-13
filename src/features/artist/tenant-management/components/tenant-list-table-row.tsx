@@ -4,9 +4,9 @@ import { useAppSelector } from '../../../../app/hooks';
 import {
   useReleaseRequestMutation,
   useReleaseCancellationMutation,
+  useApproveContractMutation,
 } from '../../../shop/tenant-management/api/artist-tenant-api';
 import { TenantStatusBadge } from './tenant-status-badge';
-// import type { TenantStatus } from './tenant-status-badge';
 import type { TenantStatus } from '../../../artist/tenant-management/components/tenant-list-table';
 
 interface TenantListTableRowProps {
@@ -37,6 +37,7 @@ export const TenantListTableRow = ({
 
   const [releaseRequest] = useReleaseRequestMutation();
   const [releaseCancellation] = useReleaseCancellationMutation();
+  const [approveContract] = useApproveContractMutation();
 
   const handleActionClick = () => {
     if (!userId) return;
@@ -45,8 +46,12 @@ export const TenantListTableRow = ({
       releaseRequest({ contractId, userId });
     } else if (nextAction.code === 'RELEASE_CANCELLATION') {
       releaseCancellation({ contractId, userId });
+    } else if (nextAction.code === 'CONTRACT_APPROVE') {
+      approveContract({ contractId, userId });
     }
   };
+
+  const isDisabled = nextAction.code === 'WAITING_ARTIST_SUBMISSION';
 
   return (
     <tr className="border-b border-gray-100 text-center text-sm">
@@ -58,13 +63,20 @@ export const TenantListTableRow = ({
         <TenantStatusBadge status={status} />
       </td>
       <td className="py-2">
-        {nextAction.code !== 'NONE' && (
+        {nextAction.code !== 'NONE' ? (
           <Button
             variant="secondaryDark"
             size="small"
             label={nextAction.label}
             onClick={handleActionClick}
-            disabled={nextAction.code === 'WAITING_ARTIST_SUBMISSION'}
+            disabled={isDisabled}
+          />
+        ) : (
+          <Button
+            variant="secondaryDark"
+            size="small"
+            label={nextAction.label}
+            disabled
           />
         )}
       </td>

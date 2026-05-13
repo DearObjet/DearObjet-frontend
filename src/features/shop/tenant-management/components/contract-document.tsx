@@ -1,5 +1,4 @@
 import type { ArtistContractDetail } from '../types/artist-tenant-types';
-
 import { CONTRACT_STATIC_TEXT } from '../constants/artist-tenant-constants';
 
 interface ContractDocumentProps {
@@ -9,9 +8,10 @@ interface ContractDocumentProps {
 const c = CONTRACT_STATIC_TEXT;
 
 export const ContractDocument = ({ contractDetail }: ContractDocumentProps) => {
+  const doc = contractDetail?.contractDocument;
+
   return (
     <div className="h-[53.1875rem] w-[33.75rem] overflow-y-auto pr-4 text-gray-700">
-      {/* <p className="mb-6 text-center font-medium">{c.title}</p> */}
       <h2 className="mb-[2.1875rem] text-center text-[32px] font-medium">
         {c.title}
       </h2>
@@ -22,23 +22,37 @@ export const ContractDocument = ({ contractDetail }: ContractDocumentProps) => {
       {c.article1.gap.fields.map((field) => (
         <div key={field} className="mb-2 flex items-center gap-2 text-sm">
           <span className="w-32 shrink-0">{field}</span>
-          {field === '상호명' ? (
-            <span>{contractDetail?.shopName ?? '__________'}</span>
-          ) : (
-            <span className="text-gray-400">__________</span>
-          )}
+          <span>
+            {field === '상호명'
+              ? (doc?.shopBusinessName ?? '__________')
+              : field === '대표자'
+                ? (doc?.shopOwnerName ?? '__________')
+                : field === '사업자등록번호'
+                  ? (doc?.shopBusinessNumber ?? '__________')
+                  : field === '주소'
+                    ? (doc?.shopAddress ?? '__________')
+                    : field === '연락처'
+                      ? (doc?.shopContact ?? '__________')
+                      : '__________'}
+          </span>
         </div>
       ))}
 
       <p className="mb-1 mt-3 font-medium">{c.article1.eul.label}</p>
-      <div className="mb-2 flex items-center gap-2 text-sm">
-        <span className="w-32 shrink-0">{c.article1.eul.fields[0]}</span>
-        <span>{contractDetail?.artistName ?? '__________'}</span>
-      </div>
-      {c.article1.eul.fields.slice(1).map((field) => (
+      {c.article1.eul.fields.map((field) => (
         <div key={field} className="mb-2 flex items-center gap-2 text-sm">
           <span className="w-32 shrink-0">{field}</span>
-          <span className="text-gray-400">__________</span>
+          <span>
+            {field === '성명(작가명)'
+              ? (doc?.artistName ?? '__________')
+              : field === '사업자등록번호(해당 시)'
+                ? (doc?.artistBusinessNumber ?? '__________')
+                : field === '주소'
+                  ? (doc?.artistAddress ?? '__________')
+                  : field === '연락처'
+                    ? (doc?.artistContact ?? '__________')
+                    : '__________'}
+          </span>
         </div>
       ))}
 
@@ -48,35 +62,43 @@ export const ContractDocument = ({ contractDetail }: ContractDocumentProps) => {
       <p className="mb-2 font-medium">{c.article3.title}</p>
       <div className="mb-2 flex items-center gap-2 text-sm">
         <span className="shrink-0">계약 시작일</span>
-        <span>{contractDetail?.contractStartDate ?? '__________'}</span>
+        <span>{doc?.contractStartDate ?? '__________'}</span>
       </div>
       <div className="mb-2 flex items-center gap-2 text-sm">
         <span className="shrink-0">계약 종료일</span>
-        <span>{contractDetail?.contractEndDate ?? '__________'}</span>
+        <span>{doc?.contractEndDate ?? '__________'}</span>
       </div>
       <p className="mb-6 text-sm">{c.article3.suffix}</p>
 
       <p className="mb-2 font-medium">{c.article5.title}</p>
       <div className="mb-2 flex items-center gap-2 text-sm">
         <span>{c.article5.content1}</span>
-        <span>
-          {contractDetail
-            ? `${contractDetail.commissionValue}${contractDetail.commissionType === 'RATE' ? '%' : '원'}`
-            : '__________'}
-        </span>
+        <span>{doc ? `${doc.commissionRate}%` : '__________'}</span>
         <span>{c.article5.content1Suffix}</span>
       </div>
       <p className="mb-2 text-sm">{c.article5.content2}</p>
       {c.article5.settlementFields.map((field) => (
         <div key={field} className="mb-2 flex items-center gap-2 text-sm">
           <span className="w-32 shrink-0">{field}</span>
-          <span className="text-gray-400">__________</span>
+          <span>
+            {field === c.article5.settlementFields[0]
+              ? (doc?.settlementDay ?? '__________')
+              : (doc?.paymentDay ?? '__________')}
+          </span>
         </div>
       ))}
       {c.article5.bankFields.map((field) => (
         <div key={field} className="mb-2 flex items-center gap-2 text-sm">
           <span className="w-32 shrink-0">{field}</span>
-          <span className="text-gray-400">__________</span>
+          <span>
+            {field === '은행명'
+              ? (doc?.artistBankName ?? '__________')
+              : field === '예금주'
+                ? (doc?.artistAccountHolder ?? '__________')
+                : field === '계좌번호'
+                  ? (doc?.artistAccountNumber ?? '__________')
+                  : '__________'}
+          </span>
         </div>
       ))}
 
@@ -116,7 +138,7 @@ export const ContractDocument = ({ contractDetail }: ContractDocumentProps) => {
       <div className="mt-8">
         <div className="mb-2 flex items-center gap-2 text-sm">
           <span className="shrink-0">계약일</span>
-          <span className="text-gray-400">__________</span>
+          <span>{doc?.contractDate ?? '__________'}</span>
         </div>
 
         <p className="mb-1 mt-4 font-medium">
@@ -125,11 +147,11 @@ export const ContractDocument = ({ contractDetail }: ContractDocumentProps) => {
         {c.footer.signatureFields.gap.fields.map((field) => (
           <div key={field} className="mb-2 flex items-center gap-2 text-sm">
             <span className="w-20 shrink-0">{field}</span>
-            {field === '상호명' ? (
-              <span>{contractDetail?.shopName ?? '__________'}</span>
-            ) : (
-              <span className="text-gray-400">__________</span>
-            )}
+            <span>
+              {field === '상호명'
+                ? (doc?.shopSignatureBusinessName ?? '__________')
+                : (doc?.shopSignatureOwnerName ?? '__________')}
+            </span>
           </div>
         ))}
 
@@ -140,7 +162,7 @@ export const ContractDocument = ({ contractDetail }: ContractDocumentProps) => {
           <span className="w-20 shrink-0">
             {c.footer.signatureFields.eul.fields[0]}
           </span>
-          <span>{contractDetail?.artistName ?? '__________'}</span>
+          <span>{doc?.artistSignatureName ?? '__________'}</span>
           <span>(서명)</span>
         </div>
       </div>

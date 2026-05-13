@@ -67,6 +67,19 @@ export const artistTenantApi = createApi({
         response.data,
       invalidatesTags: ['ArtistTenant'],
     }),
+
+    approveContract: builder.mutation<
+      ContractReleaseResponse,
+      { contractId: number; userId: number }
+    >({
+      query: ({ contractId, userId }) => ({
+        url: `${ARTIST_TENANT_ENDPOINTS.APPROVAL(contractId)}?userId=${userId}`,
+        method: 'PATCH',
+      }),
+      transformResponse: (response: { data: ContractReleaseResponse }) =>
+        response.data,
+      invalidatesTags: ['ArtistTenant'],
+    }),
   }),
 });
 
@@ -76,4 +89,5 @@ export const {
   useGetArtistSuggestionsQuery,
   useReleaseRequestMutation,
   useReleaseCancellationMutation,
+  useApproveContractMutation,
 } = artistTenantApi;

@@ -9,6 +9,33 @@ export type ContractRequestType = 'NONE' | 'EXTENSION' | 'TERMINATION';
 
 export type CommissionType = 'RATE' | 'FIXED';
 
+export interface ContractDocument {
+  contractId: number;
+  contractStatus: string;
+  contractDocumentStatus: string;
+  shopBusinessName: string;
+  shopOwnerName: string;
+  shopBusinessNumber: string;
+  shopAddress: string;
+  shopContact: string;
+  contractStartDate: string;
+  contractEndDate: string;
+  commissionRate: number;
+  settlementDay: number;
+  paymentDay: number;
+  contractDate: string;
+  shopSignatureBusinessName: string;
+  shopSignatureOwnerName: string;
+  artistName: string;
+  artistBusinessNumber: string;
+  artistAddress: string;
+  artistContact: string;
+  artistBankName: string;
+  artistAccountHolder: string;
+  artistAccountNumber: string;
+  artistSignatureName: string;
+}
+
 export interface ArtistContractItem {
   contractId: number;
   artistId: number;
@@ -37,6 +64,7 @@ export interface ArtistContractDetail {
   commissionType: CommissionType;
   commissionValue: number;
   memo: string;
+  contractDocument: ContractDocument;
 }
 
 export interface ArtistSuggestionItem {

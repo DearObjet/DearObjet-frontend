@@ -58,7 +58,9 @@ export const ArtistTenantManagement = () => {
         label:
           item.nextAction.code === 'WAITING_ARTIST_SUBMISSION'
             ? '대기'
-            : item.nextAction.label,
+            : item.nextAction.code === 'NONE'
+              ? item.contractStatusLabel
+              : item.nextAction.label,
       },
       detailAvailable: item.detailAvailable,
     })) ?? [];

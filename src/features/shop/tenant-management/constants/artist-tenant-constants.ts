@@ -7,6 +7,8 @@ export const ARTIST_TENANT_ENDPOINTS = {
     `/api/v1/contracts/shops/${contractId}/release-request`,
   RELEASE_CANCELLATION: (contractId: number) =>
     `/api/v1/contracts/shops/${contractId}/release-cancellation`,
+  APPROVAL: (contractId: number) =>
+    `/api/v1/contracts/artists/${contractId}/approval`,
 };
 
 export const CONTRACT_STATIC_TEXT = {
