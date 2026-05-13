@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 
 import { useAppSelector } from '../../../app/hooks';
+import { ROUTES } from '../../../shared/constants';
 
 import { useLazyGetUserPostsQuery } from '../../post/api/post-api';
 import type { PostListItem } from '../../post/types/post-type';
@@ -32,7 +33,7 @@ export const MyPosts = () => {
   );
 
   const handlePostClick = (postId: number) => {
-    navigate(`/post?id=${postId}`);
+    navigate(`${ROUTES.POSTS}?id=${postId}`);
   };
 
   return (
