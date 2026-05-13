@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import type { RootState } from '../../../app/store';
@@ -124,7 +124,7 @@ export const ContractManagement = () => {
   const [sendContract] = useSendContractMutation();
   const [artistSubmission] = useArtistSubmissionMutation();
 
-  const buildProfileValues = () => {
+  const buildProfileValues = useCallback(() => {
     if (!businessProfile) return;
     if (isShop) {
       const newGapValues: Record<string, string> = {};
@@ -159,11 +159,11 @@ export const ContractManagement = () => {
       setEulFooterValue(businessProfile.userName ?? '');
     }
     setHasInput(true);
-  };
+  }, [businessProfile, isShop]);
 
   useEffect(() => {
     buildProfileValues();
-  }, [businessProfile, isShop, buildProfileValues]);
+  }, [buildProfileValues]);
 
   useEffect(() => {
     if (!contractDetail || mode !== 'existing') return;
