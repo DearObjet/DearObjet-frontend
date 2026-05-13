@@ -1,13 +1,14 @@
-import { Button } from '../../../../shared/components/ui';
-import { useAppSelector } from '../../../../app/hooks';
+import { Button } from '../../../shared/components/ui';
+import { useAppSelector } from '../../../app/hooks';
 
 import {
   useReleaseRequestMutation,
   useReleaseCancellationMutation,
-} from '../../../shop/tenant-management/api/artist-tenant-api';
+  useApproveContractMutation,
+  useExtensionRequestMutation,
+} from '../api/artist-tenant-api';
 import { TenantStatusBadge } from './tenant-status-badge';
-// import type { TenantStatus } from './tenant-status-badge';
-import type { TenantStatus } from '../../../artist/tenant-management/components/tenant-list-table';
+import type { TenantStatus } from '../components/tenant-list-table';
 
 interface TenantListTableRowProps {
   index: number;
@@ -21,6 +22,8 @@ interface TenantListTableRowProps {
     label: string;
   };
   onView: () => void;
+  onActionClick?: () => void;
+  variant?: 'artist' | 'shop';
 }
 
 export const TenantListTableRow = ({
@@ -32,21 +35,42 @@ export const TenantListTableRow = ({
   status,
   nextAction,
   onView,
+  onActionClick,
+  variant = 'artist',
 }: TenantListTableRowProps) => {
   const userId = useAppSelector((state) => state.auth.user?.userId);
 
   const [releaseRequest] = useReleaseRequestMutation();
   const [releaseCancellation] = useReleaseCancellationMutation();
+  const [approveContract] = useApproveContractMutation();
+  const [extensionRequest] = useExtensionRequestMutation();
 
   const handleActionClick = () => {
     if (!userId) return;
-
+    if (nextAction.code === 'EXTENSION_REQUEST') {
+      extensionRequest({ contractId, userId });
+      return;
+    }
+    if (onActionClick) {
+      onActionClick();
+      return;
+    }
     if (nextAction.code === 'RELEASE_REQUEST') {
       releaseRequest({ contractId, userId });
     } else if (nextAction.code === 'RELEASE_CANCELLATION') {
       releaseCancellation({ contractId, userId });
+    } else if (nextAction.code === 'CONTRACT_APPROVE') {
+      approveContract({ contractId, userId });
     }
   };
+
+  const isActionable =
+    nextAction.code === 'RELEASE_REQUEST' ||
+    nextAction.code === 'RELEASE_CANCELLATION' ||
+    nextAction.code === 'EXTENSION_REQUEST' ||
+    (variant === 'artist' && nextAction.code === 'CONTRACT_APPROVE');
+
+  const isDisabled = !isActionable;
 
   return (
     <tr className="border-b border-gray-100 text-center text-sm">
@@ -55,17 +79,25 @@ export const TenantListTableRow = ({
       <td className="py-2 text-gray-500">{contractStart}</td>
       <td className="py-2 text-gray-500">{contractEnd}</td>
       <td className="py-2">
-        <TenantStatusBadge status={status} />
+        <TenantStatusBadge
+          status={status}
+          onExtension={() => {
+            if (userId) extensionRequest({ contractId, userId });
+          }}
+        />
       </td>
       <td className="py-2">
-        {nextAction.code !== 'NONE' && (
-          <Button
-            variant="secondaryDark"
-            size="small"
-            label={nextAction.label}
-            onClick={handleActionClick}
-          />
-        )}
+        <Button
+          variant="secondaryDark"
+          size="small"
+          label={
+            nextAction.code === 'EXTENSION_REQUEST'
+              ? '해제신청'
+              : nextAction.label
+          }
+          onClick={handleActionClick}
+          disabled={isDisabled}
+        />
       </td>
       <td className="py-2">
         <Button

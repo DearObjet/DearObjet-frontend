@@ -30,9 +30,9 @@ import { Chat } from '../features/chat/pages/chat';
 import { InventoryManagement } from '../features/artist/inventory-management/pages/inventory-mangement';
 import { OutboundManagement } from '../features/artist/outbound-management';
 import { InboundManagement } from '../features/shop/inbound-management';
-import { ArtistTenantManagement } from '../features/shop/tenant-management/pages/artist-tenant-management';
-import { ShopTenantManagement } from '../features/artist/tenant-management/pages/shop-tenant-management';
-import { ContractManagement } from '../features/shop/contract-management/pages/contract-management';
+import { ArtistTenantManagement } from '../features/tenant-management/pages/artist-tenant-management';
+import { ShopTenantManagement } from '../features/tenant-management/pages/shop-tenant-management';
+import { ContractManagement } from '../features/contract-management/pages/contract-management';
 import { SettlementHistory } from '../features/settlement-hisotry';
 import { ArtistPage } from '../features/artist-page/pages/artist-page';
 
@@ -145,6 +145,10 @@ export const router = createBrowserRouter([
               {
                 path: ROUTES.ARTIST_SHIPMENTS,
                 element: <OutboundManagement />,
+              },
+              {
+                path: ROUTES.ARTIST_CONTRACTS,
+                element: <ContractManagement />,
               },
               { path: ROUTES.ARTIST_SETTLEMENTS, element: <div>정산</div> },
               {

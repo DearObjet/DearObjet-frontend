@@ -61,7 +61,6 @@ export const Aside = () => {
       <nav className="mt-[3.375rem] flex flex-col gap-[1.9375rem]">
         <h2 className="font-abril text-sm">Manage</h2>
 
-        {/* 관리 홈 */}
         <div className="flex flex-col gap-5">
           <Asidetab
             icon={LayoutPanelTop}
@@ -129,24 +128,21 @@ export const Aside = () => {
               </>
             )}
             {role === 'ARTIST' && (
-              <>
-                <li>
-                  <Asidetab
-                    label="품목 및 재고 관리"
-                    className={
-                      activeMenu === ROUTES.ARTIST_INVENTORY
-                        ? 'text-white'
-                        : 'text-[#C1C1C1]'
-                    }
-                    onClick={() => handleClick(ROUTES.ARTIST_INVENTORY)}
-                  />
-                </li>
-              </>
+              <li>
+                <Asidetab
+                  label="품목 및 재고 관리"
+                  className={
+                    activeMenu === ROUTES.ARTIST_INVENTORY
+                      ? 'text-white'
+                      : 'text-[#C1C1C1]'
+                  }
+                  onClick={() => handleClick(ROUTES.ARTIST_INVENTORY)}
+                />
+              </li>
             )}
           </ul>
         </div>
 
-        {/* 입점관리 */}
         <div className="flex flex-col gap-5">
           <Asidetab
             icon={ClipboardList}
@@ -226,12 +222,22 @@ export const Aside = () => {
                     onClick={() => handleClick(ROUTES.ARTIST_SHIPMENTS)}
                   />
                 </li>
+                <li>
+                  <Asidetab
+                    label="계약서 관리"
+                    className={
+                      activeMenu === ROUTES.ARTIST_CONTRACTS
+                        ? 'text-white'
+                        : 'text-[#C1C1C1]'
+                    }
+                    onClick={() => handleClick(ROUTES.ARTIST_CONTRACTS)}
+                  />
+                </li>
               </>
             )}
           </ul>
         </div>
 
-        {/* 정산관리 */}
         <div className="flex flex-col gap-5">
           <Asidetab
             icon={Calculator}
@@ -319,7 +325,6 @@ export const Aside = () => {
           </ul>
         </div>
 
-        {/* 메시지 */}
         <Asidetab
           icon={MessageCircleMore}
           label="메시지"
@@ -337,7 +342,6 @@ export const Aside = () => {
           }
         />
 
-        {/* 결제관리 */}
         <Asidetab
           icon={Wallet}
           label="결제관리"
@@ -345,7 +349,6 @@ export const Aside = () => {
           onClick={handleComingSoon('결제관리')}
         />
 
-        {/* 개인정보 */}
         <Asidetab
           icon={ShieldCheck}
           label="개인정보"

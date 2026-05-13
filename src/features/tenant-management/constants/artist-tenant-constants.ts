@@ -4,10 +4,18 @@ export const ARTIST_TENANT_ENDPOINTS = {
     `/api/v1/contracts/artists/${contractId}`,
   ARTIST_SUGGESTIONS: '/api/v1/contracts/artists/suggestions',
   RELEASE_REQUEST: (contractId: number) =>
-    `/api/v1/contracts/shops/${contractId}/release-request`,
+    `/api/v1/contracts/artists/${contractId}/termination`,
   RELEASE_CANCELLATION: (contractId: number) =>
     `/api/v1/contracts/shops/${contractId}/release-cancellation`,
-};
+  APPROVAL: (contractId: number) =>
+    `/api/v1/contracts/artists/${contractId}/approval`,
+  EXTENSION_REQUEST: (contractId: number) =>
+    `/api/v1/contracts/shops/${contractId}/extension-request`,
+  SHOP_CONTRACTS: '/api/v1/contracts/shops',
+  SHOP_CONTRACT_DETAIL: (contractId: number) =>
+    `/api/v1/contracts/shops/${contractId}`,
+  SHOP_SUGGESTIONS: '/api/v1/contracts/shops/suggestions',
+} as const;
 
 export const CONTRACT_STATIC_TEXT = {
   title: '입점계약서',

@@ -70,6 +70,9 @@ export const ROUTES = {
   // artist_inventory
   ARTIST_INVENTORY: '/artist/inventory',
 
+  // artist_contracts
+  ARTIST_CONTRACTS: '/artist/contracts',
+
   // shop
   ARTIST_SHOPS: '/artist/shops',
 
