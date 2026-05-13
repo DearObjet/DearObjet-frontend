@@ -8,6 +8,7 @@ import { useGetBusinessProfileQuery } from '../../my-page/api/my-page-api';
 import {
   useSendContractMutation,
   useArtistSubmissionMutation,
+  useGetInProgressContractsQuery,
 } from '../api/contract-management-api';
 import type { ArtistSearchItem } from '../types/contract-management-types';
 import { Button, Input } from '../../../shared/components/ui';
@@ -51,9 +52,11 @@ const formatNumberInput = (value: string) => value.replace(/\D/g, '');
 export const ContractManagement = () => {
   const [mode, setMode] = useState<TemplateMode>(null);
   const [hasInput, setHasInput] = useState(false);
-  const [hasEdit, setHasEdit] = useState(false);
   const [showArtistModal, setShowArtistModal] = useState(false);
   const [selectedArtist, setSelectedArtist] = useState<ArtistSearchItem | null>(
+    null
+  );
+  const [selectedContractId, setSelectedContractId] = useState<number | null>(
     null
   );
 
@@ -77,10 +80,13 @@ export const ContractManagement = () => {
   const isShop = role === 'SHOP';
 
   const { data: businessProfile } = useGetBusinessProfileQuery();
+  const { data: inProgressData } = useGetInProgressContractsQuery(userId!, {
+    skip: !userId,
+  });
   const [sendContract] = useSendContractMutation();
   const [artistSubmission] = useArtistSubmissionMutation();
 
-  useEffect(() => {
+  const buildProfileValues = () => {
     if (!businessProfile) return;
     if (isShop) {
       const newGapValues: Record<string, string> = {};
@@ -114,17 +120,35 @@ export const ContractManagement = () => {
       setEulValues(newEulValues);
       setEulFooterValue(businessProfile.userName ?? '');
     }
-  }, [businessProfile, isShop]);
-
-  const triggerChange = () => {
-    if (mode === 'new') setHasInput(true);
-    if (mode === 'existing') setHasEdit(true);
   };
+
+  useEffect(() => {
+    buildProfileValues();
+  }, [businessProfile, isShop]);
 
   const handleCancel = () => {
     setMode(null);
     setHasInput(false);
-    setHasEdit(false);
+    setSelectedArtist(null);
+    setSelectedContractId(null);
+    setContractStartDate('');
+    setContractEndDate('');
+    setContractDate('');
+    setCommissionValue('');
+    setSettlementValues({});
+    setBankValues({});
+    buildProfileValues();
+  };
+
+  const handleNewContract = () => {
+    handleCancel();
+    setMode('new');
+  };
+
+  const handleSelectInProgress = (contractId: number) => {
+    setMode('existing');
+    setHasInput(false);
+    setSelectedContractId(contractId);
     setSelectedArtist(null);
   };
 
@@ -156,10 +180,10 @@ export const ContractManagement = () => {
     handleCancel();
   };
 
-  const handleArtistSubmit = async (contractId: number) => {
-    if (!userId) return;
+  const handleArtistSend = async () => {
+    if (!userId || !selectedContractId) return;
     await artistSubmission({
-      contractId,
+      contractId: selectedContractId,
       userId,
       body: {
         artistName: eulValues['성명(작가명)'] ?? '',
@@ -193,26 +217,7 @@ export const ContractManagement = () => {
         {mode !== null ? (
           <div className="relative min-h-0 flex-1 overflow-y-auto p-10 text-gray-700">
             <div className="absolute right-6 top-4 flex gap-2">
-              {mode === 'new' && isShop && hasInput && (
-                <>
-                  <Button variant="secondaryDark" size="small" label="저장" />
-                  <Button
-                    variant="primary"
-                    size="small"
-                    label="보내기"
-                    onClick={() => setShowArtistModal(true)}
-                  />
-                </>
-              )}
-              {mode === 'new' && !isShop && hasInput && (
-                <Button
-                  variant="primary"
-                  size="small"
-                  label="제출"
-                  onClick={() => handleArtistSubmit(0)}
-                />
-              )}
-              {mode === 'existing' && hasEdit && (
+              {!hasInput ? (
                 <>
                   <Button
                     variant="secondaryDark"
@@ -221,6 +226,18 @@ export const ContractManagement = () => {
                     onClick={handleCancel}
                   />
                   <Button variant="primary" size="small" label="저장" />
+                </>
+              ) : (
+                <>
+                  <Button variant="secondaryDark" size="small" label="저장" />
+                  <Button
+                    variant="primary"
+                    size="small"
+                    label="보내기"
+                    onClick={() =>
+                      isShop ? setShowArtistModal(true) : handleArtistSend()
+                    }
+                  />
                 </>
               )}
             </div>
@@ -254,7 +271,7 @@ export const ContractManagement = () => {
                       ...prev,
                       [field]: e.target.value,
                     }));
-                    triggerChange();
+                    setHasInput(true);
                   }}
                   disabled={!isShop}
                 />
@@ -277,7 +294,7 @@ export const ContractManagement = () => {
                       ...prev,
                       [field]: e.target.value,
                     }));
-                    triggerChange();
+                    setHasInput(true);
                   }}
                   disabled={isShop}
                 />
@@ -296,7 +313,7 @@ export const ContractManagement = () => {
                 value={contractStartDate}
                 onChange={(e) => {
                   setContractStartDate(formatDateInput(e.target.value));
-                  triggerChange();
+                  setHasInput(true);
                 }}
                 disabled={!isShop}
               />
@@ -309,7 +326,7 @@ export const ContractManagement = () => {
                 value={contractEndDate}
                 onChange={(e) => {
                   setContractEndDate(formatDateInput(e.target.value));
-                  triggerChange();
+                  setHasInput(true);
                 }}
                 disabled={!isShop}
               />
@@ -326,7 +343,7 @@ export const ContractManagement = () => {
                 value={commissionValue}
                 onChange={(e) => {
                   setCommissionValue(formatNumberInput(e.target.value));
-                  triggerChange();
+                  setHasInput(true);
                 }}
                 disabled={!isShop}
               />
@@ -345,7 +362,7 @@ export const ContractManagement = () => {
                       ...prev,
                       [field]: formatNumberInput(e.target.value),
                     }));
-                    triggerChange();
+                    setHasInput(true);
                   }}
                   disabled={!isShop}
                 />
@@ -363,9 +380,9 @@ export const ContractManagement = () => {
                       ...prev,
                       [field]: e.target.value,
                     }));
-                    triggerChange();
+                    setHasInput(true);
                   }}
-                  disabled={!isShop}
+                  disabled={isShop}
                 />
               </div>
             ))}
@@ -412,7 +429,7 @@ export const ContractManagement = () => {
                   value={contractDate}
                   onChange={(e) => {
                     setContractDate(formatDateInput(e.target.value));
-                    triggerChange();
+                    setHasInput(true);
                   }}
                   disabled={!isShop}
                 />
@@ -437,7 +454,7 @@ export const ContractManagement = () => {
                         ...prev,
                         [field]: e.target.value,
                       }));
-                      triggerChange();
+                      setHasInput(true);
                     }}
                     disabled={!isShop}
                   />
@@ -458,7 +475,7 @@ export const ContractManagement = () => {
                   value={eulFooterValue}
                   onChange={(e) => {
                     setEulFooterValue(e.target.value);
-                    triggerChange();
+                    setHasInput(true);
                   }}
                   disabled={isShop}
                 />
@@ -483,18 +500,27 @@ export const ContractManagement = () => {
                   variant="primary"
                   size="small"
                   label="새 계약서 작성"
-                  onClick={() => {
-                    setMode('new');
-                    setHasInput(false);
-                    setHasEdit(false);
-                    setSelectedArtist(null);
-                  }}
+                  onClick={handleNewContract}
                 />
               )}
               <Button variant="secondaryDark" size="small" label="삭제" />
             </div>
           </div>
-          <div className="overflow-y-auto" />
+          <div className="overflow-y-auto">
+            {inProgressData?.items.map((item) => (
+              <button
+                key={item.contractId}
+                onClick={() => handleSelectInProgress(item.contractId)}
+                className={`grid w-full grid-cols-3 border-b border-gray-100 px-4 py-3 text-left text-sm transition-colors hover:bg-gray-50 ${
+                  selectedContractId === item.contractId ? 'bg-gray-100' : ''
+                }`}
+              >
+                <span className="truncate">{item.title}</span>
+                <span className="text-gray-500">{item.contractDate}</span>
+                <span className="text-gray-500">{item.counterpartyName}</span>
+              </button>
+            ))}
+          </div>
         </section>
 
         <section className="flex w-[25.125rem] flex-col overflow-hidden rounded-xl bg-white">
