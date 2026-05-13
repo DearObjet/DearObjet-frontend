@@ -51,6 +51,7 @@ export const ROUTE_LABELS: Record<string, { main: string; sub?: string }> = {
   '/artist/inventory': { main: '입점관리', sub: '품목 및 재고관리' },
   '/artist/shops': { main: '입점관리', sub: '입점처 리스트' },
   '/artist/shipments': { main: '입점관리', sub: '출고관리' },
+  '/artist/contracts': { main: '입점관리', sub: '계약서 관리' },
 
   '/artist/settlements': { main: '정산관리', sub: '정산관리' },
 

@@ -120,7 +120,7 @@ export const ContractManagement = () => {
     skip: !userId,
   });
   const { data: completedData } = useGetCompletedContractsQuery(userId!, {
-    skip: !userId,
+    skip: !userId || !isShop,
   });
   const { data: contractDetail } = useGetContractDetailQuery(
     { contractId: selectedContractId!, userId: userId! },
