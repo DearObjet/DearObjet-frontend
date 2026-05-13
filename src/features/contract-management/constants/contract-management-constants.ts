@@ -7,6 +7,8 @@ export const CONTRACT_MANAGEMENT_ENDPOINTS = {
   IN_PROGRESS: '/api/v1/contracts/documents/in-progress',
   COMPLETED: '/api/v1/contracts/documents/completed',
   TEMPLATE: '/api/v1/contracts/template',
-  CONTRACT_DETAIL: (contractId: number) =>
+  CONTRACT_DETAIL_AS_SHOP: (contractId: number) =>
     `/api/v1/contracts/artists/${contractId}`,
+  CONTRACT_DETAIL_AS_ARTIST: (contractId: number) =>
+    `/api/v1/contracts/shops/${contractId}`,
 } as const;

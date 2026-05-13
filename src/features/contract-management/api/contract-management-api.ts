@@ -75,10 +75,14 @@ export const contractManagementApi = createApi({
 
     getContractDetail: builder.query<
       ContractDetailData,
-      { contractId: number; userId: number }
+      { contractId: number; userId: number; isShop: boolean }
     >({
-      query: ({ contractId, userId }) =>
-        `${CONTRACT_MANAGEMENT_ENDPOINTS.CONTRACT_DETAIL(contractId)}?userId=${userId}`,
+      query: ({ contractId, userId, isShop }) => {
+        const url = isShop
+          ? CONTRACT_MANAGEMENT_ENDPOINTS.CONTRACT_DETAIL_AS_SHOP(contractId)
+          : CONTRACT_MANAGEMENT_ENDPOINTS.CONTRACT_DETAIL_AS_ARTIST(contractId);
+        return `${url}?userId=${userId}`;
+      },
       transformResponse: (response: ApiResponse<ContractDetailData>) =>
         response.data,
     }),

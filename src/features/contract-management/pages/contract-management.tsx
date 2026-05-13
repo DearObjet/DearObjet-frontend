@@ -9,7 +9,6 @@ import {
   useSendContractMutation,
   useArtistSubmissionMutation,
   useGetInProgressContractsQuery,
-  useGetCompletedContractsQuery,
   useGetContractDetailQuery,
 } from '../api/contract-management-api';
 import type { ArtistSearchItem } from '../types/contract-management-types';
@@ -34,7 +33,7 @@ const EUL_FIELD_MAP: Record<string, string> = {
   '성명(작가명)': 'userName',
   '사업자등록번호(해당 시)': 'businessNumber',
   주소: 'businessAddress',
-  연락처: 'phoneNumber',
+  연락처: 'businessPhoneNumber',
 };
 
 const GAP_FOOTER_FIELD_MAP: Record<string, string> = {
@@ -87,7 +86,6 @@ const formatNumberInput = (value: string) => value.replace(/\D/g, '');
 export const ContractManagement = () => {
   const [mode, setMode] = useState<TemplateMode>(null);
   const [hasInput, setHasInput] = useState(false);
-  const [isReadOnly, setIsReadOnly] = useState(false);
   const [showArtistModal, setShowArtistModal] = useState(false);
   const [selectedArtist, setSelectedArtist] = useState<ArtistSearchItem | null>(
     null
@@ -119,22 +117,12 @@ export const ContractManagement = () => {
   const { data: inProgressData } = useGetInProgressContractsQuery(userId!, {
     skip: !userId,
   });
-  const { data: completedData } = useGetCompletedContractsQuery(userId!, {
-    skip: !userId || !isShop,
-  });
   const { data: contractDetail } = useGetContractDetailQuery(
-    { contractId: selectedContractId!, userId: userId! },
-    { skip: !selectedContractId || !userId || mode !== 'existing' }
+    { contractId: selectedContractId!, userId: userId!, isShop },
+    { skip: !selectedContractId || !userId }
   );
   const [sendContract] = useSendContractMutation();
   const [artistSubmission] = useArtistSubmissionMutation();
-
-  const activeContracts = inProgressData?.items.filter((item) => {
-    if (isShop) return item.contractDocumentStatus === 'NONE';
-    return item.contractDocumentStatus === 'SHOP_SENT';
-  });
-
-  const completedContracts = completedData?.items ?? [];
 
   const buildProfileValues = () => {
     if (!businessProfile) return;
@@ -177,47 +165,52 @@ export const ContractManagement = () => {
   }, [businessProfile, isShop]);
 
   useEffect(() => {
-    if (!contractDetail || mode !== 'existing' || !selectedContractId) return;
+    if (!contractDetail || mode !== 'existing') return;
     const doc = contractDetail.contractDocument;
 
     setGapValues({
-      상호명: doc.shopBusinessName,
-      대표자: doc.shopOwnerName,
-      사업자등록번호: doc.shopBusinessNumber,
-      주소: doc.shopAddress,
-      연락처: doc.shopContact,
+      상호명: doc.shopBusinessName ?? '',
+      대표자: doc.shopOwnerName ?? '',
+      사업자등록번호: doc.shopBusinessNumber ?? '',
+      주소: doc.shopAddress ?? '',
+      연락처: doc.shopContact ?? '',
     });
     setGapFooterValues({
-      상호명: doc.shopSignatureBusinessName,
-      대표자: doc.shopSignatureOwnerName,
+      상호명: doc.shopSignatureBusinessName ?? '',
+      대표자: doc.shopSignatureOwnerName ?? '',
     });
-    setContractStartDate(doc.contractStartDate);
-    setContractEndDate(doc.contractEndDate);
-    setContractDate(doc.contractDate);
-    setCommissionValue(String(doc.commissionRate));
+    setContractStartDate(doc.contractStartDate ?? '');
+    setContractEndDate(doc.contractEndDate ?? '');
+    setContractDate(doc.contractDate ?? '');
+    setCommissionValue(String(doc.commissionRate ?? ''));
     setSettlementValues({
-      [c.article5.settlementFields[0]]: String(doc.settlementDay),
-      [c.article5.settlementFields[1]]: String(doc.paymentDay),
+      [c.article5.settlementFields[0]]: String(doc.settlementDay ?? ''),
+      [c.article5.settlementFields[1]]: String(doc.paymentDay ?? ''),
     });
 
-    setEulValues({
-      '성명(작가명)': doc.artistName,
-      '사업자등록번호(해당 시)': doc.artistBusinessNumber,
-      주소: doc.artistAddress,
-      연락처: doc.artistContact,
-    });
-    setEulFooterValue(doc.artistSignatureName);
-    setBankValues({
-      은행명: doc.artistBankName,
-      예금주: doc.artistAccountHolder,
-      계좌번호: doc.artistAccountNumber,
-    });
-  }, [contractDetail, mode, selectedContractId]);
+    if (!isShop) {
+      setEulValues({
+        '성명(작가명)': doc.artistName || businessProfile?.userName || '',
+        '사업자등록번호(해당 시)':
+          doc.artistBusinessNumber || businessProfile?.businessNumber || '',
+        주소: doc.artistAddress || businessProfile?.businessAddress || '',
+        연락처: doc.artistContact || businessProfile?.businessPhoneNumber || '',
+      });
+      setBankValues({
+        은행명: doc.artistBankName || businessProfile?.bankName || '',
+        예금주: doc.artistAccountHolder || businessProfile?.accountHolder || '',
+        계좌번호:
+          doc.artistAccountNumber || businessProfile?.bankAccountNumber || '',
+      });
+      setEulFooterValue(
+        doc.artistSignatureName || businessProfile?.userName || ''
+      );
+    }
+  }, [contractDetail, mode, isShop, businessProfile]);
 
   const handleCancel = () => {
     setMode(null);
     setHasInput(false);
-    setIsReadOnly(false);
     setSelectedArtist(null);
     setSelectedContractId(null);
     setContractStartDate('');
@@ -234,17 +227,11 @@ export const ContractManagement = () => {
     setMode('new');
   };
 
-  const handleSelectInProgress = (
-    contractId: number,
-    documentStatus: string
-  ) => {
+  const handleSelectInProgress = (contractId: number) => {
     setMode('existing');
     setHasInput(false);
     setSelectedContractId(contractId);
     setSelectedArtist(null);
-    setIsReadOnly(
-      documentStatus === 'ARTIST_SUBMITTED' || documentStatus === 'APPROVED'
-    );
   };
 
   const handleSend = async (artist: ArtistSearchItem) => {
@@ -272,7 +259,6 @@ export const ContractManagement = () => {
         shopSignatureOwnerName: gapFooterValues['대표자'] ?? '',
       },
     }).unwrap();
-    handleCancel();
   };
 
   const handleArtistSend = async () => {
@@ -311,33 +297,31 @@ export const ContractManagement = () => {
       <section className="flex h-[63.25rem] w-[59.875rem] flex-col rounded-xl bg-white">
         {mode !== null ? (
           <div className="relative min-h-0 flex-1 overflow-y-auto p-10 text-gray-700">
-            {!isReadOnly && (
-              <div className="absolute right-6 top-4 flex gap-2">
-                {!hasInput ? (
-                  <>
-                    <Button
-                      variant="secondaryDark"
-                      size="small"
-                      label="취소"
-                      onClick={handleCancel}
-                    />
-                    <Button variant="primary" size="small" label="저장" />
-                  </>
-                ) : (
-                  <>
-                    <Button variant="secondaryDark" size="small" label="저장" />
-                    <Button
-                      variant="primary"
-                      size="small"
-                      label="보내기"
-                      onClick={() =>
-                        isShop ? setShowArtistModal(true) : handleArtistSend()
-                      }
-                    />
-                  </>
-                )}
-              </div>
-            )}
+            <div className="absolute right-6 top-4 flex gap-2">
+              {!hasInput ? (
+                <>
+                  <Button
+                    variant="secondaryDark"
+                    size="small"
+                    label="취소"
+                    onClick={handleCancel}
+                  />
+                  <Button variant="secondaryDark" size="small" label="저장" />
+                </>
+              ) : (
+                <>
+                  <Button variant="secondaryDark" size="small" label="저장" />
+                  <Button
+                    variant="primary"
+                    size="small"
+                    label="보내기"
+                    onClick={() =>
+                      isShop ? setShowArtistModal(true) : handleArtistSend()
+                    }
+                  />
+                </>
+              )}
+            </div>
 
             {isShop && mode === 'new' && (
               <div className="mb-4 flex items-center gap-2">
@@ -364,14 +348,13 @@ export const ContractManagement = () => {
                   placeholder={field === '상호명' ? '[소품샵명]' : ''}
                   value={gapValues[field] ?? ''}
                   onChange={(e) => {
-                    const value =
-                      field === '연락처'
-                        ? formatNumberInput(e.target.value)
-                        : e.target.value;
-                    setGapValues((prev) => ({ ...prev, [field]: value }));
+                    setGapValues((prev) => ({
+                      ...prev,
+                      [field]: e.target.value,
+                    }));
                     setHasInput(true);
                   }}
-                  disabled={!isShop || mode === 'existing'}
+                  disabled={!isShop}
                 />
               </div>
             ))}
@@ -388,14 +371,13 @@ export const ContractManagement = () => {
                   }
                   value={eulValues[field] ?? ''}
                   onChange={(e) => {
-                    const value =
-                      field === '연락처'
-                        ? formatNumberInput(e.target.value)
-                        : e.target.value;
-                    setEulValues((prev) => ({ ...prev, [field]: value }));
+                    setEulValues((prev) => ({
+                      ...prev,
+                      [field]: e.target.value,
+                    }));
                     setHasInput(true);
                   }}
-                  disabled={isShop || isReadOnly}
+                  disabled={isShop}
                 />
               </div>
             ))}
@@ -415,7 +397,7 @@ export const ContractManagement = () => {
                   setContractStartDate(validateDate(formatted));
                   setHasInput(true);
                 }}
-                disabled={!isShop || mode === 'existing'}
+                disabled={!isShop}
               />
             </div>
             <div className="mb-2 flex items-center gap-2 text-sm">
@@ -429,7 +411,7 @@ export const ContractManagement = () => {
                   setContractEndDate(validateDate(formatted));
                   setHasInput(true);
                 }}
-                disabled={!isShop || mode === 'existing'}
+                disabled={!isShop}
               />
             </div>
             <p className="mb-6 text-sm">{c.article3.suffix}</p>
@@ -444,12 +426,11 @@ export const ContractManagement = () => {
                 value={commissionValue}
                 onChange={(e) => {
                   const raw = formatNumberInput(e.target.value);
-                  const num = Number(raw);
-                  const capped = num > 99 ? '99' : raw;
+                  const capped = Number(raw) > 99 ? '99' : raw;
                   setCommissionValue(capped);
                   setHasInput(true);
                 }}
-                disabled={!isShop || mode === 'existing'}
+                disabled={!isShop}
               />
               <span className="shrink-0">{c.article5.content1Suffix}</span>
             </div>
@@ -463,15 +444,14 @@ export const ContractManagement = () => {
                   value={settlementValues[field] ?? ''}
                   onChange={(e) => {
                     const raw = formatNumberInput(e.target.value);
-                    const num = Number(raw);
-                    const capped = num > 31 ? '31' : raw;
+                    const capped = Number(raw) > 31 ? '31' : raw;
                     setSettlementValues((prev) => ({
                       ...prev,
                       [field]: capped,
                     }));
                     setHasInput(true);
                   }}
-                  disabled={!isShop || mode === 'existing'}
+                  disabled={!isShop}
                 />
               </div>
             ))}
@@ -483,14 +463,13 @@ export const ContractManagement = () => {
                   className="flex-1"
                   value={bankValues[field] ?? ''}
                   onChange={(e) => {
-                    const value =
-                      field === '계좌번호'
-                        ? formatNumberInput(e.target.value)
-                        : e.target.value;
-                    setBankValues((prev) => ({ ...prev, [field]: value }));
+                    setBankValues((prev) => ({
+                      ...prev,
+                      [field]: e.target.value,
+                    }));
                     setHasInput(true);
                   }}
-                  disabled={isShop || isReadOnly}
+                  disabled={isShop}
                 />
               </div>
             ))}
@@ -540,7 +519,7 @@ export const ContractManagement = () => {
                     setContractDate(validateDate(formatted));
                     setHasInput(true);
                   }}
-                  disabled={!isShop || mode === 'existing'}
+                  disabled={!isShop}
                 />
               </div>
 
@@ -565,7 +544,7 @@ export const ContractManagement = () => {
                       }));
                       setHasInput(true);
                     }}
-                    disabled={!isShop || mode === 'existing'}
+                    disabled={!isShop}
                   />
                 </div>
               ))}
@@ -586,7 +565,7 @@ export const ContractManagement = () => {
                     setEulFooterValue(e.target.value);
                     setHasInput(true);
                   }}
-                  disabled={isShop || isReadOnly}
+                  disabled={isShop}
                 />
                 <span>(서명)</span>
               </div>
@@ -616,24 +595,27 @@ export const ContractManagement = () => {
             </div>
           </div>
           <div className="overflow-y-auto">
-            {activeContracts?.map((item) => (
-              <button
-                key={item.contractId}
-                onClick={() =>
-                  handleSelectInProgress(
-                    item.contractId,
-                    item.contractDocumentStatus
+            {inProgressData?.items
+              .filter(
+                (item) =>
+                  !(
+                    !isShop &&
+                    item.contractDocumentStatus === 'ARTIST_SUBMITTED'
                   )
-                }
-                className={`grid w-full grid-cols-3 border-b border-gray-100 px-4 py-3 text-left text-sm transition-colors hover:bg-gray-50 ${
-                  selectedContractId === item.contractId ? 'bg-gray-100' : ''
-                }`}
-              >
-                <span className="truncate">{item.title}</span>
-                <span className="text-gray-500">{item.contractDate}</span>
-                <span className="text-gray-500">{item.counterpartyName}</span>
-              </button>
-            ))}
+              )
+              .map((item) => (
+                <button
+                  key={item.contractId}
+                  onClick={() => handleSelectInProgress(item.contractId)}
+                  className={`grid w-full grid-cols-3 border-b border-gray-100 px-4 py-3 text-left text-sm transition-colors hover:bg-gray-50 ${
+                    selectedContractId === item.contractId ? 'bg-gray-100' : ''
+                  }`}
+                >
+                  <span className="truncate">{item.title}</span>
+                  <span className="text-gray-500">{item.contractDate}</span>
+                  <span className="text-gray-500">{item.counterpartyName}</span>
+                </button>
+              ))}
           </div>
         </section>
 
@@ -642,23 +624,7 @@ export const ContractManagement = () => {
             <h3>완료된 계약</h3>
             <Button variant="secondaryDark" size="small" label="삭제" />
           </div>
-          <div className="overflow-y-auto">
-            {completedContracts.map((item) => (
-              <button
-                key={item.contractId}
-                onClick={() =>
-                  handleSelectInProgress(item.contractId, 'APPROVED')
-                }
-                className={`grid w-full grid-cols-3 border-b border-gray-100 px-4 py-3 text-left text-sm transition-colors hover:bg-gray-50 ${
-                  selectedContractId === item.contractId ? 'bg-gray-100' : ''
-                }`}
-              >
-                <span className="truncate">{item.title}</span>
-                <span className="text-gray-500">{item.contractDate}</span>
-                <span className="text-gray-500">{item.artistName}</span>
-              </button>
-            ))}
-          </div>
+          <div className="overflow-y-auto" />
         </section>
       </div>
     </div>
