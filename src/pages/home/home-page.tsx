@@ -4,15 +4,18 @@ import { ChevronRight, ChevronLeft } from 'lucide-react';
 
 import { useAppSelector } from '../../app/hooks';
 import { Button } from '../../shared/components/ui';
-import { API_BASE_URL } from '../../shared/constants';
+import { API_BASE_URL, ROUTES } from '../../shared/constants';
+
 import { useGetNoticesQuery } from '../../features/notice/api/notice-api';
 import { CATEGORY_LABEL } from '../../features/notice/constants/notice-constants';
 import { FestivalSection } from '../../features/festival/components/festival-section';
+import { useGetAllPostsQuery } from '../../features/post/api/post-api';
 
 import KakaoLogo from '../../assets/kakao-logo.svg';
 import CatImg from '../../assets/cat.png';
 
 const HOME_NOTICES_PER_PAGE = 5;
+const HOME_POSTS_LIMIT = 4;
 
 export const HomePage = () => {
   const [currentNoticePage, setCurrentNoticePage] = useState(1);
@@ -30,6 +33,8 @@ export const HomePage = () => {
     (currentNoticePage - 1) * HOME_NOTICES_PER_PAGE,
     currentNoticePage * HOME_NOTICES_PER_PAGE
   );
+  const { data: postData } = useGetAllPostsQuery(1);
+  const latestPosts = (postData?.items ?? []).slice(0, HOME_POSTS_LIMIT);
 
   const handleNoticePrevPage = () => {
     if (currentNoticePage > 1) setCurrentNoticePage(currentNoticePage - 1);
@@ -53,18 +58,50 @@ export const HomePage = () => {
 
         <section className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
           <h2 className="sr-only">포스트</h2>
-          <div className="h-[21rem] rounded-sm border border-gray-300">
-            포스트
-          </div>
-          <div className="h-[21rem] rounded-sm border border-gray-300">
-            포스트
-          </div>
-          <div className="h-[21rem] rounded-sm border border-gray-300">
-            포스트
-          </div>
-          <div className="h-[21rem] rounded-sm border border-gray-300">
-            포스트
-          </div>
+          {latestPosts.length === 0
+            ? Array.from({ length: HOME_POSTS_LIMIT }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-[21rem] rounded-sm border border-gray-300"
+                />
+              ))
+            : latestPosts.map((post) => (
+                <button
+                  key={post.postId}
+                  onClick={() => navigate(`${ROUTES.POSTS}?id=${post.postId}`)}
+                  className="group relative h-[21rem] overflow-hidden rounded-sm border border-gray-300 focus:outline-none"
+                >
+                  {post.thumbnailUrl ? (
+                    <img
+                      src={post.thumbnailUrl}
+                      alt={`${post.authorName}의 포스트`}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-theme-200" />
+                  )}
+
+                  {/* 하단 작성자 정보 오버레이 */}
+                  <div className="absolute bottom-0 left-0 right-0 flex items-center gap-2 bg-white px-3 py-3">
+                    {post.authorProfileUrl ? (
+                      <div className="h-7 w-7 shrink-0 overflow-hidden rounded-full">
+                        <img
+                          src={post.authorProfileUrl}
+                          alt={post.authorName}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-medium">
+                        {post.authorName[0]}
+                      </div>
+                    )}
+                    <span className="truncate text-xs font-medium text-gray-700">
+                      {post.authorName}
+                    </span>
+                  </div>
+                </button>
+              ))}
         </section>
       </div>
 
