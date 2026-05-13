@@ -13,8 +13,8 @@ export const favoriteApi = createApi({
   baseQuery: createBaseQuery(),
   tagTypes: ['Favorite'],
   endpoints: (builder) => ({
-    getFavoriteShopList: builder.query<FavoriteShopListResponse, void>({
-      query: () => '/api/v1/favorites/shops?page=1&size=50',
+    getFavoriteShopList: builder.query<FavoriteShopListResponse, number>({
+      query: (page) => `/api/v1/favorites/shops?page=${page}&size=12`,
       transformResponse: (res: ApiResponse<FavoriteShopListResponse>) =>
         res.data,
       providesTags: ['Favorite'],
@@ -39,6 +39,7 @@ export const favoriteApi = createApi({
 
 export const {
   useGetFavoriteShopListQuery,
+  useLazyGetFavoriteShopListQuery,
   useAddShopFavoriteMutation,
   useRemoveShopFavoriteMutation,
 } = favoriteApi;
