@@ -14,16 +14,13 @@ export const ClassReservation = () => {
   const [date, setDate] = useState<Date | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
-  const year = date ? date.getFullYear() : new Date().getFullYear();
-  const month = date ? date.getMonth() + 1 : new Date().getMonth() + 1;
-
-  const { data } = useGetClassReservationsQuery({ year, month });
+  const { data } = useGetClassReservationsQuery();
   const [confirmReservation] = useConfirmReservationMutation();
   const [cancelReservation] = useCancelReservationMutation();
 
-  const filteredReservations = (data?.reservations ?? []).filter((r) => {
+  const filteredReservations = (data?.items ?? []).filter((r) => {
     if (!date) return true;
-    const reservationDate = new Date(r.reservationTime);
+    const reservationDate = new Date(r.usageDateTime);
     return (
       reservationDate.getFullYear() === date.getFullYear() &&
       reservationDate.getMonth() === date.getMonth() &&
@@ -35,7 +32,7 @@ export const ClassReservation = () => {
     if (selectedIds.size === 0) return;
 
     const selectedReservations = filteredReservations.filter((r) =>
-      selectedIds.has(r.reservationId)
+      selectedIds.has(r.reservationNumber)
     );
     const hasNonPending = selectedReservations.some(
       (r) => r.status !== 'PENDING'
@@ -54,7 +51,7 @@ export const ClassReservation = () => {
     if (selectedIds.size === 0) return;
 
     const selectedReservations = filteredReservations.filter((r) =>
-      selectedIds.has(r.reservationId)
+      selectedIds.has(r.reservationNumber)
     );
     const hasNonPending = selectedReservations.some(
       (r) => r.status !== 'PENDING'

@@ -16,7 +16,6 @@ const COL_WIDTHS = [
   '11.9375rem',
   '9rem',
   '13.5625rem',
-  '5.5rem',
   'auto',
 ];
 
@@ -49,7 +48,7 @@ export const ReservationTable = ({
     if (isAllSelected) {
       onSelectedIdsChange(new Set());
     } else {
-      onSelectedIdsChange(new Set(data.map((item) => item.reservationId)));
+      onSelectedIdsChange(new Set(data.map((item) => item.reservationNumber)));
     }
   };
 
@@ -70,7 +69,7 @@ export const ReservationTable = ({
     const aVal = a[sortKey];
     const bVal = b[sortKey];
 
-    if (sortKey === 'reservationTime') {
+    if (sortKey === 'usageDateTime') {
       return sortOrder === 'asc'
         ? new Date(aVal as string).getTime() -
             new Date(bVal as string).getTime()
@@ -78,7 +77,7 @@ export const ReservationTable = ({
             new Date(aVal as string).getTime();
     }
 
-    if (sortKey === 'guestCount') {
+    if (sortKey === 'reservationNumber') {
       return sortOrder === 'asc'
         ? (aVal as number) - (bVal as number)
         : (bVal as number) - (aVal as number);
@@ -132,26 +131,21 @@ export const ReservationTable = ({
             </th>
             <th className="py-3 text-left font-medium">상태</th>
             <th className="py-3 text-left font-medium">
-              예약자명 <SortButton sortTarget="reservationName" />
+              예약자명 <SortButton sortTarget="reserverName" />
             </th>
             <th className="py-3 text-left font-medium">
               전화번호 <SortButton sortTarget="phoneNumber" />
             </th>
             <th className="py-3 text-left font-medium">
-              예약번호 <SortButton sortTarget="reservationId" />
+              예약번호 <SortButton sortTarget="reservationNumber" />
             </th>
             <th className="py-3 text-left font-medium">
-              이용일시 <SortButton sortTarget="reservationTime" />
+              이용일시 <SortButton sortTarget="usageDateTime" />
             </th>
             <th className="py-3 text-left font-medium">
               클래스명 <SortButton sortTarget="className" />
             </th>
-            <th className="py-3 text-left font-medium">
-              인원 <SortButton sortTarget="guestCount" />
-            </th>
-            <th className="py-3 text-left font-medium">
-              메모 <SortButton sortTarget="memo" />
-            </th>
+            <th className="py-3 text-left font-medium">인원</th>
           </tr>
         </thead>
       </table>
@@ -167,9 +161,9 @@ export const ReservationTable = ({
           <tbody>
             {sortedData.map((item) => (
               <ReservationTableRow
-                key={item.reservationId}
+                key={item.reservationNumber}
                 data={item}
-                checked={selectedIds.has(item.reservationId)}
+                checked={selectedIds.has(item.reservationNumber)}
                 onCheck={handleSelectOne}
               />
             ))}

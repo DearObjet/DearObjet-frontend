@@ -12,7 +12,7 @@ export const ReservationTableRow = ({
   checked,
   onCheck,
 }: ReservationTableRowProps) => {
-  const formattedTime = new Date(data.reservationTime).toLocaleString('ko-KR', {
+  const formattedTime = new Date(data.usageDateTime).toLocaleString('ko-KR', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -26,19 +26,18 @@ export const ReservationTableRow = ({
         <input
           type="checkbox"
           checked={checked}
-          onChange={() => onCheck(data.reservationId)}
+          onChange={() => onCheck(data.reservationNumber)}
         />
       </td>
       <td className="py-3">
         <ReservationStatusBadge status={data.status} />
       </td>
-      <td className="py-3">{data.reservationName}</td>
+      <td className="py-3">{data.reserverName}</td>
       <td className="py-3">{data.phoneNumber}</td>
-      <td className="py-3">{data.reservationId}</td>
+      <td className="py-3">{data.reservationNumber}</td>
       <td className="py-3">{formattedTime}</td>
       <td className="py-3">{data.className}</td>
-      <td className="py-3">{data.guestCount}명</td>
-      <td className="py-3">{data.memo}</td>
+      <td className="py-3">-</td>
     </tr>
   );
 };
