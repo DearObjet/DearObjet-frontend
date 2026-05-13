@@ -5,6 +5,7 @@ import {
   useReleaseRequestMutation,
   useReleaseCancellationMutation,
   useApproveContractMutation,
+  useExtensionRequestMutation,
 } from '../api/artist-tenant-api';
 import { TenantStatusBadge } from './tenant-status-badge';
 import type { TenantStatus } from '../components/tenant-list-table';
@@ -21,6 +22,8 @@ interface TenantListTableRowProps {
     label: string;
   };
   onView: () => void;
+  onActionClick?: () => void;
+  variant?: 'artist' | 'shop';
 }
 
 export const TenantListTableRow = ({
@@ -32,16 +35,26 @@ export const TenantListTableRow = ({
   status,
   nextAction,
   onView,
+  onActionClick,
+  variant = 'artist',
 }: TenantListTableRowProps) => {
   const userId = useAppSelector((state) => state.auth.user?.userId);
 
   const [releaseRequest] = useReleaseRequestMutation();
   const [releaseCancellation] = useReleaseCancellationMutation();
   const [approveContract] = useApproveContractMutation();
+  const [extensionRequest] = useExtensionRequestMutation();
 
   const handleActionClick = () => {
     if (!userId) return;
-
+    if (nextAction.code === 'EXTENSION_REQUEST') {
+      extensionRequest({ contractId, userId });
+      return;
+    }
+    if (onActionClick) {
+      onActionClick();
+      return;
+    }
     if (nextAction.code === 'RELEASE_REQUEST') {
       releaseRequest({ contractId, userId });
     } else if (nextAction.code === 'RELEASE_CANCELLATION') {
@@ -51,7 +64,13 @@ export const TenantListTableRow = ({
     }
   };
 
-  const isDisabled = nextAction.code === 'WAITING_ARTIST_SUBMISSION';
+  const isActionable =
+    nextAction.code === 'RELEASE_REQUEST' ||
+    nextAction.code === 'RELEASE_CANCELLATION' ||
+    nextAction.code === 'EXTENSION_REQUEST' ||
+    (variant === 'artist' && nextAction.code === 'CONTRACT_APPROVE');
+
+  const isDisabled = !isActionable;
 
   return (
     <tr className="border-b border-gray-100 text-center text-sm">
@@ -60,25 +79,25 @@ export const TenantListTableRow = ({
       <td className="py-2 text-gray-500">{contractStart}</td>
       <td className="py-2 text-gray-500">{contractEnd}</td>
       <td className="py-2">
-        <TenantStatusBadge status={status} />
+        <TenantStatusBadge
+          status={status}
+          onExtension={() => {
+            if (userId) extensionRequest({ contractId, userId });
+          }}
+        />
       </td>
       <td className="py-2">
-        {nextAction.code !== 'NONE' ? (
-          <Button
-            variant="secondaryDark"
-            size="small"
-            label={nextAction.label}
-            onClick={handleActionClick}
-            disabled={isDisabled}
-          />
-        ) : (
-          <Button
-            variant="secondaryDark"
-            size="small"
-            label={nextAction.label}
-            disabled
-          />
-        )}
+        <Button
+          variant="secondaryDark"
+          size="small"
+          label={
+            nextAction.code === 'EXTENSION_REQUEST'
+              ? '해제신청'
+              : nextAction.label
+          }
+          onClick={handleActionClick}
+          disabled={isDisabled}
+        />
       </td>
       <td className="py-2">
         <Button

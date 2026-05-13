@@ -7,13 +7,16 @@ import type {
   ArtistContractDetail,
   ArtistSuggestionListResponse,
   ContractReleaseResponse,
+  ShopContractListResponse,
+  ShopContractDetail,
+  ShopSuggestionListResponse,
 } from '../types/artist-tenant-types';
 import { ARTIST_TENANT_ENDPOINTS } from '../constants/artist-tenant-constants';
 
 export const artistTenantApi = createApi({
   reducerPath: 'artistTenantApi',
   baseQuery: createBaseQuery(),
-  tagTypes: ['ArtistTenant'],
+  tagTypes: ['ArtistTenant', 'ShopTenant'],
   endpoints: (builder) => ({
     getArtistContracts: builder.query<ArtistContractListResponse, number>({
       query: (userId) =>
@@ -80,6 +83,46 @@ export const artistTenantApi = createApi({
         response.data,
       invalidatesTags: ['ArtistTenant'],
     }),
+
+    extensionRequest: builder.mutation<
+      ContractReleaseResponse,
+      { contractId: number; userId: number }
+    >({
+      query: ({ contractId, userId }) => ({
+        url: `${ARTIST_TENANT_ENDPOINTS.EXTENSION_REQUEST(contractId)}?userId=${userId}`,
+        method: 'PATCH',
+      }),
+      transformResponse: (response: { data: ContractReleaseResponse }) =>
+        response.data,
+      invalidatesTags: ['ShopTenant'],
+    }),
+
+    getShopContracts: builder.query<ShopContractListResponse, number>({
+      query: (userId) =>
+        `${ARTIST_TENANT_ENDPOINTS.SHOP_CONTRACTS}?userId=${userId}`,
+      transformResponse: (response: { data: ShopContractListResponse }) =>
+        response.data,
+      providesTags: ['ShopTenant'],
+    }),
+
+    getShopContractDetail: builder.query<
+      ShopContractDetail,
+      { contractId: number; userId: number }
+    >({
+      query: ({ contractId, userId }) =>
+        `${ARTIST_TENANT_ENDPOINTS.SHOP_CONTRACT_DETAIL(contractId)}?userId=${userId}`,
+      transformResponse: (response: { data: ShopContractDetail }) =>
+        response.data,
+      providesTags: ['ShopTenant'],
+    }),
+
+    getShopSuggestions: builder.query<ShopSuggestionListResponse, number>({
+      query: (userId) =>
+        `${ARTIST_TENANT_ENDPOINTS.SHOP_SUGGESTIONS}?userId=${userId}`,
+      transformResponse: (response: { data: ShopSuggestionListResponse }) =>
+        response.data,
+      providesTags: ['ShopTenant'],
+    }),
   }),
 });
 
@@ -90,4 +133,8 @@ export const {
   useReleaseRequestMutation,
   useReleaseCancellationMutation,
   useApproveContractMutation,
+  useExtensionRequestMutation,
+  useGetShopContractsQuery,
+  useGetShopContractDetailQuery,
+  useGetShopSuggestionsQuery,
 } = artistTenantApi;

@@ -20,6 +20,7 @@ interface TenantItem {
 interface TenantListTableProps {
   items: TenantItem[];
   onView: (id: string) => void;
+  onActionClick?: (id: string) => void;
   variant?: 'artist' | 'shop';
 }
 
@@ -36,6 +37,7 @@ const Colgroup = () => (
 export const TenantListTable = ({
   items,
   onView,
+  onActionClick,
   variant = 'artist',
 }: TenantListTableProps) => {
   const nameHeader = variant === 'artist' ? '매장명' : '작가명';
@@ -72,6 +74,10 @@ export const TenantListTable = ({
                 status={item.status}
                 nextAction={item.nextAction}
                 onView={() => onView(item.id)}
+                onActionClick={
+                  onActionClick ? () => onActionClick(item.id) : undefined
+                }
+                variant={variant}
               />
             ))}
           </tbody>

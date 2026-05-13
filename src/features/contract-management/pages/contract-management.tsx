@@ -158,11 +158,12 @@ export const ContractManagement = () => {
       setEulValues(newEulValues);
       setEulFooterValue(businessProfile.userName ?? '');
     }
+    setHasInput(true);
   };
 
   useEffect(() => {
     buildProfileValues();
-  }, [businessProfile, isShop]);
+  }, [businessProfile, isShop, buildProfileValues]);
 
   useEffect(() => {
     if (!contractDetail || mode !== 'existing') return;
@@ -206,6 +207,7 @@ export const ContractManagement = () => {
         doc.artistSignatureName || businessProfile?.userName || ''
       );
     }
+    setHasInput(true);
   }, [contractDetail, mode, isShop, businessProfile]);
 
   const handleCancel = () => {

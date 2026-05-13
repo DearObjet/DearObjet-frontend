@@ -1,8 +1,12 @@
-import type { ArtistContractDetail } from '../types/artist-tenant-types';
+import type {
+  ArtistContractDetail,
+  ShopContractDetail,
+} from '../types/artist-tenant-types';
+
 import { CONTRACT_STATIC_TEXT } from '../constants/artist-tenant-constants';
 
 interface ContractDocumentProps {
-  contractDetail: ArtistContractDetail | null;
+  contractDetail: ArtistContractDetail | ShopContractDetail | null;
 }
 
 const c = CONTRACT_STATIC_TEXT;

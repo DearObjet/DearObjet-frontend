@@ -89,3 +89,55 @@ export interface ContractReleaseResponse {
   contractStatus: ContractStatus;
   contractRequestType: ContractRequestType;
 }
+
+export interface ShopContractAction {
+  code: string;
+  label: string;
+  enabled: boolean;
+}
+
+export interface ShopContractItem {
+  contractId: number;
+  shopId: number;
+  shopName: string;
+  contractStartDate: string;
+  contractEndDate: string;
+  statusCode: string;
+  statusLabel: string;
+  statusDisabled: boolean;
+  actions: ShopContractAction[];
+  detailAvailable: boolean;
+}
+
+export interface ShopContractListResponse {
+  items: ShopContractItem[];
+}
+
+export interface ShopContractDetail {
+  contractId: number;
+  shopId: number;
+  shopName: string;
+  artistId: number;
+  artistName: string;
+  contractStartDate: string;
+  contractEndDate: string;
+  contractStatus: ContractStatus;
+  contractRequestType: ContractRequestType;
+  commissionType: CommissionType;
+  commissionValue: number;
+  memo: string;
+  contractDocument: ContractDocument;
+}
+
+export interface ShopSuggestionItem {
+  shopId: number;
+  userId: number;
+  shopName: string;
+  shopImageUrl: string;
+  specialty: string;
+  instagramId: string;
+}
+
+export interface ShopSuggestionListResponse {
+  items: ShopSuggestionItem[];
+}
