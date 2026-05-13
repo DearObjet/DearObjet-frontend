@@ -1,5 +1,6 @@
-import { Link, NavLink } from 'react-router';
+import { Link, NavLink, useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
+import { UserPlus } from 'lucide-react';
 
 import type { RootState } from '../../../app/store';
 import { ROUTES, NAV_ITEMS, USER_ROLE } from '../../constants';
@@ -10,9 +11,9 @@ import DearObjetBlackLogo from '../../../assets/dear-objet-black-logo.svg';
 import UserRoundIcon from '../../../assets/user-round.svg';
 import { useAppDispatch } from '../../../app/hooks';
 import { useLogoutMutation, clearAuth } from '../../../features/auth';
-import { UserPlus } from 'lucide-react';
 
 export const Header = () => {
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const [logout] = useLogoutMutation();
   const user = useSelector((state: RootState) => state.auth.user);
@@ -70,6 +71,7 @@ export const Header = () => {
                 <li key={to}>
                   <NavLink
                     to={to}
+                    state={{ from: location.pathname }}
                     className={({ isActive }) =>
                       [
                         'text-base font-semibold transition-colors duration-150',

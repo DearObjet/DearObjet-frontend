@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import { Search, X } from 'lucide-react';
+
+import LeftShiftIcon from '../../../assets/left-shift.svg';
 
 import type { ShopMapItem } from '../types/map-types';
 
@@ -9,6 +12,9 @@ interface MapSearchBarProps {
 }
 
 export const MapSearchBar = ({ shops, onSelectShop }: MapSearchBarProps) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: string })?.from ?? '/';
   const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -51,6 +57,10 @@ export const MapSearchBar = ({ shops, onSelectShop }: MapSearchBarProps) => {
   return (
     <div ref={containerRef} className="relative mx-2 my-2.5">
       <div className="flex items-center gap-2 rounded-lg border border-theme-300 px-3 py-2">
+        {/* 뒤로가기 버튼*/}
+        <button onClick={() => navigate(from)} className="shrink-0">
+          <img src={LeftShiftIcon} alt="뒤로가기" className="h-4 w-4" />
+        </button>
         <Search className="h-4 w-4 shrink-0 text-theme-300" />
         <input
           type="text"
