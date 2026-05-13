@@ -53,6 +53,7 @@ export interface ShopDetail {
   phoneNumber: string | null;
   businessAddress: string;
   businessHours: BusinessHours | null;
+  isFavorite: boolean;
 }
 
 export type TabMenu = (typeof TAB_MENUS)[number];

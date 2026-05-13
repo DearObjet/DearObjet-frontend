@@ -17,7 +17,6 @@ import { NearbyTab } from './nearby-tab';
 import { useGetUserPostsQuery } from '../../post/api/post-api';
 import {
   useAddShopFavoriteMutation,
-  useGetFavoriteShopListQuery,
   useRemoveShopFavoriteMutation,
 } from '../api/favorite-api';
 
@@ -37,23 +36,24 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
 
   const isCustomer = user?.role === USER_ROLE.CUSTOMER;
 
-  const { data: favoriteData } = useGetFavoriteShopListQuery(undefined, {
-    skip: !isCustomer,
-  });
-
+  const [isFavorited, setIsFavorited] = useState(
+    shopDetail?.isFavorite ?? false
+  );
   const [addFavorite] = useAddShopFavoriteMutation();
   const [removeFavorite] = useRemoveShopFavoriteMutation();
 
-  const isFavorited =
-    favoriteData?.items.some((item) => item.shopId === shopId) ?? false;
-
   const handleLikeToggle = async () => {
     if (!shopId || !isCustomer) return;
-
-    if (isFavorited) {
-      await removeFavorite(shopId);
-    } else {
-      await addFavorite(shopId);
+    const next = !isFavorited;
+    setIsFavorited(next);
+    try {
+      if (isFavorited) {
+        await removeFavorite(shopId).unwrap();
+      } else {
+        await addFavorite(shopId).unwrap();
+      }
+    } catch {
+      setIsFavorited(!next);
     }
   };
 
@@ -65,6 +65,10 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
   const handleWriteReview = () => console.log('리뷰작성하기');
   const handleShareContent = () => console.log('공유하기');
   const handleApplyForPartnership = () => console.log('입점신청하기');
+
+  useEffect(() => {
+    setIsFavorited(shopDetail?.isFavorite ?? false);
+  }, [shopDetail?.isFavorite]);
 
   useEffect(() => {
     setActiveTab('스토리');
