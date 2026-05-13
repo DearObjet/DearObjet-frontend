@@ -136,14 +136,6 @@ export const ArtistTenantManagement = () => {
       </div>
 
       <section className="flex h-[63rem] w-full flex-col items-center justify-center rounded-xl bg-white pb-[2.625rem]">
-        {rightPanelContent === 'contract' && (
-          <Button
-            variant="secondaryDark"
-            className="mr-5 mt-4 self-end"
-            label="PDF로 내려받기"
-          />
-        )}
-
         <div className="ml-[1.875rem]">
           {rightPanelContent === 'post' && (
             <Post
@@ -155,7 +147,10 @@ export const ArtistTenantManagement = () => {
             />
           )}
           {rightPanelContent === 'contract' && contractDetail && (
-            <ContractDocument contractDetail={contractDetail} />
+            <ContractDocument
+              contractDetail={contractDetail}
+              showDownload={true}
+            />
           )}
           {rightPanelContent === 'empty' && (
             <p className="text-gray-500">작가를 선택해주세요.</p>

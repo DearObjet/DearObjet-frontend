@@ -187,13 +187,6 @@ export const ShopTenantManagement = () => {
       </div>
 
       <section className="flex h-[63rem] w-full flex-col rounded-xl bg-white pb-[2.625rem]">
-        {rightPanelContent === 'contract' && (
-          <Button
-            variant="secondaryDark"
-            className="mr-5 mt-4 self-end"
-            label="PDF로 내려받기"
-          />
-        )}
         <div className="flex h-full flex-col items-center justify-center">
           {rightPanelContent === 'post' && selectedSuggestion && (
             <Post
@@ -206,7 +199,10 @@ export const ShopTenantManagement = () => {
           )}
           {rightPanelContent === 'contract' && contractDetail && (
             <div className="self-start pl-[1.875rem] pt-4">
-              <ContractDocument contractDetail={contractDetail} />
+              <ContractDocument
+                contractDetail={contractDetail}
+                showDownload={true}
+              />
             </div>
           )}
           {rightPanelContent === 'empty' && (
