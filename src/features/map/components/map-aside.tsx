@@ -14,12 +14,21 @@ import { ArtistTab } from './artist-tab';
 import { ReviewTab } from './review-tab';
 import { NearbyTab } from './nearby-tab';
 
+import { useGetUserPostsQuery } from '../../post/api/post-api';
+
 export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
   const user = useAppSelector((state) => state.auth.user);
   const [activeTab, setActiveTab] = useState<TabMenu>('스토리');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isTabClickedRef = useRef(false);
   const tabMenuRef = useRef<HTMLDivElement>(null);
+
+  const { data: postData } = useGetUserPostsQuery(
+    { userId: shopDetail?.userId ?? 0, page: 1 },
+    { skip: !shopDetail?.userId }
+  );
+
+  const postImages = (postData?.items ?? []).slice(0, 9);
 
   const handleTabClick = (tab: TabMenu) => {
     isTabClickedRef.current = true;
@@ -73,12 +82,23 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
     >
       {/* 포스트 사진 그리드 */}
       <div className="grid grid-cols-[repeat(3,136px)] grid-rows-[repeat(3,136px)] gap-[1.5px]">
-        {Array.from({ length: 9 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-[8.375rem] w-[8.375rem] overflow-hidden bg-theme-200"
-          />
-        ))}
+        {Array.from({ length: 9 }).map((_, i) => {
+          const post = postImages[i];
+          return (
+            <div
+              key={i}
+              className="h-[8.375rem] w-[8.375rem] overflow-hidden bg-theme-200"
+            >
+              {post?.thumbnailUrl && (
+                <img
+                  src={post.thumbnailUrl}
+                  alt={`${shopDetail?.shopName} 포스트 ${i + 1}`}
+                  className="h-full w-full object-cover"
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <div className="flex flex-col items-center gap-7 py-7">
