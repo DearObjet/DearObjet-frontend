@@ -1,0 +1,56 @@
+import { useInfiniteScroll } from '../../map/hooks/use-infinite-scroll';
+import type { PostListItem } from '../../post/types/post-type';
+
+interface MyPostsGridProps {
+  fetchData: (
+    page: number
+  ) => Promise<{ items: PostListItem[]; hasMore: boolean }>;
+  onPostClick: (postId: number) => void;
+}
+
+export const MyPostsGrid = ({ fetchData, onPostClick }: MyPostsGridProps) => {
+  const {
+    items: posts,
+    isLoading,
+    hasMore,
+    observerTargetRef,
+  } = useInfiniteScroll<PostListItem>({ fetchData });
+
+  if (!isLoading && posts.length === 0) {
+    return (
+      <p className="pt-20 text-center text-xs text-gray-400">
+        아직 포스트가 없습니다.
+      </p>
+    );
+  }
+
+  return (
+    <div className="w-full">
+      <div className="grid grid-cols-3">
+        {posts.map((post) => (
+          <button
+            key={post.postId}
+            onClick={() => onPostClick(post.postId)}
+            className="group h-[15.875rem] w-[15.875rem] overflow-hidden focus:outline-none"
+          >
+            {post.thumbnailUrl ? (
+              <img
+                src={post.thumbnailUrl}
+                alt=""
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+            ) : (
+              <div className="h-full w-full bg-theme-200" />
+            )}
+          </button>
+        ))}
+      </div>
+      <div ref={observerTargetRef} className="py-2 text-center">
+        {isLoading && <p className="text-xs text-gray-400">불러오는 중...</p>}
+        {!hasMore && posts.length > 0 && (
+          <p className="text-xs text-gray-400">마지막 포스트입니다.</p>
+        )}
+      </div>
+    </div>
+  );
+};

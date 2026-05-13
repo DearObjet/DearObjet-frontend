@@ -1,12 +1,12 @@
 import { useSearchParams } from 'react-router';
-import { MyBookMarks } from '../components/mybookmarks';
+import { MyFavorites } from '../components/my-favorites';
 import { MyProfile } from '../components/myprofile';
 import { MyReservations } from '../components/myreservations';
-import { MyPosts } from '../components/myposts';
+import { MyPosts } from '../components/my-posts';
 import { MyMessages } from '../components/mymessages';
 
 const TAB_MAP = {
-  bookmarks: <MyBookMarks />,
+  bookmarks: <MyFavorites />,
   profile: <MyProfile />,
   reservations: <MyReservations />,
   posts: <MyPosts />,
