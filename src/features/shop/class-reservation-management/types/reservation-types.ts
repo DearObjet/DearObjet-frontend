@@ -1,6 +1,6 @@
 export interface Reservation {
   reservationNumber: number;
-  status: 'CONFIRMED' | 'CANCELLED' | 'PENDING';
+  status: 'CONFIRMED' | 'CANCELED' | 'PENDING';
   reserverName: string;
   phoneNumber: string;
   usageDateTime: string;
