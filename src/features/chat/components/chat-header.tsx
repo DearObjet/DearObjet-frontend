@@ -5,6 +5,8 @@ import { useAppSelector } from '../../../app/hooks';
 
 import LeftShiftIcon from '../../../assets/left-shift.svg';
 
+import { useGetChatRoomQuery } from '../api/chat-api';
+
 interface ChatHeaderProps {
   onBack?: () => void;
 }
@@ -15,10 +17,18 @@ export const ChatHeader = ({ onBack }: ChatHeaderProps) => {
   );
 
   // 선택된 채팅방 찾기
-  const selectedChatRoom = useMemo(
+  const roomFromStore = useMemo(
     () => chatRooms.find((room) => room.roomId === selectedChatRoomId),
     [chatRooms, selectedChatRoomId]
   );
+
+  // 새로 생성된 채팅방은 getChatRooms 리패치 완료 전까지 Redux에 없음
+  // roomId로 직접 조회해서 폴백 처리
+  const { data: roomFromApi } = useGetChatRoomQuery(selectedChatRoomId!, {
+    skip: !selectedChatRoomId || !!roomFromStore,
+  });
+
+  const selectedChatRoom = roomFromStore ?? roomFromApi;
 
   if (!selectedChatRoom) return null;
 
