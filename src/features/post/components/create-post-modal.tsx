@@ -58,10 +58,10 @@ export const CreatePostModal = ({
 
   return (
     <div
-      className="absolute inset-0 z-10 flex items-center justify-center bg-black/40"
+      className="absolute inset-0 z-10 flex items-start justify-center bg-black/40 pt-20"
       onClick={(e) => e.target === e.currentTarget && handleClose()}
     >
-      <div className="relative flex max-h-[calc(100%-90px)] w-96 flex-col overflow-hidden rounded-xl bg-white shadow-xl">
+      <div className="relative flex max-h-[calc(100%-90px)] w-[32rem] flex-col overflow-hidden rounded-xl bg-white shadow-xl">
         <div className="flex shrink-0 items-center gap-2.5 px-4 py-3">
           <Avatar user={user} />
           <span className="flex-1 text-sm font-medium">{user.name}</span>
