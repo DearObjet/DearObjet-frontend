@@ -66,6 +66,7 @@ export const ChatList = () => {
   );
   const { data, isLoading, error } = useGetChatRoomsQuery();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // 채팅방 목록 로드 완료 시 Redux에 저장 + 파트너 읽음 시각 초기화
   useEffect(() => {
@@ -92,6 +93,15 @@ export const ChatList = () => {
     (roomId: string) => dispatch(selectChatRoom(roomId)),
     [dispatch]
   );
+
+  // 검색어로 파트너 이름 필터링
+  const filteredChatRooms = searchQuery.trim()
+    ? chatRooms.filter((room) =>
+        room.partnerName
+          .toLowerCase()
+          .includes(searchQuery.trim().toLowerCase())
+      )
+    : chatRooms;
 
   return (
     <div className="flex h-full flex-col rounded-xl bg-white">
@@ -127,6 +137,8 @@ export const ChatList = () => {
           <input
             type="text"
             placeholder="검색"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-lg border border-gray-200 py-2 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none"
           />
           <svg
@@ -150,7 +162,7 @@ export const ChatList = () => {
         <ChatRoomList
           isLoading={isLoading}
           error={error}
-          chatRooms={chatRooms}
+          chatRooms={filteredChatRooms}
           selectedChatRoomId={selectedChatRoomId}
           onSelectRoom={handleSelectRoom}
         />
