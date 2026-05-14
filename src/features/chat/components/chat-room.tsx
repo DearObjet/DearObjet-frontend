@@ -18,7 +18,11 @@ import { ChatHeader } from './chat-header';
 import { MessageList } from './message-list';
 import { MessageInput } from './message-input';
 
-export const ChatRoom = () => {
+interface ChatRoomProps {
+  onBack?: () => void;
+}
+
+export const ChatRoom = ({ onBack }: ChatRoomProps) => {
   const dispatch = useAppDispatch();
   const { joinRoom, leaveRoom, markAsRead } = useChatWebSocketContext();
   const { selectedChatRoomId, messages, chatRooms } = useAppSelector(
@@ -112,7 +116,7 @@ export const ChatRoom = () => {
 
   return (
     <div className="flex h-full flex-col rounded-xl bg-white">
-      <ChatHeader />
+      <ChatHeader onBack={onBack} />
       <MessageList />
       <MessageInput />
     </div>
