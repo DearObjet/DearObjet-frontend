@@ -35,7 +35,7 @@ export const PostViewModal = ({
       className="absolute inset-0 z-10 flex items-start justify-center bg-black/40 pt-20"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="relative flex max-h-[calc(100%-90px)] w-96 flex-col overflow-hidden rounded-xl bg-white shadow-xl">
+      <div className="relative flex max-h-[calc(100%-90px)] w-[32rem] flex-col overflow-hidden rounded-xl bg-white shadow-xl">
         {/* 헤더 */}
         <div className="flex shrink-0 items-center gap-2.5 px-4 py-3">
           <Avatar user={postAuthor} />
