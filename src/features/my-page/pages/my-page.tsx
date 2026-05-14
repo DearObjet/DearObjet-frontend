@@ -3,7 +3,7 @@ import { MyFavorites } from '../components/my-favorites';
 import { MyProfile } from '../components/myprofile';
 import { MyReservations } from '../components/myreservations';
 import { MyPosts } from '../components/my-posts';
-import { MyMessages } from '../components/mymessages';
+import { MyMessages } from '../components/my-messages';
 
 const TAB_MAP = {
   bookmarks: <MyFavorites />,
