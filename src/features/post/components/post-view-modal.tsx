@@ -32,7 +32,7 @@ export const PostViewModal = ({
 
   return (
     <div
-      className="absolute inset-0 z-10 flex items-center justify-center bg-black/40"
+      className="absolute inset-0 z-10 flex items-start justify-center bg-black/40 pt-20"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="relative flex max-h-[calc(100%-90px)] w-96 flex-col overflow-hidden rounded-xl bg-white shadow-xl">
