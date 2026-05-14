@@ -1,5 +1,7 @@
 import type { useChatWebSocket } from '../hooks/use-chat-websocket';
 
+import type { UserRole } from '../../../shared/constants';
+
 export type MessageType = 'TEXT' | 'IMAGE' | 'FILE' | 'SYSTEM';
 export type ChatRoomType = 'ONE_TO_ONE' | 'GROUP';
 
@@ -23,6 +25,15 @@ export interface UserListProps {
   userList: UserListItem[];
   selectedUserId: number | null;
   onSelect: (userId: number) => void;
+}
+
+export interface UserListItem {
+  userId: number;
+  accountName: string;
+  role: UserRole;
+  profileImageUrl: string | null;
+  specialty: string | null;
+  statusLabel: string;
 }
 
 export interface MessageItemProps {
@@ -62,11 +73,10 @@ export interface GetMessagesBeforeParams {
   limit?: number;
 }
 
-export interface UserListItem {
-  userId: number;
-  name: string;
-  category: string;
-  status: string;
+export interface SearchChatUsersParams {
+  keyword?: string;
+  page?: number;
+  size?: number;
 }
 
 export interface Participant {

@@ -1,125 +1,37 @@
 import { useCallback, useState } from 'react';
 
-import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-
-import {
-  useGetUserListQuery,
-  useGetOrCreateDirectChatMutation,
-} from '../../../features/chat/api/chat-api';
-import { selectChatRoom } from '../../../features/chat/slices/chat-slice';
+import { useAppSelector } from '../../../app/hooks';
 import { useSearchArtistsQuery } from '../../../features/contract-management/api/contract-management-api';
 import type { ArtistSearchItem } from '../../../features/contract-management/types/contract-management-types';
-import type {
-  UserListProps,
-  UserSelectModalProps,
-} from '../../../features/chat/types/chat-types';
 
-type Mode = 'chat' | 'contract';
-
-interface ExtendedUserSelectModalProps extends UserSelectModalProps {
-  mode?: Mode;
-  onSelectArtist?: (artist: ArtistSearchItem) => void;
+export interface ArtistSelectModalProps {
+  onClose: () => void;
+  onSelectArtist: (artist: ArtistSearchItem) => void;
 }
-
-const UserList = ({
-  isLoading,
-  userList,
-  selectedUserId,
-  onSelect,
-}: UserListProps) => {
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-8">
-        <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-theme-900" />
-      </div>
-    );
-  }
-
-  if (userList.length === 0) {
-    return (
-      <p className="py-8 text-center text-sm text-theme-500">
-        검색 결과가 없습니다.
-      </p>
-    );
-  }
-
-  return (
-    <>
-      {userList.map((user) => (
-        <div
-          key={user.userId}
-          onClick={() => onSelect(user.userId)}
-          className={`grid cursor-pointer grid-cols-3 border-b border-gray-100 py-3 transition-colors hover:bg-gray-50 ${
-            selectedUserId === user.userId ? 'bg-gray-100' : ''
-          }`}
-        >
-          <span className="text-sm text-gray-900">{user.name}</span>
-          <span className="text-sm text-gray-600">{user.category}</span>
-          <span className="text-sm text-gray-600">{user.status}</span>
-        </div>
-      ))}
-    </>
-  );
-};
 
 export const UserSelectModal = ({
   onClose,
-  mode = 'chat',
   onSelectArtist,
-}: ExtendedUserSelectModalProps) => {
-  const dispatch = useAppDispatch();
+}: ArtistSelectModalProps) => {
   const userId = useAppSelector((state) => state.auth.user?.userId);
   const [search, setSearch] = useState('');
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [selectedArtistId, setSelectedArtistId] = useState<number | null>(null);
 
-  const { data: userList = [], isLoading: isChatLoading } = useGetUserListQuery(
-    search,
-    { skip: mode !== 'chat' }
+  const { data: artistData, isLoading } = useSearchArtistsQuery(
+    { userId: userId!, keyword: search },
+    { skip: !userId || search.length < 1 }
   );
-
-  const { data: artistData, isLoading: isArtistLoading } =
-    useSearchArtistsQuery(
-      { userId: userId!, keyword: search },
-      { skip: mode !== 'contract' || !userId || search.length < 1 }
-    );
-
+  console.log(artistData, isLoading);
   const artistList = artistData?.items ?? [];
-  const isLoading = mode === 'chat' ? isChatLoading : isArtistLoading;
 
-  const [getOrCreateDirectChat, { isLoading: isCreating }] =
-    useGetOrCreateDirectChatMutation();
-
-  const handleSend = useCallback(async () => {
-    if (mode === 'chat') {
-      if (!selectedUserId) return;
-      try {
-        const chatRoom = await getOrCreateDirectChat(selectedUserId).unwrap();
-        dispatch(selectChatRoom(chatRoom.roomId));
-        onClose();
-      } catch (e) {
-        console.error('채팅방 생성 실패:', e);
-      }
-    } else {
-      if (!selectedArtistId) return;
-      const artist = artistList.find((a) => a.artistId === selectedArtistId);
-      if (artist && onSelectArtist) {
-        onSelectArtist(artist);
-        onClose();
-      }
+  const handleSelect = useCallback(() => {
+    if (!selectedArtistId) return;
+    const artist = artistList.find((a) => a.artistId === selectedArtistId);
+    if (artist) {
+      onSelectArtist(artist);
+      onClose();
     }
-  }, [
-    mode,
-    selectedUserId,
-    selectedArtistId,
-    artistList,
-    getOrCreateDirectChat,
-    dispatch,
-    onClose,
-    onSelectArtist,
-  ]);
-
-  const isDisabled = mode === 'chat' ? !selectedUserId : !selectedArtistId;
+  }, [selectedArtistId, artistList, onSelectArtist, onClose]);
 
   return (
     <div
@@ -130,9 +42,7 @@ export const UserSelectModal = ({
         className="w-[500px] rounded-2xl bg-white p-8"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-6 text-center text-xl font-bold">
-          {mode === 'chat' ? '사용자 계정 검색' : '작가 검색'}
-        </h2>
+        <h2 className="mb-6 text-center text-xl font-bold">작가 검색</h2>
 
         <div className="relative mb-4">
           <svg
@@ -158,26 +68,13 @@ export const UserSelectModal = ({
         </div>
 
         <div className="grid grid-cols-3 border-b border-gray-200 pb-4 text-center">
-          <span className="text-sm font-semibold text-gray-900">
-            {mode === 'chat' ? '계정명' : '작가명'}
-          </span>
-          <span className="text-sm font-semibold text-gray-900">
-            {mode === 'chat' ? '주요 카테고리' : '전문분야'}
-          </span>
-          <span className="text-sm font-semibold text-gray-900">
-            {mode === 'chat' ? '상태' : '이메일'}
-          </span>
+          <span className="text-sm font-semibold text-gray-900">작가명</span>
+          <span className="text-sm font-semibold text-gray-900">전문분야</span>
+          <span className="text-sm font-semibold text-gray-900">이메일</span>
         </div>
 
         <div className="mb-6 max-h-80 overflow-y-auto">
-          {mode === 'chat' ? (
-            <UserList
-              isLoading={isLoading}
-              userList={userList}
-              selectedUserId={selectedUserId}
-              onSelect={setSelectedUserId}
-            />
-          ) : isLoading ? (
+          {isLoading ? (
             <div className="flex justify-center py-8">
               <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-theme-900" />
             </div>
@@ -209,11 +106,11 @@ export const UserSelectModal = ({
         </div>
 
         <button
-          onClick={handleSend}
-          disabled={isDisabled || isCreating}
+          onClick={handleSelect}
+          disabled={!selectedArtistId}
           className="w-full rounded-lg bg-black py-3 font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isCreating ? '생성 중...' : mode === 'chat' ? '보내기' : '선택'}
+          선택
         </button>
       </div>
     </div>

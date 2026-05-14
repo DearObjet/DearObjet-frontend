@@ -1,4 +1,6 @@
-import { useAppSelector } from '../../../app/hooks';
+import { useEffect } from 'react';
+
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 
 import { ChatWebSocketProvider } from '../hooks/chat-websocket-provider';
 import { useChatWebSocketContext } from '../hooks/use-chat-websocket-context';
@@ -6,10 +8,16 @@ import { useChatWebSocketContext } from '../hooks/use-chat-websocket-context';
 import { ChatList } from '../components/chat-list';
 import { ChatRoom } from '../components/chat-room';
 import { EmptyChat } from '../components/empty-chat';
+import { selectChatRoom } from '../slices/chat-slice';
 
 const ChatPageInner = () => {
+  const dispatch = useAppDispatch();
   const { selectedChatRoomId } = useAppSelector((state) => state.chat);
   const { isConnected } = useChatWebSocketContext();
+
+  useEffect(() => {
+    dispatch(selectChatRoom(null));
+  }, [dispatch]);
 
   return (
     <div className="flex h-[52.2rem] flex-1 gap-3 overflow-hidden bg-gray-100">

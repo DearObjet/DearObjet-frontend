@@ -286,7 +286,6 @@ export const ContractManagement = () => {
     <div className="flex h-full gap-4">
       {showArtistModal && (
         <UserSelectModal
-          mode="contract"
           onClose={() => setShowArtistModal(false)}
           onSelectArtist={(artist) => {
             setSelectedArtist(artist);

@@ -10,9 +10,19 @@ import type {
   GetLatestMessagesParams,
   GetMessagesBeforeParams,
   MessageSyncResponse,
+  SearchChatUsersParams,
   SyncMessagesParams,
   UserListItem,
 } from '../types/chat-types';
+
+interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  last: boolean;
+}
 
 export const chatApi = createApi({
   reducerPath: 'chatApi',
@@ -21,14 +31,22 @@ export const chatApi = createApi({
   endpoints: (builder) => ({
     // ===== 채팅방 =====
 
-    // 유저 검색 — 새 메시지 시작 시 대화 상대 검색에 사용
-    getUserList: builder.query<UserListItem[], string | void>({
-      query: (search = '') =>
-        search
-          ? `${CHAT_ENDPOINTS.USER_LIST}?search=${search}`
-          : CHAT_ENDPOINTS.USER_LIST,
-      transformResponse: (response: ApiResponse<UserListItem[]>) =>
-        response.data,
+    // 새 메시지 시작 시 대화 상대 검색에 사용
+    searchChatUsers: builder.query<
+      UserListItem[],
+      SearchChatUsersParams | void
+    >({
+      query: (params = {}) => {
+        const { keyword = '', page = 0, size = 20 } = params ?? {};
+        const searchParams = new URLSearchParams({
+          page: String(page),
+          size: String(size),
+        });
+        if (keyword) searchParams.set('keyword', keyword);
+        return `${CHAT_ENDPOINTS.USER_SEARCH}?${searchParams.toString()}`;
+      },
+      transformResponse: (response: ApiResponse<PageResponse<UserListItem>>) =>
+        response.data.content,
     }),
 
     // 내가 참여한 채팅방 목록 전체 조회
@@ -140,7 +158,7 @@ export const chatApi = createApi({
 });
 
 export const {
-  useGetUserListQuery,
+  useSearchChatUsersQuery,
   useGetChatRoomsQuery,
   useCreateChatRoomMutation,
   useGetOrCreateDirectChatMutation,
