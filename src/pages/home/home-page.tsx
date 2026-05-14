@@ -4,6 +4,7 @@ import { ChevronRight, ChevronLeft } from 'lucide-react';
 
 import { useAppSelector } from '../../app/hooks';
 import { Button } from '../../shared/components/ui';
+import { CarouselBanner } from '../../shared/components/common/carousel-banner';
 import { API_BASE_URL, ROUTES } from '../../shared/constants';
 
 import { useGetNoticesQuery } from '../../features/notice/api/notice-api';
@@ -52,8 +53,9 @@ export const HomePage = () => {
   return (
     <div className="flex flex-col gap-3 lg:flex-row">
       <div className="flex flex-1 flex-col gap-3">
-        <section className="flex h-[20.93rem] w-full items-center justify-center rounded-sm border border-gray-300">
-          <h2>캐러셀 배너</h2>
+        <section className="h-[20.93rem] w-full overflow-hidden rounded-sm">
+          <h2 className="sr-only">캐러셀 배너</h2>
+          <CarouselBanner />
         </section>
 
         <section className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
