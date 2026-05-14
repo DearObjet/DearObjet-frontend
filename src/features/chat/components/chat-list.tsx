@@ -9,9 +9,8 @@ import {
 } from '../slices/chat-slice';
 import type { ChatRoomListProps } from '../types/chat-types';
 import { ChatListItem } from './chat-list-item';
-import { UserSelectModal } from '../../../shared/components/common/user-select-modal';
+import { ChatUserSelectModal } from './chat-user-select-modal';
 
-// isLoading / error / chatRooms 빈 상태를 early return으로 처리
 const ChatRoomList = ({
   isLoading,
   error,
@@ -158,7 +157,9 @@ export const ChatList = () => {
       </div>
 
       {/* 새 메시지 유저 검색 모달 */}
-      {isModalOpen && <UserSelectModal onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && (
+        <ChatUserSelectModal onClose={() => setIsModalOpen(false)} />
+      )}
     </div>
   );
 };

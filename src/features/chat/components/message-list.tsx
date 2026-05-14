@@ -20,6 +20,8 @@ export const MessageList = () => {
   const isLoadingMoreRef = useRef(false); // 이전 메시지 로딩 중 여부
   const isInitialLoadRef = useRef(true); // 최초 진입 여부 — 첫 로드 시 스크롤을 최하단으로 즉시 이동
   const isAtBottomLocalRef = useRef(true); // 현재 스크롤이 최하단인지 여부
+  // 이전 메시지 수 — bulk 교체(setMessages)와 단일 추가(addMessage)를 구분하기 위해 사용
+  const prevMessageCountRef = useRef(0);
 
   const [oldestMessageId, setOldestMessageId] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(true); // 더 불러올 과거 메시지가 있는지
@@ -50,21 +52,23 @@ export const MessageList = () => {
     setIsAtBottomLocal(true);
     isLoadingMoreRef.current = false;
     isInitialLoadRef.current = true;
+    prevMessageCountRef.current = 0;
   }, [selectedChatRoomId]);
 
   // 메시지 변경 시 스크롤 처리
   useEffect(() => {
     if (currentMessages.length === 0) return;
 
-    // 최초 진입: 스크롤을 즉시 최하단으로 이동
+    // Case 1: 최초 진입 / 재진입 — 즉시 최하단으로 이동
     if (isInitialLoadRef.current) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
       setOldestMessageId(currentMessages[0].id);
       isInitialLoadRef.current = false;
+      prevMessageCountRef.current = currentMessages.length;
       return;
     }
 
-    // 이전 메시지(50개 이상인 경우) 로드 완료: 스크롤 위치 복원 (위로 스크롤되지 않도록)
+    // Case 2: 이전 메시지 로드 완료 — 스크롤 위치 복원
     if (isLoadingMoreRef.current) {
       const container = containerRef.current;
       if (container) {
@@ -72,13 +76,28 @@ export const MessageList = () => {
           container.scrollHeight - prevScrollHeightRef.current;
       }
       isLoadingMoreRef.current = false;
+      prevMessageCountRef.current = currentMessages.length;
       return;
     }
 
-    // 새 메시지 수신: 최하단에 있을 때만 자동으로 최하단으로 스크롤
+    // Case 3: 메시지 업데이트
+    // - 정확히 +1 증가: WebSocket 단일 메시지 수신 → smooth 스크롤 (자연스러운 알림 효과)
+    // - 그 외 (setMessages bulk 교체, refetch 등): auto 스크롤
+    //   → refetchOnMountOrArgChange로 인한 2차 setMessages 호출 시 top→bottom smooth 방지
     if (isAtBottomLocalRef.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      const isExactlyOneNewMessage =
+        currentMessages.length === prevMessageCountRef.current + 1;
+      messagesEndRef.current?.scrollIntoView({
+        behavior: isExactlyOneNewMessage ? 'smooth' : 'auto',
+      });
     }
+
+    // refetch로 메시지가 교체될 경우 oldest ID를 실제 메시지 기준으로 동기화
+    // 동일한 ID면 React가 re-render를 bail out하므로 부담 없음
+    if (currentMessages.length > 0) {
+      setOldestMessageId(currentMessages[0].id);
+    }
+    prevMessageCountRef.current = currentMessages.length;
   }, [currentMessages]);
 
   const { data: olderMessages } = useGetMessagesBeforeQuery(
@@ -134,7 +153,7 @@ export const MessageList = () => {
 
     // 최상단 도달 시 이전 메시지 로드 트리거
     if (!hasMore || isLoadingMoreRef.current || !oldestMessageId) return;
-    if (container.scrollTop === 0) {
+    if (container.scrollTop < 5) {
       prevScrollHeightRef.current = container.scrollHeight; // 현재 높이 저장
       isLoadingMoreRef.current = true;
       setBeforeMessageId(oldestMessageId);

@@ -18,6 +18,6 @@ export const CHAT_ENDPOINTS = {
   // 이미지 업로드
   UPLOAD_IMAGE: '/api/chat/upload/image',
 
-  // 유저 검색
-  USER_LIST: '/api/users/list',
+  // 채팅 상대 검색
+  USER_SEARCH: '/api/chat/users/search',
 } as const;

@@ -44,7 +44,7 @@ export const ChatRoom = () => {
   // 초기 메시지 로드 — 채팅방 진입 시 최신 메시지 50개를 API로 조회
   const { data: latestMessages } = useGetLatestMessagesQuery(
     { roomId: selectedChatRoomId!, limit: 50 },
-    { skip: !selectedChatRoomId }
+    { skip: !selectedChatRoomId, refetchOnMountOrArgChange: true }
   );
 
   useEffect(() => {
