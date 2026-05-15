@@ -15,7 +15,6 @@ export const MessageList = () => {
     useAppSelector((state) => state.chat);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null); // 스크롤 최하단 앵커
   const prevScrollHeightRef = useRef<number>(0); // 이전 메시지 로드 후 스크롤 위치 복원에 사용
   const isLoadingMoreRef = useRef(false); // 이전 메시지 로딩 중 여부
   const isInitialLoadRef = useRef(true); // 최초 진입 여부 — 첫 로드 시 스크롤을 최하단으로 즉시 이동
@@ -61,7 +60,10 @@ export const MessageList = () => {
 
     // Case 1: 최초 진입 / 재진입 — 즉시 최하단으로 이동
     if (isInitialLoadRef.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      if (containerRef.current) {
+        containerRef.current.scrollTop = containerRef.current.scrollHeight;
+      }
+
       setOldestMessageId(currentMessages[0].id);
       isInitialLoadRef.current = false;
       prevMessageCountRef.current = currentMessages.length;
@@ -87,9 +89,12 @@ export const MessageList = () => {
     if (isAtBottomLocalRef.current) {
       const isExactlyOneNewMessage =
         currentMessages.length === prevMessageCountRef.current + 1;
-      messagesEndRef.current?.scrollIntoView({
-        behavior: isExactlyOneNewMessage ? 'smooth' : 'auto',
-      });
+      if (containerRef.current) {
+        containerRef.current.scrollTo({
+          top: containerRef.current.scrollHeight,
+          behavior: isExactlyOneNewMessage ? 'smooth' : 'auto',
+        });
+      }
     }
 
     // refetch로 메시지가 교체될 경우 oldest ID를 실제 메시지 기준으로 동기화
@@ -128,7 +133,10 @@ export const MessageList = () => {
 
   const scrollToBottom = useCallback(
     (behavior: 'smooth' | 'auto' = 'smooth') => {
-      messagesEndRef.current?.scrollIntoView({ behavior });
+      containerRef.current?.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior,
+      });
     },
     []
   );
@@ -188,7 +196,7 @@ export const MessageList = () => {
     <div
       ref={containerRef}
       onScroll={handleScroll}
-      className="flex-1 overflow-y-auto bg-white px-6"
+      className="flex-1 overflow-y-auto overscroll-contain bg-white px-6"
     >
       {!hasMore && currentMessages.length > 0 && (
         <div className="py-2 text-center text-xs text-theme-900">
@@ -217,8 +225,6 @@ export const MessageList = () => {
             {partnerName}님이 메세지를 입력하고 있습니다.
           </div>
         ))}
-
-      <div ref={messagesEndRef} />
     </div>
   );
 };
