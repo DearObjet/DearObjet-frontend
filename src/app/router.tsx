@@ -36,6 +36,7 @@ import { ContractManagement } from '../features/contract-management/pages/contra
 import { SettlementHistory } from '../features/settlement-hisotry';
 import { ArtistPage } from '../features/artist-page/pages/artist-page';
 import { SettlementCalculation } from '../features/shop/settlement';
+import { SettlementManagement } from '../features/artist/settlement-management';
 
 export const router = createBrowserRouter([
   {
@@ -153,7 +154,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: ROUTES.ARTIST_SETTLEMENT_MANAGEMENT,
-                element: <div>정산</div>,
+                element: <SettlementManagement />,
               },
               {
                 path: ROUTES.ARTIST_SETTLEMENTS_HISTORY,
