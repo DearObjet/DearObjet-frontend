@@ -38,9 +38,7 @@ export const MyPosts = () => {
 
   return (
     <MyPageLayout>
-      <div className="max-h-[69.5625rem] overflow-y-auto [&::-webkit-scrollbar-thumb]:bg-black [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-[5px]">
-        <MyPostsGrid fetchData={fetchData} onPostClick={handlePostClick} />
-      </div>
+      <MyPostsGrid fetchData={fetchData} onPostClick={handlePostClick} />
     </MyPageLayout>
   );
 };

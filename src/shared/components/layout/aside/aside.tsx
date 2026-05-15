@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from 'react';
+import { useState, useRef, useEffect, type MouseEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
 import {
@@ -24,9 +24,29 @@ import DearObjectWhiteLogo from '../../../../assets/dear-objet-white-logo.svg';
 export const Aside = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const asideRef = useRef<HTMLElement>(null);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [activeMenu, setActiveMenu] = useState(location.pathname);
   const role = useSelector((state: RootState) => state.auth.user?.role);
   const { data: userMe } = useGetMeQuery();
+
+  const handleScroll = () => {
+    const el = asideRef.current;
+    if (!el) return;
+
+    el.classList.add('is-scrolling');
+
+    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = setTimeout(() => {
+      el.classList.remove('is-scrolling');
+    }, 500); // 스크롤 멈춘 뒤 500ms 후 사라짐
+  };
+
+  useEffect(() => {
+    return () => {
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
+  }, []);
 
   const handleClick = (path: string) => {
     setActiveMenu(path);
@@ -47,7 +67,11 @@ export const Aside = () => {
     };
 
   return (
-    <aside className="flex flex-col bg-black pb-[2.875rem] pl-[2.375rem] pr-[3.75rem] pt-[3.25rem] text-white">
+    <aside
+      ref={asideRef}
+      onScroll={handleScroll}
+      className="aside-scroll flex flex-col overflow-y-auto bg-black pb-[2.875rem] pl-[2.375rem] pr-[3.375rem] pt-[3.25rem] text-white"
+    >
       <section className="flex items-center gap-2 text-[1.1875rem]">
         <img
           src={DearObjectWhiteLogo}
@@ -410,7 +434,7 @@ export const Aside = () => {
       </section>
 
       <UserProfile
-        className="mt-auto"
+        className="mt-10"
         variant="aside"
         userName={userMe?.name ?? ''}
         userId={userMe?.email}

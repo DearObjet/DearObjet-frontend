@@ -180,7 +180,7 @@ export const ShopManagement = () => {
   const isFormDisabled = mode === 'default' || mode === 'selected';
 
   return (
-    <div className="grid w-full flex-1 grid-cols-2 gap-3 overflow-y-auto bg-gray-100">
+    <div className="grid w-full grid-cols-2 gap-3 bg-gray-100 pb-5">
       {/* 클래스 등록 및 매장 운영 정보 등록 */}
       <div className="flex flex-col gap-3">
         <StoryManagement />
