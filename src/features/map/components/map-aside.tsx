@@ -252,7 +252,9 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
         {activeTab === '원데이클래스' && shopId && (
           <OneDayClassTab shopId={shopId} shopName={shopDetail.shopName} />
         )}
-        {activeTab === '입점작가' && <ArtistTab />}
+        {activeTab === '입점작가' && shopId !== null && (
+          <ArtistTab shopId={shopId} />
+        )}
         {activeTab === '리뷰' && shopId !== null && (
           <ReviewTab shopId={shopId} />
         )}
