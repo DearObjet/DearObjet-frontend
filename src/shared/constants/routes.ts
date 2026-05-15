@@ -47,8 +47,8 @@ export const ROUTES = {
   SHOP_CONTRACTS: '/shop/contracts',
 
   // shop_settlements
-  SHOP_SETTLEMENTS: '/shop/settlements',
-  SHOP_SETTLEMENTS_HISTORY: '/shop/settlements/history',
+  SHOP_SETTLEMENT_CALCULATION: '/shop/settlement-calculation',
+  SHOP_SETTLEMENT_HISTORY: '/shop/settlement/history',
 
   // shop_messages
   SHOP_MESSAGES: '/shop/messages',
@@ -80,7 +80,7 @@ export const ROUTES = {
   ARTIST_SHIPMENTS: '/artist/shipments',
 
   // artist_settlements
-  ARTIST_SETTLEMENTS: '/artist/settlements',
+  ARTIST_SETTLEMENT_MANAGEMENT: '/artist/settlement-management',
   ARTIST_SETTLEMENTS_HISTORY: '/artist/settlements/history',
 
   // artist_messages

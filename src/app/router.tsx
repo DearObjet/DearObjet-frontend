@@ -35,6 +35,7 @@ import { ShopTenantManagement } from '../features/tenant-management/pages/shop-t
 import { ContractManagement } from '../features/contract-management/pages/contract-management';
 import { SettlementHistory } from '../features/settlement-hisotry';
 import { ArtistPage } from '../features/artist-page/pages/artist-page';
+import { SettlementCalculation } from '../features/shop/settlement';
 
 export const router = createBrowserRouter([
   {
@@ -108,11 +109,11 @@ export const router = createBrowserRouter([
               { path: ROUTES.SHOP_INVENTORY, element: <InboundManagement /> },
               { path: ROUTES.SHOP_CONTRACTS, element: <ContractManagement /> },
               {
-                path: ROUTES.SHOP_SETTLEMENTS,
-                element: <div>정산금액 계산</div>,
+                path: ROUTES.SHOP_SETTLEMENT_CALCULATION,
+                element: <SettlementCalculation />,
               },
               {
-                path: ROUTES.SHOP_SETTLEMENTS_HISTORY,
+                path: ROUTES.SHOP_SETTLEMENT_HISTORY,
                 element: <SettlementHistory />,
               },
               { path: ROUTES.SHOP_MESSAGES, element: <Chat /> },
@@ -150,7 +151,10 @@ export const router = createBrowserRouter([
                 path: ROUTES.ARTIST_CONTRACTS,
                 element: <ContractManagement />,
               },
-              { path: ROUTES.ARTIST_SETTLEMENTS, element: <div>정산</div> },
+              {
+                path: ROUTES.ARTIST_SETTLEMENT_MANAGEMENT,
+                element: <div>정산</div>,
+              },
               {
                 path: ROUTES.ARTIST_SETTLEMENTS_HISTORY,
                 element: <SettlementHistory />,
