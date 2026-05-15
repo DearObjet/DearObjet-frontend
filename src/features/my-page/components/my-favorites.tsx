@@ -29,9 +29,7 @@ export const MyFavorites = () => {
 
   return (
     <MyPageLayout>
-      <div className="max-h-[69.5625rem] overflow-y-auto [&::-webkit-scrollbar-thumb]:bg-black [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-[5px]">
-        <MyFavoritesGrid fetchData={fetchData} onShopClick={handleShopClick} />
-      </div>
+      <MyFavoritesGrid fetchData={fetchData} onShopClick={handleShopClick} />
     </MyPageLayout>
   );
 };
