@@ -116,13 +116,14 @@ export const Aside = () => {
                     ? 'text-white'
                     : 'text-[#C1C1C1]'
                 }
-                onClick={() =>
-                  handleClick(
-                    role === 'SHOP'
-                      ? ROUTES.SHOP_DASHBOARD
-                      : ROUTES.ARTIST_DASHBOARD
-                  )
-                }
+                onClick={handleComingSoon('대시보드')}
+                // onClick={() =>
+                //   handleClick(
+                //     role === 'SHOP'
+                //       ? ROUTES.SHOP_DASHBOARD
+                //       : ROUTES.ARTIST_DASHBOARD
+                //   )
+                // }
               />
             </li>
             {role === 'SHOP' && (

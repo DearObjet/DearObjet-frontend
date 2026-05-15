@@ -68,7 +68,7 @@ export const TenantListTableRow = ({
     nextAction.code === 'RELEASE_REQUEST' ||
     nextAction.code === 'RELEASE_CANCELLATION' ||
     nextAction.code === 'EXTENSION_REQUEST' ||
-    (variant === 'artist' && nextAction.code === 'CONTRACT_APPROVE');
+    (variant === 'shop' && nextAction.code === 'CONTRACT_APPROVE');
 
   const isDisabled = !isActionable;
 
