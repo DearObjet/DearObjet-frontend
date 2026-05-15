@@ -26,7 +26,7 @@ export const PostGrid = ({ fetchData, onPostClick }: PostGridProps) => {
   }
 
   return (
-    <div className="aspect-square w-full overflow-y-auto">
+    <div className="w-full">
       <div className="grid grid-cols-3 gap-1">
         {posts.map((post) => (
           <button
