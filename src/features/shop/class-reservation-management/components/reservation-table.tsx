@@ -1,9 +1,9 @@
 import { useState, type Dispatch, type SetStateAction } from 'react';
 
 import type { Reservation } from '../types/reservation-types';
-import { ReservationTableRow } from './reservation-table-row';
 import Sort from '../../../../assets/sort.svg';
 import { Button } from '../../../../shared/components/ui';
+import { ReservationTableRow } from './reservation-table-row';
 
 type SortKey = keyof Omit<Reservation, 'status'>;
 type SortOrder = 'asc' | 'desc';
@@ -16,7 +16,6 @@ const COL_WIDTHS = [
   '11.9375rem',
   '9rem',
   '13.5625rem',
-  '5.5rem',
   'auto',
 ];
 
@@ -70,7 +69,7 @@ export const ReservationTable = ({
     const aVal = a[sortKey];
     const bVal = b[sortKey];
 
-    if (sortKey === 'reservationTime') {
+    if (sortKey === 'usageDateTime') {
       return sortOrder === 'asc'
         ? new Date(aVal as string).getTime() -
             new Date(bVal as string).getTime()
@@ -78,7 +77,7 @@ export const ReservationTable = ({
             new Date(aVal as string).getTime();
     }
 
-    if (sortKey === 'guestCount') {
+    if (sortKey === 'reservationId') {
       return sortOrder === 'asc'
         ? (aVal as number) - (bVal as number)
         : (bVal as number) - (aVal as number);
@@ -132,7 +131,7 @@ export const ReservationTable = ({
             </th>
             <th className="py-3 text-left font-medium">상태</th>
             <th className="py-3 text-left font-medium">
-              예약자명 <SortButton sortTarget="reservationName" />
+              예약자명 <SortButton sortTarget="reserverName" />
             </th>
             <th className="py-3 text-left font-medium">
               전화번호 <SortButton sortTarget="phoneNumber" />
@@ -141,17 +140,12 @@ export const ReservationTable = ({
               예약번호 <SortButton sortTarget="reservationId" />
             </th>
             <th className="py-3 text-left font-medium">
-              이용일시 <SortButton sortTarget="reservationTime" />
+              이용일시 <SortButton sortTarget="usageDateTime" />
             </th>
             <th className="py-3 text-left font-medium">
               클래스명 <SortButton sortTarget="className" />
             </th>
-            <th className="py-3 text-left font-medium">
-              인원 <SortButton sortTarget="guestCount" />
-            </th>
-            <th className="py-3 text-left font-medium">
-              메모 <SortButton sortTarget="memo" />
-            </th>
+            <th className="py-3 text-left font-medium">인원</th>
           </tr>
         </thead>
       </table>

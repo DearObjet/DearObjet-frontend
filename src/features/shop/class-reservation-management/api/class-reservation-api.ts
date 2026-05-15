@@ -12,23 +12,15 @@ const CLASS_RESERVATION_ENDPOINTS = {
     `/api/v1/class-reservations/${reservationId}/cancel`,
 };
 
-interface GetReservationsParams {
-  year: number;
-  month: number;
-}
-
 export const classReservationApi = createApi({
   reducerPath: 'classReservationApi',
   baseQuery: createBaseQuery(),
   tagTypes: ['ClassReservation'] as const,
   endpoints: (builder) => ({
-    getClassReservations: builder.query<
-      ReservationListResponse,
-      GetReservationsParams
-    >({
-      query: ({ year, month }) => ({
+    getClassReservations: builder.query<ReservationListResponse, void>({
+      query: () => ({
         url: CLASS_RESERVATION_ENDPOINTS.LIST,
-        params: { year, month },
+        params: { page: 1, size: 100 },
       }),
       transformResponse: (response: ApiResponse<ReservationListResponse>) =>
         response.data,
@@ -37,14 +29,14 @@ export const classReservationApi = createApi({
     confirmReservation: builder.mutation<void, number>({
       query: (reservationId) => ({
         url: CLASS_RESERVATION_ENDPOINTS.CONFIRM(reservationId),
-        method: 'PATCH',
+        method: 'POST',
       }),
       invalidatesTags: ['ClassReservation'],
     }),
     cancelReservation: builder.mutation<void, number>({
       query: (reservationId) => ({
         url: CLASS_RESERVATION_ENDPOINTS.CANCEL(reservationId),
-        method: 'PATCH',
+        method: 'POST',
       }),
       invalidatesTags: ['ClassReservation'],
     }),

@@ -1,15 +1,15 @@
 export interface Reservation {
   reservationId: number;
-  status: 'CONFIRMED' | 'CANCELLED' | 'PENDING';
-  reservationName: string;
+  status: 'CONFIRMED' | 'CANCELED' | 'PENDING';
+  reserverName: string;
   phoneNumber: string;
-  reservationTime: string;
+  usageDateTime: string;
   className: string;
-  guestCount: number;
-  memo: string;
 }
 
 export interface ReservationListResponse {
   reservationCount: number;
-  reservations: Reservation[];
+  items: Reservation[];
+  page: number;
+  totalPages: number;
 }
