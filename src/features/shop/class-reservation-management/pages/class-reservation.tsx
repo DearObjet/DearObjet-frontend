@@ -32,7 +32,7 @@ export const ClassReservation = () => {
     if (selectedIds.size === 0) return;
 
     const selectedReservations = filteredReservations.filter((r) =>
-      selectedIds.has(r.reservationNumber)
+      selectedIds.has(r.reservationId)
     );
     const hasNonPending = selectedReservations.some(
       (r) => r.status !== 'PENDING'
@@ -51,7 +51,7 @@ export const ClassReservation = () => {
     if (selectedIds.size === 0) return;
 
     const selectedReservations = filteredReservations.filter((r) =>
-      selectedIds.has(r.reservationNumber)
+      selectedIds.has(r.reservationId)
     );
     const hasNonPending = selectedReservations.some(
       (r) => r.status !== 'PENDING'

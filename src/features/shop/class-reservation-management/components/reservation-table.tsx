@@ -1,9 +1,9 @@
 import { useState, type Dispatch, type SetStateAction } from 'react';
 
 import type { Reservation } from '../types/reservation-types';
-import { ReservationTableRow } from './reservation-table-row';
 import Sort from '../../../../assets/sort.svg';
 import { Button } from '../../../../shared/components/ui';
+import { ReservationTableRow } from './reservation-table-row';
 
 type SortKey = keyof Omit<Reservation, 'status'>;
 type SortOrder = 'asc' | 'desc';
@@ -48,7 +48,7 @@ export const ReservationTable = ({
     if (isAllSelected) {
       onSelectedIdsChange(new Set());
     } else {
-      onSelectedIdsChange(new Set(data.map((item) => item.reservationNumber)));
+      onSelectedIdsChange(new Set(data.map((item) => item.reservationId)));
     }
   };
 
@@ -77,7 +77,7 @@ export const ReservationTable = ({
             new Date(aVal as string).getTime();
     }
 
-    if (sortKey === 'reservationNumber') {
+    if (sortKey === 'reservationId') {
       return sortOrder === 'asc'
         ? (aVal as number) - (bVal as number)
         : (bVal as number) - (aVal as number);
@@ -137,7 +137,7 @@ export const ReservationTable = ({
               전화번호 <SortButton sortTarget="phoneNumber" />
             </th>
             <th className="py-3 text-left font-medium">
-              예약번호 <SortButton sortTarget="reservationNumber" />
+              예약번호 <SortButton sortTarget="reservationId" />
             </th>
             <th className="py-3 text-left font-medium">
               이용일시 <SortButton sortTarget="usageDateTime" />
@@ -161,9 +161,9 @@ export const ReservationTable = ({
           <tbody>
             {sortedData.map((item) => (
               <ReservationTableRow
-                key={item.reservationNumber}
+                key={item.reservationId}
                 data={item}
-                checked={selectedIds.has(item.reservationNumber)}
+                checked={selectedIds.has(item.reservationId)}
                 onCheck={handleSelectOne}
               />
             ))}

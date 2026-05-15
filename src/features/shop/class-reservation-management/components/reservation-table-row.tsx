@@ -21,12 +21,16 @@ export const ReservationTableRow = ({
   });
 
   return (
-    <tr className="text-sm">
+    <tr
+      className="cursor-pointer text-sm hover:bg-gray-50"
+      onClick={() => onCheck(data.reservationId)}
+    >
       <td className="w-10 py-3">
         <input
           type="checkbox"
           checked={checked}
-          onChange={() => onCheck(data.reservationNumber)}
+          onChange={() => onCheck(data.reservationId)}
+          onClick={(e) => e.stopPropagation()}
         />
       </td>
       <td className="py-3">
@@ -34,7 +38,7 @@ export const ReservationTableRow = ({
       </td>
       <td className="py-3">{data.reserverName}</td>
       <td className="py-3">{data.phoneNumber}</td>
-      <td className="py-3">{data.reservationNumber}</td>
+      <td className="py-3">{data.reservationId}</td>
       <td className="py-3">{formattedTime}</td>
       <td className="py-3">{data.className}</td>
       <td className="py-3">-</td>

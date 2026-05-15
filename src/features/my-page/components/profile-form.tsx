@@ -209,7 +209,7 @@ export const ProfileForm = forwardRef<ProfileFormRef, ProfileFormProps>(
               <img
                 src={profileImagePreview}
                 alt=""
-                className="h-[12rem] w-[12rem] justify-self-center rounded-full object-cover"
+                className="mx-auto block h-[12rem] w-[12rem] rounded-full object-cover"
               />
             ) : (
               <div className="flex h-[12rem] w-[12rem] items-center justify-center justify-self-center rounded-full bg-black">

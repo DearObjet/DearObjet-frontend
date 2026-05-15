@@ -1,5 +1,5 @@
 export interface Reservation {
-  reservationNumber: number;
+  reservationId: number;
   status: 'CONFIRMED' | 'CANCELED' | 'PENDING';
   reserverName: string;
   phoneNumber: string;
