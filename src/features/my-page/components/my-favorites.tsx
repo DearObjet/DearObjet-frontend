@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 
-import { useLazyGetFavoriteShopListQuery } from '../../map/api/favorite-api';
+import { useLazyGetFavoriteShopListQuery } from '../../map/api/map-api';
 import type { FavoriteShopItem } from '../../map/types/favorite-types';
 import { MyPageLayout } from './my-page-layout';
 import { MyFavoritesGrid } from './my-favorites-grid';

@@ -1,4 +1,4 @@
-import { useGetShopArtistsQuery } from '../api/map-artist-api';
+import { useGetShopArtistsQuery } from '../api/map-api';
 import type { ArtistTabProps } from '../types/map-artist-types';
 
 export const ArtistTab = ({ shopId }: ArtistTabProps) => {

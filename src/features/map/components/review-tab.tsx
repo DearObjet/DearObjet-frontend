@@ -15,7 +15,7 @@ import {
   useCreateShopReviewMutation,
   useUpdateShopReviewMutation,
   useDeleteShopReviewMutation,
-} from '../api/review-api';
+} from '../api/map-api';
 import type { ShopReviewItem } from '../types/review-types';
 
 interface ReviewTabProps {

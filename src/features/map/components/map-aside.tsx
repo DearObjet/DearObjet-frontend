@@ -18,7 +18,7 @@ import { useGetUserPostsQuery } from '../../post/api/post-api';
 import {
   useAddShopFavoriteMutation,
   useRemoveShopFavoriteMutation,
-} from '../api/favorite-api';
+} from '../api/map-api';
 
 export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
   const user = useAppSelector((state) => state.auth.user);
