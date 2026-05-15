@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 import { useInfiniteScroll } from '../hooks/use-infinite-scroll';
 
-import { useLazyGetShopStoriesQuery } from '../api/map-story-api';
+import { useLazyGetShopStoriesQuery } from '../api/map-api';
 import type { MapStoryItem, StoryTabProps } from '../types/map-story-types';
 
 const formatDate = (createdAt: string) =>

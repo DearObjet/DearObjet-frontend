@@ -8,7 +8,7 @@ import {
   useGetClassListQuery,
   useGetAvailableSlotsQuery,
   useCreateReservationMutation,
-} from '../api/one-day-class-api';
+} from '../api/map-api';
 import type { ClassListItem } from '../types/one-day-class-types';
 import { DearObjetCalendar } from '../../../shared/components/common';
 
