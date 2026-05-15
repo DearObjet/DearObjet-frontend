@@ -244,7 +244,9 @@ export const Aside = () => {
             label="정산관리"
             className={
               activeMenu.startsWith(
-                role === 'SHOP' ? '/shop/settlements' : '/artist/settlements'
+                role === 'SHOP'
+                  ? '/shop/settlement-calculation'
+                  : '/artist/settlement-management'
               )
                 ? 'text-white'
                 : 'text-[#C1C1C1]'
@@ -252,8 +254,8 @@ export const Aside = () => {
             onClick={() =>
               handleClick(
                 role === 'SHOP'
-                  ? ROUTES.SHOP_SETTLEMENTS
-                  : ROUTES.ARTIST_SETTLEMENTS
+                  ? ROUTES.SHOP_SETTLEMENT_CALCULATION
+                  : ROUTES.ARTIST_SETTLEMENT_MANAGEMENT
               )
             }
           />
@@ -264,11 +266,13 @@ export const Aside = () => {
                   <Asidetab
                     label="정산금액 계산"
                     className={
-                      activeMenu === ROUTES.SHOP_SETTLEMENTS
+                      activeMenu === ROUTES.SHOP_SETTLEMENT_CALCULATION
                         ? 'text-white'
                         : 'text-[#C1C1C1]'
                     }
-                    onClick={() => handleClick(ROUTES.SHOP_SETTLEMENTS)}
+                    onClick={() =>
+                      handleClick(ROUTES.SHOP_SETTLEMENT_CALCULATION)
+                    }
                   />
                 </li>
                 <li>
@@ -282,7 +286,7 @@ export const Aside = () => {
                   <Asidetab
                     label="정산내역"
                     focusable={false}
-                    onClick={() => handleClick(ROUTES.SHOP_SETTLEMENTS_HISTORY)}
+                    onClick={() => handleClick(ROUTES.SHOP_SETTLEMENT_HISTORY)}
                   />
                 </li>
               </>
@@ -293,11 +297,13 @@ export const Aside = () => {
                   <Asidetab
                     label="정산관리"
                     className={
-                      activeMenu === ROUTES.ARTIST_SETTLEMENTS
+                      activeMenu === ROUTES.ARTIST_SETTLEMENT_MANAGEMENT
                         ? 'text-white'
                         : 'text-[#C1C1C1]'
                     }
-                    onClick={() => handleClick(ROUTES.ARTIST_SETTLEMENTS)}
+                    onClick={() =>
+                      handleClick(ROUTES.ARTIST_SETTLEMENT_MANAGEMENT)
+                    }
                   />
                 </li>
                 <li>
