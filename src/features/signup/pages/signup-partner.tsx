@@ -290,8 +290,9 @@ export const SignupPartner = () => {
           error={errors.phoneNumber}
           onChange={handlePhoneNumberChange}
           onButtonClick={() =>
-            handleSendVerification(formData.phoneNumber, (msg) =>
-              setErrors((prev) => ({ ...prev, phoneNumber: msg }))
+            handleSendVerification(
+              formData.phoneNumber.replace(/-/g, ''),
+              (msg) => setErrors((prev) => ({ ...prev, phoneNumber: msg }))
             )
           }
         />
@@ -317,7 +318,7 @@ export const SignupPartner = () => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
                     handleVerifyCode(
-                      formData.phoneNumber,
+                      formData.phoneNumber.replace(/-/g, ''),
                       () =>
                         setErrors((prev) => ({
                           ...prev,
@@ -342,7 +343,7 @@ export const SignupPartner = () => {
                 type="button"
                 onClick={() =>
                   handleVerifyCode(
-                    formData.phoneNumber,
+                    formData.phoneNumber.replace(/-/g, ''),
                     () =>
                       setErrors((prev) => ({
                         ...prev,
