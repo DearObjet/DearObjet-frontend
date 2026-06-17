@@ -47,10 +47,10 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
     const next = !isFavorited;
     setIsFavorited(next);
     try {
-      if (isFavorited) {
-        await removeFavorite(shopId).unwrap();
-      } else {
+      if (next) {
         await addFavorite(shopId).unwrap();
+      } else {
+        await removeFavorite(shopId).unwrap();
       }
     } catch {
       setIsFavorited(!next);
@@ -68,9 +68,7 @@ export const MapAside = ({ shopDetail, shopId }: ShopPanelProps) => {
 
   useEffect(() => {
     setIsFavorited(shopDetail?.isFavorite ?? false);
-    // shopId 변경 시에만 초기화하는 것이 의도적 - isFavorite 값이 같아도 샵이 바뀌면 리셋되어야 함
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shopId]);
+  }, [shopId, shopDetail?.isFavorite]);
 
   useEffect(() => {
     setActiveTab('스토리');
